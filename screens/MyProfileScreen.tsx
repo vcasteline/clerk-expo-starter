@@ -51,7 +51,7 @@ function MyProfileScreen({ navigation }: RootStackScreenProps<"MyProfile">) {
       <TouchableOpacity onPress={onSignOutPress} style={styles.link}>
         <Text style={styles.linkText}>Sign out</Text>
       </TouchableOpacity>
-      <Text style={styles.token}>{sessionToken}</Text>
+      {/* <Text style={styles.token}>{sessionToken}</Text> */}
     </View>
   );
 }

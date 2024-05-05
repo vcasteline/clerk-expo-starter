@@ -1,6 +1,6 @@
 import React from "react";
 import * as WebBrowser from "expo-web-browser";
-import { Text, TouchableOpacity } from "react-native";
+import { Text, TouchableOpacity, Image } from "react-native";
 import { useOAuth } from "@clerk/clerk-expo";
 import { styles } from "./Styles";
 import { useWamUpBrowser } from "../hooks/useWarmUpBrowser";
@@ -31,9 +31,17 @@ export function OAuthButtons() {
 
   return (
     <TouchableOpacity
-      style={{ ...styles.secondaryButton, marginBottom: 20 }}
+      style={{
+        ...styles.secondaryButton,
+        marginBottom: 20,
+        flexDirection: "row",
+      }}
       onPress={onPress}
     >
+      <Image
+        source={require("../assets/google-icon.png")}
+        style={{ width: 30, height: 30, marginRight:10 }}
+      />
       <Text style={styles.secondaryButtonText}>Continue with Google</Text>
     </TouchableOpacity>
   );

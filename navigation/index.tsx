@@ -11,10 +11,15 @@ import SignUpScreen from "../screens/SignUpScreen";
 import SignInScreen from "../screens/SignInScreen";
 import VerifyCodeScreen from "../screens/VerifyCodeScreen";
 import MyProfileScreen from "../screens/MyProfileScreen";
+import WelcomeScreen from "../screens/WelcomeScreen";
 import { RootStackParamList } from "../types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import { ClerkLoaded, useUser } from "@clerk/clerk-expo";
 import * as SplashScreen from "expo-splash-screen";
+import HomeScreen from "../screens/HomeScreen";
+import InstructorsScreen from "../screens/InstructorsScreen";
+import ScheduleScreen from "../screens/ScheduleScreen";
+import BottomNav from "./BottomNav";
 
 export default function Navigation() {
   return (
@@ -33,7 +38,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
  */
 const RootNavigator = () => {
   const { isSignedIn, isLoaded } = useUser();
-  
+
   React.useEffect(() => {
     if (isLoaded) {
       SplashScreen.hideAsync();
@@ -42,15 +47,37 @@ const RootNavigator = () => {
 
   return (
     <ClerkLoaded>
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
         {isSignedIn ? (
-          <Stack.Screen
-            name="MyProfile"
-            component={MyProfileScreen}
-            options={{ title: "MyProfile" }}
-          />
+          <>
+            <Stack.Screen
+              name="Home"
+              component={HomeScreen}
+              options={{ title: "Home" }}
+            />
+            <Stack.Screen
+              name="Schedule"
+              component={ScheduleScreen}
+              options={{ title: "Schedule" }}
+            />
+             <Stack.Screen
+              name="Instructors"
+              component={InstructorsScreen}
+              options={{ title: "Instructors" }}
+            />
+          </>
+          
         ) : (
           <>
+            <Stack.Screen
+              name="Welcome"
+              component={WelcomeScreen}
+              options={{ title: "Welcome" }}
+            />
             <Stack.Screen
               name="SignUp"
               component={SignUpScreen}

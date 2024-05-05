@@ -3,15 +3,29 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#3D4AF5",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingTop: 20,
+    paddingTop: 70,
+    overflow:"scroll",
   },
-
+  instructorImage:{
+    width: 130,
+    height: 130,
+    marginLeft: 10,
+    resizeMode: "contain",
+    borderRadius: 50
+  },
+  containerInside: {
+    flex: 1,
+    backgroundColor: "#000000",
+    alignItems: "center",
+    justifyContent: "flex-start",
+    paddingTop: 70,
+  },
   inputView: {
     borderRadius: 5,
-    width: "90%",
+    width: "100%",
     height: 45,
     marginBottom: 20,
     borderColor: "#000",
@@ -27,12 +41,12 @@ export const styles = StyleSheet.create({
   },
 
   primaryButton: {
-    width: "90%",
-    borderRadius: 5,
-    height: 50,
+    width: "100%",
+    borderRadius: 15,
+    height: 45,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 40,
+    marginTop: 24,
     backgroundColor: "#000",
     color: "#ffffff",
   },
@@ -42,11 +56,18 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
+  instructorCard: {
+    backgroundColor:"#F5F8FE",
+    borderRadius: 24,
+    padding: 30,
+    height: 200,
+    marginRight: 10
+  },
   titleText: {
     color: "#000",
-    fontSize: 20,
+    fontSize:26,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 10,
   },
 
   footer: {
@@ -60,8 +81,9 @@ export const styles = StyleSheet.create({
 
   secondaryButton: {
     marginTop: 15,
-    borderRadius: 5,
-    padding: 10,
+    borderRadius: 15,
+    width: "100%",
+    height:40,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#ffffff",
@@ -75,9 +97,34 @@ export const styles = StyleSheet.create({
   },
 
   oauthView: {
-    width: "90%",
+    width: "100%",
     borderBottomWidth: 1,
     borderBottomColor: "#000",
     marginBottom: 20,
+  },
+
+  logoSignUp: {
+    display:"flex",
+    justifyContent:"center"
+  },
+  paragraph: {
+    fontSize: 16,
+  },
+  center: {
+    flexDirection:"row",
+    justifyContent:"center",
+    gap: 8
+  },
+  box:{
+    backgroundColor: "#141414",
+    borderRadius: 24,
+    padding:30,
+    height: 175,
+    width: 175
+  },
+  spaceBet: {
+    flexDirection:"row",
+    justifyContent: "space-between",
+    gap: 10
   },
 });
