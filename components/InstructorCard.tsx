@@ -11,7 +11,7 @@ interface InstructorCardProps {
 const InstructorCard: React.FC<InstructorCardProps> = ({ name, category, image }) => {
   return (
     <TouchableOpacity style={{ ...styles.instructorCard, ...styles.spaceBet }}>
-      <View>
+      <View style={styles.half}>
         <Text style={styles.titleText}>{name}</Text>
         <Text style={styles.paragraph}>{category}</Text>
       </View>

@@ -20,7 +20,7 @@ export function OAuthButtons() {
         await startOAuthFlow();
 
       if (createdSessionId) {
-        setActive({ session: createdSessionId });
+        setActive?({ session: createdSessionId }) : null;
       } else {
         // Use signIn or signUp for next steps such as MFA
       }

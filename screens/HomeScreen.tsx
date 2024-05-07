@@ -6,18 +6,31 @@ import {
   Image,
   TouchableWithoutFeedback,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
-import { useSignIn } from "@clerk/clerk-expo";
+import { useAuth, useSignIn } from "@clerk/clerk-expo";
 import { RootStackScreenProps } from "../types";
 import { styles } from "../components/Styles";
 import ClassCard from "../components/ClassCard";
 import InstructorCard from "../components/InstructorCard";
 import BottomNav from "../navigation/BottomNav";
+import { log } from "../logger";
 
 export default function HomeScreen({
-  navigation, route
+  navigation,
+  route,
 }: RootStackScreenProps<"Home">) {
   const { signIn, setSession, isLoaded } = useSignIn();
+  const { getToken, signOut } = useAuth();
+  const onSignOutPress = async () => {
+    try {
+      await signOut();
+    } catch (err: any) {
+      log("Error:> " + err?.status || "");
+      log("Error:> " + err?.errors ? JSON.stringify(err.errors) : err);
+    }
+  };
+  const onClassPress = () => navigation.replace("BikeSelection");
   const onSchedulePress = () => navigation.replace("Schedule");
   const onInstructorPress = () => navigation.replace("Instructors");
   const instructorImage = require("../assets/images/instructor-1.jpg");
@@ -30,11 +43,11 @@ export default function HomeScreen({
       justifyContent: "center",
     },
     rides: {
-        flex:1,
-        marginBottom:38 
+      flex: 1,
+      marginBottom: 38,
     },
-    instructors:{
-        flex:2
+    instructors: {
+      flex: 2,
     },
     logoImage: {
       width: 100,
@@ -54,7 +67,7 @@ export default function HomeScreen({
       textAlign: "left",
       width: "100%",
       marginLeft: 60,
-      marginBottom: 20,
+      marginBottom: 6,
     },
     dashboard: {
       borderRadius: 30,
@@ -83,9 +96,16 @@ export default function HomeScreen({
       fontSize: 16,
       color: "rgba(255, 255, 255, 0.8)",
     },
+    containerInside: {
+      flex: 1,
+      backgroundColor: "#000000",
+      alignItems: "center",
+      justifyContent: "flex-start",
+      paddingTop: 70,
+    },
   });
   return (
-    <View style={styles.containerInside}>
+    <View style={stylesHere.containerInside}>
       <View style={stylesHere.heading}>
         <Image
           style={stylesHere.logoImage}
@@ -128,10 +148,24 @@ export default function HomeScreen({
             </TouchableWithoutFeedback>
           </View>
           <View>
-            {/* <Text style={styles.paragraph}>No booked rides</Text> */}
-            <ClassCard date="Feb 20" className="Rider Rythm" time="20:30" instructor="Sofis Chang" spots={20}/>
-            <ClassCard date="Feb 20" className="Rider Rythm" time="20:30" instructor="Sofis Chang" spots={20}/>
-
+            <ClassCard
+              onPress={onClassPress}
+              image={null}
+              date="Feb 20"
+              className="Rider Rythm"
+              time="20:30"
+              instructor="Sofis Chang"
+              spots={20}
+            />
+            <ClassCard
+              onPress={onClassPress}
+              image={null}
+              date="Feb 20"
+              className="Rider Rythm"
+              time="20:30"
+              instructor="Sofis Chang"
+              spots={20}
+            />
           </View>
         </View>
         <View style={stylesHere.instructors}>
@@ -142,7 +176,11 @@ export default function HomeScreen({
             </TouchableWithoutFeedback>
           </View>
           <ScrollView horizontal={true}>
-            <InstructorCard name="Sofia Chang" category="fast" image={instructorImage}/>
+            <InstructorCard
+              name="Sofia Chang"
+              category="fast"
+              image={instructorImage}
+            />
           </ScrollView>
         </View>
       </View>

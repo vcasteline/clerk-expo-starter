@@ -16,12 +16,19 @@ export const styles = StyleSheet.create({
     resizeMode: "contain",
     borderRadius: 50
   },
+  instructorImageClass:{
+    width: 60,
+    height: 60,
+    marginLeft: 0,
+    resizeMode: "contain",
+    borderRadius: 50
+  },
   containerInside: {
     flex: 1,
     backgroundColor: "#000000",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingTop: 70,
+    paddingTop: 100,
   },
   inputView: {
     borderRadius: 5,
@@ -61,7 +68,9 @@ export const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 30,
     height: 200,
-    marginRight: 10
+    width:"100%",
+    marginRight: 10,
+    marginBottom: 10
   },
   titleText: {
     color: "#000",
@@ -69,7 +78,9 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
   },
-
+  half: {
+    width: "50%"
+  },
   footer: {
     color: "#000",
     marginTop: 20,
@@ -113,13 +124,23 @@ export const styles = StyleSheet.create({
   center: {
     flexDirection:"row",
     justifyContent:"center",
-    gap: 8
+    gap: 7
+  },
+  heading: {
+    display: "flex",
+    gap: 10,
+    flexDirection:"row",
+    justifyContent: "flex-start",
+    textAlign: "left",
+    width: "100%",
+    marginLeft: 60,
+    marginBottom: 6,
   },
   box:{
     backgroundColor: "#141414",
     borderRadius: 24,
     padding:30,
-    height: 175,
+    height: 165,
     width: 175
   },
   spaceBet: {

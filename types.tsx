@@ -8,10 +8,13 @@ declare global {
 
 export type RootStackParamList = {
   Root: undefined;
+  Main: undefined;
+  BikeSelection: undefined;
   Welcome: undefined;
   SignUp: undefined;
   SignIn: undefined;
   Home: undefined;
+  ScheduleStack: undefined;
   Schedule: undefined;
   Instructors: undefined;
   MyProfile: undefined;
@@ -19,7 +22,7 @@ export type RootStackParamList = {
 };
 export type RootTabParamList = {
   Home: undefined;
-  Schedule: undefined;
+  ScheduleStack: undefined;
   MyProfile: undefined;
   Instructors: undefined;
 };

@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { styles } from "./Styles";
 
 interface ClassCardProps {
   date: string;
@@ -7,28 +8,31 @@ interface ClassCardProps {
   time: string;
   instructor: string;
   spots: number;
+  image: any;
+  onPress: any;
 }
 
-const ClassCard: React.FC<ClassCardProps> = ({ date, className, time, instructor, spots }) => {
+const ClassCard: React.FC<ClassCardProps> = ({ onPress, date, image = null, className, time, instructor, spots }) => {
   return (
-    <View style={styles.container}>
-      <View style={styles.dateContainer}>
-        <Text style={styles.dateText}>{date}</Text>
+    <TouchableOpacity onPress={onPress} style={stylesHere.container}>
+      <View style={stylesHere.dateContainer}>
+        {/* {date && <Text style={stylesHere.dateText}>{date}</Text>} */}
+        {image && <Image style={styles.instructorImageClass} source={image}/>}
       </View>
-      <View style={styles.infoContainer}>
-        <Text style={styles.className}>{className}</Text>
-        <Text style={styles.timeInstructor}>
+      <View style={stylesHere.infoContainer}>
+        <Text style={stylesHere.className}>{className}</Text>
+        <Text style={stylesHere.timeInstructor}>
           {time} · {instructor}
         </Text>
       </View>
-      <View style={styles.spotsContainer}>
-        <Text style={styles.spotsText}>{spots}</Text>
+      <View style={stylesHere.spotsContainer}>
+        <Text style={stylesHere.spotsText}>{spots}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
-const styles = StyleSheet.create({
+const stylesHere = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -41,7 +45,7 @@ const styles = StyleSheet.create({
   dateContainer: {
     backgroundColor: '#F6FD91',
     borderRadius: 20,
-    paddingVertical: 20,
+    paddingVertical: 10,
     paddingHorizontal: 10,
     marginRight: 16,
   },

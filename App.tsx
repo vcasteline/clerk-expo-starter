@@ -6,6 +6,7 @@ import Navigation from "./navigation";
 import { ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "./cache";
 import * as SplashScreen from "expo-splash-screen";
+import BottomNav from "./navigation/BottomNav";
 
 // Your publishable Key goes here
 const publishableKey = "pk_test_Zm9uZC1za3lsYXJrLTk5LmNsZXJrLmFjY291bnRzLmRldiQ";

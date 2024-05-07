@@ -10,16 +10,12 @@ import * as React from "react";
 import SignUpScreen from "../screens/SignUpScreen";
 import SignInScreen from "../screens/SignInScreen";
 import VerifyCodeScreen from "../screens/VerifyCodeScreen";
-import MyProfileScreen from "../screens/MyProfileScreen";
 import WelcomeScreen from "../screens/WelcomeScreen";
 import { RootStackParamList } from "../types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import { ClerkLoaded, useUser } from "@clerk/clerk-expo";
 import * as SplashScreen from "expo-splash-screen";
-import HomeScreen from "../screens/HomeScreen";
-import InstructorsScreen from "../screens/InstructorsScreen";
-import ScheduleScreen from "../screens/ScheduleScreen";
-import BottomNav from "./BottomNav";
+import MainScreen from "../screens/MainScreen";
 
 export default function Navigation() {
   return (
@@ -55,20 +51,11 @@ const RootNavigator = () => {
         {isSignedIn ? (
           <>
             <Stack.Screen
-              name="Home"
-              component={HomeScreen}
-              options={{ title: "Home" }}
+              name="Main"
+              component={MainScreen}
+              options={{ title: "Main" }}
             />
-            <Stack.Screen
-              name="Schedule"
-              component={ScheduleScreen}
-              options={{ title: "Schedule" }}
-            />
-             <Stack.Screen
-              name="Instructors"
-              component={InstructorsScreen}
-              options={{ title: "Instructors" }}
-            />
+           
           </>
           
         ) : (
