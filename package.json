@@ -20,6 +20,7 @@
     "@react-navigation/native": "6.1.7",
     "@react-navigation/native-stack": "6.9.13",
     "@types/expo": "33.0.1",
+    "axios": "^1.6.8",
     "expo": "~49.0.0",
     "expo-asset": "8.10.1",
     "expo-auth-session": "5.0.2",

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Text,
   View,
@@ -6,15 +6,14 @@ import {
   Image,
   TouchableWithoutFeedback,
   ScrollView,
-  TouchableOpacity,
 } from "react-native";
 import { useAuth, useSignIn } from "@clerk/clerk-expo";
 import { RootStackScreenProps } from "../types";
 import { styles } from "../components/Styles";
 import ClassCard from "../components/ClassCard";
 import InstructorCard from "../components/InstructorCard";
-import BottomNav from "../navigation/BottomNav";
 import { log } from "../logger";
+import { getClasses, getInstructors } from "../services/GlobalApi";
 
 export default function HomeScreen({
   navigation,
@@ -34,6 +33,46 @@ export default function HomeScreen({
   const onSchedulePress = () => navigation.replace("Schedule");
   const onInstructorPress = () => navigation.replace("Instructors");
   const instructorImage = require("../assets/images/instructor-1.jpg");
+
+  useEffect(() => {
+    const selectedDay = "Martes"; // Día seleccionado por el usuario
+  
+    getClasses()
+      .then((response) => {
+        const allClasses = response.data.data;
+        const filteredClasses = allClasses.filter(
+          (clase: { attributes: { diaDeLaSemana: string } }) =>
+            clase.attributes.diaDeLaSemana === selectedDay
+        );
+        // Utilizar las clases filtradas en tu aplicación
+        console.log(filteredClasses);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  
+    getInstructors()
+      .then((response) => {
+        const instructors = response.data.data;
+        instructors.forEach(
+          (instructor: {
+            attributes: {
+              nombreCompleto: any;
+              fotoPerfil: { data: { attributes: { url: any } } };
+            };
+          }) => {
+            const nombre = instructor.attributes.nombreCompleto;
+            const fotoPerfil = instructor.attributes.fotoPerfil.data.attributes.url;
+            console.log(instructors);
+            console.log(`URL de la foto de perfil de ${nombre}: ${fotoPerfil}`);
+          }
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
 
   const stylesHere = StyleSheet.create({
     container: {
