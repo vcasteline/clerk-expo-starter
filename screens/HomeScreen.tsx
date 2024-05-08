@@ -34,6 +34,7 @@ export default function HomeScreen({
   const onInstructorPress = () => navigation.replace("Instructors");
   const instructorImage = require("../assets/images/instructor-1.jpg");
 
+
   useEffect(() => {
     const selectedDay = "Martes"; // Día seleccionado por el usuario
   
