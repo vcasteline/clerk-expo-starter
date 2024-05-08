@@ -144,7 +144,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#141414",
     borderRadius: 24,
     padding:30,
-    height: 165,
+    height: 145,
     width: 175
   },
   spaceBet: {

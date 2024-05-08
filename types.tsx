@@ -21,6 +21,7 @@ export type RootStackParamList = {
   Instructors: undefined;
   MyProfile: undefined;
   SettingsProfile: undefined;
+  RideHistory: undefined;
   ProfileStack: undefined;
   VerifyCode: undefined;
 };

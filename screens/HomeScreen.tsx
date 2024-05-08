@@ -14,6 +14,7 @@ import ClassCard from "../components/ClassCard";
 import InstructorCard from "../components/InstructorCard";
 import { log } from "../logger";
 import { getClasses, getInstructors } from "../services/GlobalApi";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function HomeScreen({
   navigation,
@@ -83,11 +84,14 @@ export default function HomeScreen({
       justifyContent: "center",
     },
     rides: {
-      flex: 1,
-      marginBottom: 38,
+      // flex: 1,
+      marginBottom: 10,
+    },
+    ridesSection: {
+      marginBottom: 0,
     },
     instructors: {
-      flex: 2,
+      // flex: 3,
     },
     logoImage: {
       width: 100,
@@ -116,7 +120,7 @@ export default function HomeScreen({
       paddingBottom: 40,
       width: "100%",
       height: 600,
-      justifyContent: "center",
+      justifyContent: "flex-start",
       backgroundColor: "#fff",
     },
     boxTitle: {
@@ -127,7 +131,8 @@ export default function HomeScreen({
     boxContent: {
       textAlign: "center",
       color: "white",
-      fontSize: 40,
+      fontSize: 30,
+      marginTop:0,
       marginBottom: 7,
       fontWeight: "800",
     },
@@ -143,6 +148,11 @@ export default function HomeScreen({
       justifyContent: "flex-start",
       paddingTop: 70,
     },
+    iconBg: {
+      backgroundColor: "#3D4AF5",
+      borderRadius:50,
+      padding: 10
+    }
   });
   return (
     <View style={stylesHere.containerInside}>
@@ -156,10 +166,13 @@ export default function HomeScreen({
         <View style={styles.box}>
           <View style={styles.spaceBet}>
             <Text style={stylesHere.boxTitle}>Ride Legacy</Text>
-            <Image
+            <View style={stylesHere.iconBg}>
+              <Ionicons name="flame" color={'white'} size={20}/>
+            </View>
+            {/* <Image
               style={stylesHere.iconImage}
               source={require("../assets/images/fire-icon.png")}
-            />
+            /> */}
           </View>
 
           <Text style={stylesHere.boxContent}>17</Text>
@@ -187,7 +200,16 @@ export default function HomeScreen({
               <Text style={styles.titleText}>&#8594;</Text>
             </TouchableWithoutFeedback>
           </View>
-          <View>
+          <View style={stylesHere.ridesSection}>
+            <ClassCard
+              onPress={onClassPress}
+              image={null}
+              date="Feb 20"
+              className="Rider Rythm"
+              time="20:30"
+              instructor="Sofis Chang"
+              spots={20}
+            />
             <ClassCard
               onPress={onClassPress}
               image={null}
@@ -216,11 +238,12 @@ export default function HomeScreen({
             </TouchableWithoutFeedback>
           </View>
           <ScrollView horizontal={true}>
-            {/* <InstructorCard
+            <InstructorCard
+              onPress={null}
               name="Sofia Chang"
               category="fast"
               image={instructorImage}
-            /> */}
+            />
           </ScrollView>
         </View>
       </View>

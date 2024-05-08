@@ -42,7 +42,7 @@ export default function SettingsProfileScreen({ navigation }: RootStackScreenPro
   return (
     <View style={styles.containerInside}>
       <View style={styles.heading}>
-        <Text style={{ ...styles.titleText, color: "white" }}>Profile</Text>
+        <Text style={{ ...styles.titleText, color: "white" }}>Edit Profile</Text>
       </View>
       <View style={stylesHere.containerHeading}>
         <Image
@@ -101,6 +101,7 @@ const stylesHere = StyleSheet.create({
     paddingHorizontal: 16,
   },
   profilePicture: {
+    marginLeft: 20,
     width: 50,
     height: 50,
     borderRadius: 25,
@@ -119,7 +120,7 @@ const stylesHere = StyleSheet.create({
     color: '#666666',
   },
   settingsIcon: {
-    marginLeft: 16,
+    marginRight: 16,
   },
   title: {
     color: "white",

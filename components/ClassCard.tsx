@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { styles } from "./Styles";
+import { Ionicons } from '@expo/vector-icons';
 
 interface ClassCardProps {
   date: any;
@@ -16,7 +17,7 @@ const ClassCard: React.FC<ClassCardProps> = ({ onPress, date, image = null, clas
   return (
     <TouchableOpacity onPress={onPress} style={stylesHere.container}>
       <View style={stylesHere.dateContainer}>
-        {/* {date && <Text style={stylesHere.dateText}>{date}</Text>} */}
+        {date && <Text style={stylesHere.dateText}>{date}</Text>}
         {image && <Image style={styles.instructorImageClass} source={image}/>}
       </View>
       <View style={stylesHere.infoContainer}>
@@ -26,6 +27,7 @@ const ClassCard: React.FC<ClassCardProps> = ({ onPress, date, image = null, clas
         </Text>
       </View>
       <View style={stylesHere.spotsContainer}>
+        <Ionicons name='bicycle' color={'black'} size={20}/>
         <Text style={stylesHere.spotsText}>{spots}</Text>
       </View>
     </TouchableOpacity>
@@ -69,10 +71,13 @@ const stylesHere = StyleSheet.create({
     borderRadius: 4,
     paddingVertical: 4,
     paddingHorizontal: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   spotsText: {
     fontSize: 14,
     fontWeight: 'bold',
+    marginLeft:10
   },
 });
 

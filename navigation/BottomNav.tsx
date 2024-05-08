@@ -41,6 +41,7 @@ const BottomNav: React.FC = () => {
           component={HomeScreen}
           options={{
             tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
+            tabBarLabel:() => {return null},
           }}
         />
         <Tab.Screen
@@ -48,6 +49,7 @@ const BottomNav: React.FC = () => {
           component={ScheduleStack}
           options={{
             tabBarIcon: ({ color, size }) => <Ionicons name="calendar" size={size} color={color} />,
+            tabBarLabel:() => {return null},
           }}
         />
         <Tab.Screen
@@ -55,6 +57,7 @@ const BottomNav: React.FC = () => {
           component={InstructorStack}
           options={{
             tabBarIcon: ({ color, size }) => <Ionicons name="people" size={size} color={color} />,
+            tabBarLabel:() => {return null},
           }}
         />
          <Tab.Screen
@@ -62,6 +65,7 @@ const BottomNav: React.FC = () => {
           component={ProfileStack}
           options={{
             tabBarIcon: ({ color, size }) => <Ionicons name="person" size={size} color={color} />,
+            tabBarLabel:() => {return null},
           }}
         />
       </Tab.Navigator>

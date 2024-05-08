@@ -33,6 +33,7 @@ export default function SafeMyProfileScreen(
 
 function MyProfileScreen({ navigation }: RootStackScreenProps<"MyProfile">) {
   const { user } = useUser();
+  const { signOut } = useAuth();
   const [firstName, setFirstName] = React.useState(user?.firstName || "");
   const [lastName, setLastName] = React.useState(user?.lastName || "");
   const [email, setEmail] = React.useState(
@@ -41,7 +42,16 @@ function MyProfileScreen({ navigation }: RootStackScreenProps<"MyProfile">) {
   const [phoneNumber, setPhoneNumber] = React.useState(
     user?.primaryPhoneNumber?.phoneNumber || ""
   );
+  const onSignOutPress = async () => {
+    try {
+      await signOut();
+    } catch (err: any) {
+      log("Error:> " + err?.status || "");
+      log("Error:> " + err?.errors ? JSON.stringify(err.errors) : err);
+    }
+  };
   const onSettingsPress = () => navigation.push("SettingsProfile");
+  const onRideHistoryPress = () => navigation.push("RideHistory");
 
   const handleSaveChanges = async () => {
     try {
@@ -91,7 +101,7 @@ function MyProfileScreen({ navigation }: RootStackScreenProps<"MyProfile">) {
         <View>
           <TouchableOpacity
             style={stylesHere.button}
-            onPress={() => handleButtonPress("Rides History")}
+            onPress={onRideHistoryPress}
           >
             <Ionicons name="time" size={24} color="#3D4AF5" />
             <Text style={stylesHere.buttonText}>Rides History</Text>
@@ -113,25 +123,25 @@ function MyProfileScreen({ navigation }: RootStackScreenProps<"MyProfile">) {
             <Text style={stylesHere.buttonText}>Edit password</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={stylesHere.button}
             onPress={() => handleButtonPress("Notification")}
           >
             <Ionicons name="notifications" size={24} color="#3D4AF5" />
             <Text style={stylesHere.buttonText}>Notification</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={stylesHere.button}
             onPress={() => handleButtonPress("About App")}
           >
             <Ionicons name="information-circle" size={24} color="#3D4AF5" />
             <Text style={stylesHere.buttonText}>About App</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TouchableOpacity
             style={stylesHere.button}
-            onPress={() => handleButtonPress("Log Out")}
+            onPress={onSignOutPress}
           >
             <Ionicons name="log-out" size={24} color="#3D4AF5" />
             <Text style={stylesHere.buttonText}>Log Out</Text>
@@ -180,6 +190,7 @@ const stylesHere = StyleSheet.create({
     paddingHorizontal: 16,
   },
   profilePicture: {
+    marginLeft: 20,
     width: 50,
     height: 50,
     borderRadius: 25,
@@ -198,7 +209,8 @@ const stylesHere = StyleSheet.create({
     color: '#666666',
   },
   settingsIcon: {
-    marginLeft: 16,
+    marginRight: 30,
+    marginBottom: 10,
   },
   title: {
     color: "white",
