@@ -1,4 +1,7 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { Instructor } from './screens/instructors/InstructorsScreen';
+
+// ...
 
 declare global {
   namespace ReactNavigation {
@@ -16,14 +19,15 @@ export type RootStackParamList = {
   Home: undefined;
   ScheduleStack: undefined;
   Schedule: undefined;
-  Instructor: undefined;
-  InstructorStack: undefined;
   Instructors: undefined;
+  Instructor: { instructorData: Instructor };
+  InstructorStack: undefined;
   MyProfile: undefined;
   SettingsProfile: undefined;
   RideHistory: undefined;
   ProfileStack: undefined;
   VerifyCode: undefined;
+  
 };
 export type RootTabParamList = {
   Home: undefined;

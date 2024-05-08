@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,20 +6,103 @@ import {
   Image,
   StyleSheet,
   TouchableWithoutFeedback,
+  ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "../../components/Styles";
 import { RootStackScreenProps } from "../../types";
 import CalendarStrip from "react-native-calendar-strip";
+import { getClassesScheduleScreen } from "../../services/GlobalApi";
+import ClassCard from "../../components/ClassCard";
 
+interface Class {
+  id: number;
+  attributes: {
+    nombreClase: string;
+    horaInicio: string;
+    horaFin: string;
+    diaDeLaSemana:
+      | "Lunes"
+      | "Martes"
+      | "Miércoles"
+      | "Jueves"
+      | "Viernes"
+      | "Sábado"
+      | "Domingo";
+    instructor: {
+      data: Instructor;
+    };
+  };
+}
+
+interface Instructor {
+  id: number;
+  attributes: {
+    nombreCompleto: string;
+    fotoPerfil: {
+      data: {
+        attributes: {
+          url: string;
+        };
+      };
+    };
+  };
+}
 
 export default function InstructorScreen({
   navigation,
   route,
 }: RootStackScreenProps<"Instructor">) {
-  
+  const { instructorData } = route.params;
+  const onClassPress = () => navigation.push("BikeSelection");
+
   const onBackPress = () => navigation.popToTop();
 
+  useEffect(() => {
+    getClassesScheduleScreen()
+      .then((response: { data: { data: any } }) => {
+        const allClasses = response.data.data;
+        setClasses(allClasses);
+      })
+      .catch((error: any) => {
+        console.error(error);
+      });
+  }, []);
+
+  const getDayOfWeek = (dateString: string): string => {
+    const daysOfWeek = [
+      "Domingo",
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado",
+    ];
+    const date = new Date(dateString);
+    const dayOfWeek = daysOfWeek[date.getDay()];
+    return dayOfWeek;
+  };
+
+  const [classes, setClasses] = useState<Class[]>([]);
+  const [filteredClasses, setFilteredClasses] = useState<Class[]>([]);
+
+  const getFilteredClasses = (date: any, instructorName: string) => {
+    const diaSelecionado = getDayOfWeek(date);
+    const filtered = classes.filter(
+      (clase: Class) =>
+        clase.attributes.diaDeLaSemana === diaSelecionado &&
+        clase.attributes.instructor.data.attributes.nombreCompleto ===
+          instructorName
+    );
+    setFilteredClasses(filtered);
+  };
+
+  function redondearHora(hora: string) {
+    const [horas, minutos] = hora.split(":");
+    const minutosRedondeados = Math.round(Number(minutos) / 5) * 5;
+    return `${horas}:${minutosRedondeados.toString().padStart(2, "0")}`;
+  }
 
   return (
     <View style={styles.containerInside}>
@@ -27,50 +110,103 @@ export default function InstructorScreen({
         <TouchableWithoutFeedback onPress={onBackPress}>
           <Ionicons name="chevron-back-outline" size={30} color={"white"} />
         </TouchableWithoutFeedback>
-        <Text style={{ ...styles.titleText, color: "white" }}>Sofia's Profile</Text>
+        <Text style={{ ...styles.titleText, color: "white" }}>
+          {instructorData.attributes.nombreCompleto.substring(
+            0,
+            instructorData.attributes.nombreCompleto.indexOf(" ")
+          )}
+          's Profile
+        </Text>
       </View>
       <View style={stylesHere.dashboard}>
-      <View style={stylesHere.containerHere}>
-      <View style={stylesHere.instructorInfo}>
-        <Image
-          source={{ uri: 'https://utfs.io/f/bf77a67e-af87-47f1-92c3-c129615e27c0-4nhplr.jpg' }} // Reemplaza con la URL de la imagen del instructor
-          style={stylesHere.instructorImage}
-        />
-        <View style={stylesHere.instructorDetails}>
-          <Text style={stylesHere.instructorName}>Sofia Chang</Text>
-          <Text style={stylesHere.instructorSpecialty}>Drum & Bass</Text>
-          <View style={stylesHere.ratingContainer}>
-            <Text style={stylesHere.ratingText}>5+ years</Text>
-            <Text style={stylesHere.ratingText}>4.8 ★</Text>
+        <View style={stylesHere.containerHere}>
+          <View style={stylesHere.instructorInfo}>
+            <Image
+              source={{
+                uri:
+                  process.env.EXPO_PUBLIC_IMG_URL +
+                  instructorData.attributes.fotoPerfil.data.attributes.url,
+              }}
+              style={stylesHere.instructorImage}
+            />
+            <View style={stylesHere.instructorDetails}>
+              <Text style={stylesHere.instructorName}>
+                {instructorData.attributes.nombreCompleto}
+              </Text>
+              <Text style={stylesHere.instructorSpecialty}>
+                {instructorData.attributes.estilo}
+              </Text>
+              <View style={stylesHere.ratingContainer}>
+                {/* <Text style={stylesHere.ratingText}>5+ years</Text> */}
+                {/* <Text style={stylesHere.ratingText}>4.8 ★</Text> */}
+              </View>
+            </View>
+          </View>
+
+          <Text style={stylesHere.sectionTitle}>About Instructor</Text>
+          <Text style={stylesHere.description}>
+            {instructorData.attributes.bio}
+          </Text>
+
+          <Text style={stylesHere.sectionTitle}>Upcoming Classes</Text>
+          <View style={{ width: "100%", marginTop: 8 }}>
+            <CalendarStrip
+              numDaysInWeek={7}
+              style={{ height: 100, paddingTop: 6, paddingBottom: 0 }}
+              daySelectionAnimation={{
+                type: "background",
+                duration: 200,
+                highlightColor: "#F6FD91",
+              }}
+              onDateSelected={(date) =>
+                getFilteredClasses(
+                  date,
+                  instructorData.attributes.nombreCompleto
+                )
+              }
+              highlightDateNumberStyle={{ color: "black" }}
+              highlightDateNameStyle={{ color: "black" }}
+              calendarHeaderStyle={{
+                color: "black",
+                alignItems: "flex-start",
+                textAlign: "left",
+              }}
+              calendarHeaderContainerStyle={{ display: "flex", width: "100%" }}
+              dateNumberStyle={{ color: "black" }}
+              dateNameStyle={{ color: "black" }}
+            />
+            <ScrollView>
+              {filteredClasses.length == 0 ? (
+                <Text>No classes this day</Text>
+              ) : (
+                filteredClasses.map((classItem) => {
+                  // console.log(classItem.attributes);
+
+                  return (
+                    <ClassCard
+                      key={classItem.id}
+                      onPress={onClassPress}
+                      image={{
+                        uri:
+                          process.env.EXPO_PUBLIC_IMG_URL +
+                          classItem.attributes.instructor.data.attributes
+                            .fotoPerfil.data.attributes.url,
+                      }}
+                      date={null}
+                      className={classItem.attributes.nombreClase}
+                      time={redondearHora(classItem.attributes.horaInicio)}
+                      instructor={
+                        classItem.attributes.instructor.data.attributes
+                          .nombreCompleto
+                      }
+                      spots={null}
+                    />
+                  );
+                })
+              )}
+            </ScrollView>
           </View>
         </View>
-      </View>
-
-      <Text style={stylesHere.sectionTitle}>About Instructor</Text>
-      <Text style={stylesHere.description}>
-        I'm believe in the power of pushing limits and breaking through personal barriers. My philosophy centers around the idea that true.
-      </Text>
-
-      <Text style={stylesHere.sectionTitle}>Upcoming Classes</Text>
-      {/* Renderiza tu componente de calendario aquí */}
-      <View style={{width: "100%", marginTop: 8}}>
-        <CalendarStrip
-            numDaysInWeek={7}
-            style={{ height: 100, paddingTop: 6, paddingBottom: 0 }}
-            daySelectionAnimation={{
-              type: "background",
-              duration: 200,
-              highlightColor: "#F6FD91",
-            }}
-            highlightDateNumberStyle={{ color: "black" }}
-            highlightDateNameStyle={{ color: "black" }}
-            calendarHeaderStyle={{color: 'black', alignItems: 'flex-start', textAlign:'left'}}
-            calendarHeaderContainerStyle={{ display:'flex', width: '100%'}}
-            dateNumberStyle={{color: 'black'}}
-            dateNameStyle={{color: 'black'}}
-            />
-      </View>
-    </View>
       </View>
     </View>
   );
@@ -92,8 +228,8 @@ const stylesHere = StyleSheet.create({
     padding: 16,
   },
   instructorInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 16,
   },
   instructorImage: {
@@ -107,15 +243,15 @@ const stylesHere = StyleSheet.create({
   },
   instructorName: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   instructorSpecialty: {
     fontSize: 16,
-    color: 'gray',
+    color: "gray",
   },
   ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 4,
   },
   ratingText: {
@@ -124,7 +260,7 @@ const stylesHere = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 16,
     marginBottom: 8,
   },

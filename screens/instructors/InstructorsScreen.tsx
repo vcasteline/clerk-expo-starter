@@ -7,11 +7,12 @@ import InstructorCard from "../../components/InstructorCard";
 import { getInstructors } from "../../services/GlobalApi";
 
 // Define la interfaz para el objeto de instructor
-interface Instructor {
+export interface Instructor {
   id: number;
   attributes: {
     nombreCompleto: string;
     estilo: string;
+    bio: string;
     fotoPerfil: {
       data: {
         attributes: {
@@ -22,10 +23,7 @@ interface Instructor {
   };
 }
 
-export default function InstructorsScreen({
-  navigation,
-  route,
-}: RootStackScreenProps<"Instructors">) {
+export default function InstructorsScreen({ navigation, route }: RootStackScreenProps<"Instructors">) {
   const { signIn, setSession, isLoaded } = useSignIn();
   const [instructors, setInstructors] = useState<Instructor[]>([]); // Especifica el tipo de estado como Instructor[]
 
@@ -53,7 +51,9 @@ export default function InstructorsScreen({
       });
   }, []);
 
-  const onInstructorPress = () => navigation.push("Instructor");
+  const onInstructorPress = (instructor: Instructor) => {
+    navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
+  };
 
   return (
     <View style={styles.containerInside}>
@@ -66,11 +66,13 @@ export default function InstructorsScreen({
             return (
               <InstructorCard
                 key={instructor.id}
-                onPress={onInstructorPress}
+                onPress={() => onInstructorPress(instructor)}
                 name={instructor.attributes.nombreCompleto}
                 category={instructor.attributes.estilo}
                 image={{
-                  uri: process.env.EXPO_PUBLIC_IMG_URL + instructor.attributes.fotoPerfil.data.attributes.url
+                  uri:
+                    process.env.EXPO_PUBLIC_IMG_URL +
+                    instructor.attributes.fotoPerfil.data.attributes.url,
                 }}
               />
             );

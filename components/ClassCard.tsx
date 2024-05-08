@@ -8,7 +8,7 @@ interface ClassCardProps {
   className: string;
   time: string;
   instructor: string;
-  spots: number;
+  spots: any;
   image: any;
   onPress: any;
 }

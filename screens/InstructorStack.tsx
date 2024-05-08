@@ -17,6 +17,8 @@ export default function InstructorStack({
       }}>
       <Stack.Screen name="Instructors" component={InstructorsScreen} />
       <Stack.Screen name="Instructor" component={InstructorScreen} />
+      <Stack.Screen name="BikeSelection" component={BikeSelectionScreen} />
+
     </Stack.Navigator>
   );
 };
