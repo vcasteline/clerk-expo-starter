@@ -24,7 +24,6 @@ export default function RideHistoryScreen({
   });
   const instructorImage = require("../../assets/images/instructor-1.jpg");
   
-  const onInstructorPress = () => navigation.push("Instructor");
   return (
     <View style={styles.containerInside}>
       <View style={styles.heading}>
@@ -35,7 +34,7 @@ export default function RideHistoryScreen({
         <ScrollView>
             <ClassCard
             onPress={null}
-            image={instructorImage}
+            image={null}
             date="Feb 20"
             className="Rider Rythm"
             time="20:30"

@@ -58,7 +58,7 @@ export default function InstructorsScreen({ navigation, route }: RootStackScreen
   return (
     <View style={styles.containerInside}>
       <View style={styles.heading}>
-        <Text style={{ ...styles.titleText, color: "white" }}>Instructors</Text>
+        <Text style={{ ...styles.titleText, color: "white" }}>Instructores</Text>
       </View>
       <View style={stylesHere.dashboard}>
         <ScrollView>

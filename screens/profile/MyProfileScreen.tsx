@@ -74,7 +74,7 @@ function MyProfileScreen({ navigation }: RootStackScreenProps<"MyProfile">) {
   return (
     <View style={styles.containerInside}>
       <View style={styles.heading}>
-        <Text style={{ ...styles.titleText, color: "white" }}>Profile</Text>
+        <Text style={{ ...styles.titleText, color: "white" }}>Perfil</Text>
       </View>
       <View style={stylesHere.containerHeading}>
         <Image
@@ -85,7 +85,9 @@ function MyProfileScreen({ navigation }: RootStackScreenProps<"MyProfile">) {
         />
         <View style={stylesHere.userInfo}>
           <Text style={stylesHere.userName}>{user?.fullName}</Text>
-          <Text style={stylesHere.userEmail}>{user?.primaryEmailAddress?.emailAddress}</Text>
+          <Text style={stylesHere.userEmail}>
+            {user?.primaryEmailAddress?.emailAddress}
+          </Text>
         </View>
         <TouchableWithoutFeedback onPress={onSettingsPress}>
           <Ionicons
@@ -95,7 +97,6 @@ function MyProfileScreen({ navigation }: RootStackScreenProps<"MyProfile">) {
             style={stylesHere.settingsIcon}
           />
         </TouchableWithoutFeedback>
-        
       </View>
       <View style={stylesHere.dashboard}>
         <View>
@@ -103,79 +104,46 @@ function MyProfileScreen({ navigation }: RootStackScreenProps<"MyProfile">) {
             style={stylesHere.button}
             onPress={onRideHistoryPress}
           >
-            <Ionicons name="time" size={24} color="#3D4AF5" />
-            <Text style={stylesHere.buttonText}>Rides History</Text>
+            <View style={stylesHere.textAndIcon}>
+              
+                <Ionicons name="time" size={24} color="#3D4AF5" />
+            
+             
+              <Text style={stylesHere.buttonText}>Historial de Rides</Text>
+            </View>
+            <Ionicons name="chevron-forward-outline" size={24} color="black" />
           </TouchableOpacity>
 
           <TouchableOpacity
             style={stylesHere.button}
             onPress={() => handleButtonPress("Buy Rides")}
           >
-            <Ionicons name="bicycle" size={24} color="#3D4AF5" />
-            <Text style={stylesHere.buttonText}>Buy Rides</Text>
+            <View style={stylesHere.textAndIcon}>
+              <Ionicons name="bicycle" size={24} color="#3D4AF5" />
+              <Text style={stylesHere.buttonText}>Comprar Rides</Text>
+            </View>
+            <Ionicons name="chevron-forward-outline" size={24} color="black" />
           </TouchableOpacity>
 
           <TouchableOpacity
             style={stylesHere.button}
             onPress={() => handleButtonPress("Edit password")}
           >
-            <Ionicons name="lock-closed" size={24} color="#3D4AF5" />
-            <Text style={stylesHere.buttonText}>Edit password</Text>
+            <View style={stylesHere.textAndIcon}>
+              <Ionicons name="lock-closed" size={24} color="#3D4AF5" />
+              <Text style={stylesHere.buttonText}>Editar Clave</Text>
+            </View>
+            <Ionicons name="chevron-forward-outline" size={24} color="black" />
           </TouchableOpacity>
 
-          {/* <TouchableOpacity
-            style={stylesHere.button}
-            onPress={() => handleButtonPress("Notification")}
-          >
-            <Ionicons name="notifications" size={24} color="#3D4AF5" />
-            <Text style={stylesHere.buttonText}>Notification</Text>
-          </TouchableOpacity> */}
-
-          {/* <TouchableOpacity
-            style={stylesHere.button}
-            onPress={() => handleButtonPress("About App")}
-          >
-            <Ionicons name="information-circle" size={24} color="#3D4AF5" />
-            <Text style={stylesHere.buttonText}>About App</Text>
-          </TouchableOpacity> */}
-
-          <TouchableOpacity
-            style={stylesHere.button}
-            onPress={onSignOutPress}
-          >
-            <Ionicons name="log-out" size={24} color="#3D4AF5" />
-            <Text style={stylesHere.buttonText}>Log Out</Text>
+          <TouchableOpacity style={stylesHere.button} onPress={onSignOutPress}>
+            <View style={stylesHere.textAndIcon}>
+              <Ionicons name="log-out" size={24} color="#3D4AF5" />
+              <Text style={stylesHere.buttonText}>Log Out</Text>
+            </View>
+            <Ionicons name="chevron-forward-outline" size={24} color="black" />
           </TouchableOpacity>
         </View>
-        {/* <TextInput
-          style={stylesHere.input}
-          value={firstName}
-          onChangeText={setFirstName}
-          placeholder="First Name"
-        />
-        <TextInput
-          style={stylesHere.input}
-          value={lastName}
-          onChangeText={setLastName}
-          placeholder="Last Name"
-        />
-        <TextInput
-          style={stylesHere.input}
-          value={email}
-          onChangeText={setEmail}
-          placeholder="Email"
-          keyboardType="email-address"
-        />
-        <TextInput
-          style={stylesHere.input}
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-          placeholder="Phone Number"
-          keyboardType="phone-pad"
-        />
-        <TouchableOpacity style={stylesHere.saveButton} onPress={handleSaveChanges}>
-          <Text style={stylesHere.saveButtonText}>Save Changes</Text>
-        </TouchableOpacity> */}
       </View>
     </View>
   );
@@ -183,11 +151,21 @@ function MyProfileScreen({ navigation }: RootStackScreenProps<"MyProfile">) {
 
 const stylesHere = StyleSheet.create({
   containerHeading: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     // backgroundColor: '#F0F0F0',
     paddingVertical: 12,
     paddingHorizontal: 16,
+  },
+  // iconContainer: {
+  //   backgroundColor: '#3D4AF5',
+  //   borderRadius: 10,
+  //   padding: 8
+  // },
+  textAndIcon: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
   },
   profilePicture: {
     marginLeft: 20,
@@ -201,12 +179,12 @@ const stylesHere = StyleSheet.create({
   },
   userName: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color:'white'
+    fontWeight: "bold",
+    color: "white",
   },
   userEmail: {
     fontSize: 14,
-    color: '#666666',
+    color: "#666666",
   },
   settingsIcon: {
     marginRight: 30,
@@ -253,16 +231,18 @@ const stylesHere = StyleSheet.create({
   button: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     marginVertical: 10,
-    paddingVertical: 10,
+    paddingVertical: 20,
     paddingHorizontal: 20,
     borderWidth: 1,
-    borderColor: "#3D4AF5",
-    borderRadius: 5,
+    borderColor: "rgba(0, 0, 0, 0.2)",
+    borderRadius: 20,
   },
   buttonText: {
     marginLeft: 10,
+    fontWeight: "bold",
     fontSize: 16,
-    color: "#3D4AF5",
+    color: "black",
   },
 });

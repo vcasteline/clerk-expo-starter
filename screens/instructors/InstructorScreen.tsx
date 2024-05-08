@@ -143,12 +143,12 @@ export default function InstructorScreen({
             </View>
           </View>
 
-          <Text style={stylesHere.sectionTitle}>About Instructor</Text>
+          <Text style={stylesHere.sectionTitle}>Acerca del Instructor</Text>
           <Text style={stylesHere.description}>
             {instructorData.attributes.bio}
           </Text>
 
-          <Text style={stylesHere.sectionTitle}>Upcoming Classes</Text>
+          <Text style={stylesHere.sectionTitle}>Próximas Classes</Text>
           <View style={{ width: "100%", marginTop: 8 }}>
             <CalendarStrip
               numDaysInWeek={7}
@@ -169,15 +169,40 @@ export default function InstructorScreen({
               calendarHeaderStyle={{
                 color: "black",
                 alignItems: "flex-start",
-                textAlign: "left",
+                fontSize: 16,
               }}
-              calendarHeaderContainerStyle={{ display: "flex", width: "100%" }}
+              // calendarHeaderContainerStyle={{
+              //   marginLeft: 1,
+              //   flexDirection: "row",
+              //   justifyContent: "flex-start",
+              // }}
               dateNumberStyle={{ color: "black" }}
               dateNameStyle={{ color: "black" }}
             />
             <ScrollView>
               {filteredClasses.length == 0 ? (
-                <Text>No classes this day</Text>
+                <View>
+                  <Text
+                    style={{
+                      ...styles.paragraph,
+                      fontWeight: "normal",
+                      textAlign: "center",
+                      color: "#3D4AF5",
+                      marginTop: 40,
+                    }}
+                  >
+                    {`No hay clases de ${instructorData.attributes.nombreCompleto.substring(
+                      0,
+                      instructorData.attributes.nombreCompleto.indexOf(" ")
+                    )} en este día`}
+                  </Text>
+                  <Ionicons
+                    style={{ textAlign: "center", marginTop: 10 }}
+                    name="sad-outline"
+                    color={"#3D4AF5"}
+                    size={20}
+                  />
+                </View>
               ) : (
                 filteredClasses.map((classItem) => {
                   // console.log(classItem.attributes);

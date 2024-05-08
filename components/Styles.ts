@@ -5,6 +5,11 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold'
   },
+  subtitleBig:{
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom:10
+  },
   container: {
     flex: 1,
     backgroundColor: "#3D4AF5",
@@ -14,15 +19,16 @@ export const styles = StyleSheet.create({
     overflow:"scroll",
   },
   instructorImage:{
-    width: 130,
-    height: 130,
+    width: 120,
+    height: 120,
     marginLeft: 10,
+    paddingBottom: 10,
     resizeMode: "contain",
-    borderRadius: 50
+    borderRadius: 30
   },
   instructorImageClass:{
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
     marginLeft: 0,
     resizeMode: "contain",
     borderRadius: 50
@@ -71,8 +77,8 @@ export const styles = StyleSheet.create({
     backgroundColor:"#F5F8FE",
     borderRadius: 24,
     padding: 30,
-    height: 200,
-    width:"100%",
+    height: 170,
+    width:350,
     marginRight: 10,
     marginBottom: 10
   },
@@ -143,8 +149,8 @@ export const styles = StyleSheet.create({
   box:{
     backgroundColor: "#141414",
     borderRadius: 24,
-    padding:30,
-    height: 145,
+    padding:25,
+    height: 155,
     width: 175
   },
   spaceBet: {

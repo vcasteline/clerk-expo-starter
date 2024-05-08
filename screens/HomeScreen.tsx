@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -15,6 +15,7 @@ import InstructorCard from "../components/InstructorCard";
 import { log } from "../logger";
 import { getClasses, getInstructors } from "../services/GlobalApi";
 import { Ionicons } from "@expo/vector-icons";
+import { Instructor } from "./instructors/InstructorsScreen";
 
 export default function HomeScreen({
   navigation,
@@ -32,48 +33,10 @@ export default function HomeScreen({
   };
   const onClassPress = () => navigation.replace("BikeSelection");
   const onSchedulePress = () => navigation.replace("Schedule");
-  const onInstructorPress = () => navigation.replace("Instructors");
-  const instructorImage = require("../assets/images/instructor-1.jpg");
-
-
-  useEffect(() => {
-    const selectedDay = "Martes"; // Día seleccionado por el usuario
-  
-    getClasses()
-      .then((response: { data: { data: any; }; }) => {
-        const allClasses = response.data.data;
-        const filteredClasses = allClasses.filter(
-          (clase: { attributes: { diaDeLaSemana: string } }) =>
-            clase.attributes.diaDeLaSemana === selectedDay
-        );
-        // Utilizar las clases filtradas en tu aplicación
-        // console.log(filteredClasses);
-      })
-      .catch((error: any) => {
-        console.error(error);
-      });
-  
-    getInstructors()
-      .then((response: { data: { data: any; }; }) => {
-        const instructors = response.data.data;
-        instructors.forEach(
-          (instructor: {
-            attributes: {
-              nombreCompleto: any;
-              fotoPerfil: { data: { attributes: { url: any } } };
-            };
-          }) => {
-            const nombre = instructor.attributes.nombreCompleto;
-            const fotoPerfil = instructor.attributes.fotoPerfil.data.attributes.url;
-            // console.log(instructors);
-            // console.log(`URL de la foto de perfil de ${nombre}: ${fotoPerfil}`);
-          }
-        );
-      })
-      .catch((error: any) => {
-        console.error(error);
-      });
-  }, []);
+  const onInstructorPress = (instructor: Instructor) => {
+    navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
+  };  const instructorImage = require("../assets/images/instructor-1.jpg");
+  const [instructors, setInstructors] = useState<Instructor[]>([]); // Especifica el tipo de estado como Instructor[]
 
 
   const stylesHere = StyleSheet.create({
@@ -94,7 +57,7 @@ export default function HomeScreen({
       // flex: 3,
     },
     logoImage: {
-      width: 100,
+      width: 90,
       resizeMode: "contain",
       justifyContent: "flex-start",
     },
@@ -132,7 +95,7 @@ export default function HomeScreen({
       textAlign: "center",
       color: "white",
       fontSize: 30,
-      marginTop:0,
+      marginTop: 0,
       marginBottom: 7,
       fontWeight: "800",
     },
@@ -150,10 +113,20 @@ export default function HomeScreen({
     },
     iconBg: {
       backgroundColor: "#3D4AF5",
-      borderRadius:50,
-      padding: 10
-    }
+      borderRadius: 50,
+      padding: 10,
+    },
   });
+  useEffect(() => {
+    getInstructors()
+      .then((response) => {
+        const instructorsData = response.data.data;
+        setInstructors(instructorsData);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
   return (
     <View style={stylesHere.containerInside}>
       <View style={stylesHere.heading}>
@@ -165,22 +138,24 @@ export default function HomeScreen({
       <View style={styles.center}>
         <View style={styles.box}>
           <View style={styles.spaceBet}>
-            <Text style={stylesHere.boxTitle}>Ride Legacy</Text>
-            <View style={stylesHere.iconBg}>
-              <Ionicons name="flame" color={'white'} size={20}/>
-            </View>
-            {/* <Image
+            <Text style={stylesHere.boxTitle}>Rides Lifetime</Text>
+            {/* <View style={stylesHere.iconBg}>
+              <Ionicons name="flame" color={"white"} size={15} />
+            </View> */}
+            <Image
               style={stylesHere.iconImage}
               source={require("../assets/images/fire-icon.png")}
-            /> */}
+            />
           </View>
 
           <Text style={stylesHere.boxContent}>17</Text>
-          <Text style={stylesHere.boxContentBottom}>Rides completed</Text>
+          <Text style={stylesHere.boxContentBottom}>
+            Rides Completados
+          </Text>
         </View>
         <View style={styles.box}>
           <View style={styles.spaceBet}>
-            <Text style={stylesHere.boxTitle}>Your Classes</Text>
+            <Text style={stylesHere.boxTitle}>Tus Clases</Text>
             <Image
               style={stylesHere.iconImage}
               source={require("../assets/images/wheel-icon.png")}
@@ -188,20 +163,41 @@ export default function HomeScreen({
           </View>
 
           <Text style={stylesHere.boxContent}>12</Text>
-          <Text style={stylesHere.boxContentBottom}>Available</Text>
+          <Text style={stylesHere.boxContentBottom}>Disponibles</Text>
         </View>
       </View>
 
       <View style={stylesHere.dashboard}>
         <View style={stylesHere.rides}>
           <View style={styles.spaceBet}>
-            <Text style={styles.titleText}>Upcoming Rides</Text>
+            <Text style={styles.titleText}>Proximos Rides</Text>
             <TouchableWithoutFeedback onPress={onSchedulePress}>
               <Text style={styles.titleText}>&#8594;</Text>
             </TouchableWithoutFeedback>
           </View>
           <View style={stylesHere.ridesSection}>
-            <ClassCard
+            <View>
+              <Text
+                style={{
+                  ...styles.subtitle,
+                  textAlign: "center",
+                  marginTop: 40,
+                  marginBottom: 10,
+                  color: "#3D4AF5",
+                  fontWeight:'400'
+                }}
+              >
+                No has reservado ningun ride, has click en el horario para ver clases disponibles.
+              </Text>
+              <Ionicons
+                style={{ textAlign: "center", marginBottom: 40 }}
+                name="sad-outline"
+                color={"#3D4AF5"}
+                size={25}
+              />
+            </View>
+
+            {/* <ClassCard
               onPress={onClassPress}
               image={null}
               date="Feb 20"
@@ -227,23 +223,32 @@ export default function HomeScreen({
               time="20:30"
               instructor="Sofis Chang"
               spots={20}
-            />
+            /> */}
           </View>
         </View>
         <View style={stylesHere.instructors}>
           <View style={styles.spaceBet}>
-            <Text style={styles.titleText}>Instructors</Text>
-            <TouchableWithoutFeedback onPress={onInstructorPress}>
+            <Text style={styles.titleText}>Instructores</Text>
+            <TouchableWithoutFeedback>
               <Text style={styles.titleText}>&#8594;</Text>
             </TouchableWithoutFeedback>
           </View>
           <ScrollView horizontal={true}>
-            <InstructorCard
-              onPress={null}
-              name="Sofia Chang"
-              category="fast"
-              image={instructorImage}
-            />
+          {instructors.map((instructor) => {
+            return (
+              <InstructorCard
+                key={instructor.id}
+                onPress={() => onInstructorPress(instructor)}
+                name={instructor.attributes.nombreCompleto}
+                category={instructor.attributes.estilo}
+                image={{
+                  uri:
+                    process.env.EXPO_PUBLIC_IMG_URL +
+                    instructor.attributes.fotoPerfil.data.attributes.url,
+                }}
+              />
+            );
+          })}
           </ScrollView>
         </View>
       </View>

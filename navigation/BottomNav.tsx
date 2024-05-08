@@ -32,7 +32,7 @@ const BottomNav: React.FC = () => {
             }
             return <Ionicons name={iconName as any} size={size} color={color} />;
           },
-          tabBarActiveTintColor: 'blue',
+          tabBarActiveTintColor: '#3D4AF5',
           tabBarInactiveTintColor: 'gray',
         })}
       >

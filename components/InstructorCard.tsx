@@ -13,7 +13,7 @@ const InstructorCard: React.FC<InstructorCardProps> = ({ name, category, image, 
   return (
     <TouchableOpacity onPress={onPress} style={{ ...styles.instructorCard, ...styles.spaceBet }}>
       <View style={styles.half}>
-        <Text style={styles.titleText}>{name}</Text>
+        <Text style={styles.subtitleBig}>{name}</Text>
         <Text style={styles.paragraph}>{category}</Text>
       </View>
       <View>

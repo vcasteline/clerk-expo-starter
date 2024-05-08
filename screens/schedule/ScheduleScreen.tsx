@@ -6,6 +6,7 @@ import { styles } from "../../components/Styles";
 import ClassCard from "../../components/ClassCard";
 import CalendarStrip from "react-native-calendar-strip";
 import { getClassesScheduleScreen } from "../../services/GlobalApi";
+import { Ionicons } from "@expo/vector-icons";
 
 interface Class {
   id: number;
@@ -13,7 +14,14 @@ interface Class {
     nombreClase: string;
     horaInicio: string;
     horaFin: string;
-    diaDeLaSemana: 'Lunes' | 'Martes' | 'Miércoles' | 'Jueves' | 'Viernes' | 'Sábado' | 'Domingo';
+    diaDeLaSemana:
+      | "Lunes"
+      | "Martes"
+      | "Miércoles"
+      | "Jueves"
+      | "Viernes"
+      | "Sábado"
+      | "Domingo";
     instructor: {
       data: {
         id: number;
@@ -67,8 +75,6 @@ export default function ScheduleScreen({
       backgroundColor: "#fff",
     },
   });
-  const instructorImage = require("../../assets/images/instructor-1.jpg");
-
   useEffect(() => {
     getClassesScheduleScreen()
       .then((response: { data: { data: any } }) => {
@@ -81,17 +87,26 @@ export default function ScheduleScreen({
   }, []);
 
   const getDayOfWeek = (dateString: string): string => {
-    const daysOfWeek = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const daysOfWeek = [
+      "Domingo",
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado",
+    ];
     const date = new Date(dateString);
     const dayOfWeek = daysOfWeek[date.getDay()];
     return dayOfWeek;
   };
-
+  const [hasClicked, setHasClicked] = useState(false);
   const [classes, setClasses] = useState<Class[]>([]);
   const [filteredClasses, setFilteredClasses] = useState<Class[]>([]);
 
   const getFilteredClasses = (date: any) => {
     const diaSelecionado = getDayOfWeek(date);
+    setHasClicked(true);
     const filtered = classes.filter(
       (clase: { attributes: { diaDeLaSemana: string } }) =>
         clase.attributes.diaDeLaSemana === diaSelecionado
@@ -100,16 +115,19 @@ export default function ScheduleScreen({
   };
 
   function redondearHora(hora: string) {
-    const [horas, minutos, segundos, milisegundos] = hora.split(':');
+    const [horas, minutos, segundos, milisegundos] = hora.split(":");
     const minutosRedondeados = Math.round(Number(minutos) / 5) * 5;
-    const horaRedondeada = `${horas}:${String(minutosRedondeados).padStart(2, '0')}`;
+    const horaRedondeada = `${horas}:${String(minutosRedondeados).padStart(
+      2,
+      "0"
+    )}`;
     return horaRedondeada;
   }
 
   return (
     <View style={styles.containerInside}>
       <View style={styles.heading}>
-        <Text style={{ ...styles.titleText, color: "white" }}>Schedule</Text>
+        <Text style={{ ...styles.titleText, color: "white" }}>Horario</Text>
       </View>
       <View style={{ width: "100%" }}>
         <CalendarStrip
@@ -123,36 +141,54 @@ export default function ScheduleScreen({
           highlightDateNumberStyle={{ color: "black" }}
           highlightDateNameStyle={{ color: "black" }}
           onDateSelected={(date) => getFilteredClasses(date)}
-          calendarHeaderStyle={{ color: 'white', alignItems: 'flex-start' }}
-          calendarHeaderContainerStyle={{ display: 'flex', width: '100%' }}
-          dateNumberStyle={{ color: 'white' }}
-          dateNameStyle={{ color: 'white' }}
+          calendarHeaderStyle={{ color: "white" }}
+          calendarHeaderContainerStyle={{marginLeft: 31,marginBottom: 15, flexDirection:'row', justifyContent:'flex-start'}}
+          dateNumberStyle={{ color: "white" }}
+          dateNameStyle={{ color: "white" }}
         />
       </View>
 
       <View style={stylesHere.dashboard}>
-        {filteredClasses.length == 0 ? (<Text>No classes this day</Text>) : filteredClasses.map((classItem) => {
-          const totalBicycles = classItem.attributes.room.data.attributes.bicycles.data.length;
-          const reservedBicycles = 0; // Aquí debes obtener el número de bicicletas reservadas para esa clase
-          const availableSpots = totalBicycles - reservedBicycles;
+        {!hasClicked ? (
+          <View>
+            <Text style={{...styles.subtitleBig, textAlign: 'center', color:'#3D4AF5', fontWeight:'normal', marginTop: 100}}>Has click en un día para ver clases disponibles</Text>
+            <Ionicons style={{textAlign:'center'}} name="happy-outline" color={"#3D4AF5"} size={30} />
+          </View>
+        ) : filteredClasses.length == 0 ? (
+          <View>
+            <Text style={{...styles.subtitleBig, textAlign:'center', color:'#3D4AF5', fontWeight:'normal', marginTop: 100}}>No hay clases en este día</Text>
+            <Ionicons style={{textAlign:'center'}} name="sad-outline" color={"#3D4AF5"} size={30} />
+          </View>
+        ) : (
+          filteredClasses.map((classItem) => {
+            const totalBicycles =
+              classItem.attributes.room.data.attributes.bicycles.data.length;
+            const reservedBicycles = 0; // Aquí debes obtener el número de bicicletas reservadas para esa clase
+            const availableSpots = totalBicycles - reservedBicycles;
 
-          // console.log(classItem.attributes);
+            // console.log(classItem.attributes);
 
-          return (
-            <ClassCard
-              key={classItem.id}
-              onPress={onClassPress}
-              image={{
-                uri: process.env.EXPO_PUBLIC_IMG_URL + classItem.attributes.instructor.data.attributes.fotoPerfil.data.attributes.url
-              }}
-              date={null}
-              className={classItem.attributes.nombreClase}
-              time={redondearHora(classItem.attributes.horaInicio)}
-              instructor={classItem.attributes.instructor.data.attributes.nombreCompleto}
-              spots={availableSpots}
-            />
-          );
-        })}
+            return (
+              <ClassCard
+                key={classItem.id}
+                onPress={onClassPress}
+                image={{
+                  uri:
+                    process.env.EXPO_PUBLIC_IMG_URL +
+                    classItem.attributes.instructor.data.attributes.fotoPerfil
+                      .data.attributes.url,
+                }}
+                date={null}
+                className={classItem.attributes.nombreClase}
+                time={redondearHora(classItem.attributes.horaInicio)}
+                instructor={
+                  classItem.attributes.instructor.data.attributes.nombreCompleto
+                }
+                spots={availableSpots}
+              />
+            );
+          })
+        )}
       </View>
     </View>
   );
