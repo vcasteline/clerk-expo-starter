@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { styles } from "./Styles";
 
 interface ClassCardProps {
-  date: string;
+  date: any;
   className: string;
   time: string;
   instructor: string;

@@ -7,5 +7,6 @@ const AxioInstance = axios.create({
   },
 });
 
-export const getClasses = () => AxioInstance.get("/classes");
+export const getClasses = () => AxioInstance.get("/classes?populate=*");
+export const getClassesScheduleScreen = () => AxioInstance.get("/classes?populate[instructor][populate]=nombreCompleto,fotoPerfil&populate[room][populate]=roomNumber,bicycles");
 export const getInstructors = () => AxioInstance.get("/instructors?populate=*");

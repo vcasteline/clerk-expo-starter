@@ -46,7 +46,7 @@ export default function HomeScreen({
             clase.attributes.diaDeLaSemana === selectedDay
         );
         // Utilizar las clases filtradas en tu aplicación
-        console.log(filteredClasses);
+        // console.log(filteredClasses);
       })
       .catch((error: any) => {
         console.error(error);
@@ -64,8 +64,8 @@ export default function HomeScreen({
           }) => {
             const nombre = instructor.attributes.nombreCompleto;
             const fotoPerfil = instructor.attributes.fotoPerfil.data.attributes.url;
-            console.log(instructors);
-            console.log(`URL de la foto de perfil de ${nombre}: ${fotoPerfil}`);
+            // console.log(instructors);
+            // console.log(`URL de la foto de perfil de ${nombre}: ${fotoPerfil}`);
           }
         );
       })
