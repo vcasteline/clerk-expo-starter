@@ -39,7 +39,7 @@ export default function HomeScreen({
     const selectedDay = "Martes"; // Día seleccionado por el usuario
   
     getClasses()
-      .then((response) => {
+      .then((response: { data: { data: any; }; }) => {
         const allClasses = response.data.data;
         const filteredClasses = allClasses.filter(
           (clase: { attributes: { diaDeLaSemana: string } }) =>
@@ -48,12 +48,12 @@ export default function HomeScreen({
         // Utilizar las clases filtradas en tu aplicación
         console.log(filteredClasses);
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error(error);
       });
   
     getInstructors()
-      .then((response) => {
+      .then((response: { data: { data: any; }; }) => {
         const instructors = response.data.data;
         instructors.forEach(
           (instructor: {
@@ -69,7 +69,7 @@ export default function HomeScreen({
           }
         );
       })
-      .catch((error) => {
+      .catch((error: any) => {
         console.error(error);
       });
   }, []);
@@ -216,11 +216,11 @@ export default function HomeScreen({
             </TouchableWithoutFeedback>
           </View>
           <ScrollView horizontal={true}>
-            <InstructorCard
+            {/* <InstructorCard
               name="Sofia Chang"
               category="fast"
               image={instructorImage}
-            />
+            /> */}
           </ScrollView>
         </View>
       </View>

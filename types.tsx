@@ -16,15 +16,19 @@ export type RootStackParamList = {
   Home: undefined;
   ScheduleStack: undefined;
   Schedule: undefined;
+  Instructor: undefined;
+  InstructorStack: undefined;
   Instructors: undefined;
   MyProfile: undefined;
+  SettingsProfile: undefined;
+  ProfileStack: undefined;
   VerifyCode: undefined;
 };
 export type RootTabParamList = {
   Home: undefined;
   ScheduleStack: undefined;
-  MyProfile: undefined;
-  Instructors: undefined;
+  ProfileStack: undefined;
+  InstructorStack: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

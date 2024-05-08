@@ -1,10 +1,10 @@
 import React from "react";
 import { Text, View, StyleSheet, ScrollView } from "react-native";
 import { useSignIn } from "@clerk/clerk-expo";
-import { RootStackScreenProps } from "../types";
-import { styles } from "../components/Styles";
-import ClassCard from "../components/ClassCard";
-import InstructorCard from "../components/InstructorCard";
+import { RootStackScreenProps } from "../../types";
+import { styles } from "../../components/Styles";
+import ClassCard from "../../components/ClassCard";
+import InstructorCard from "../../components/InstructorCard";
 
 export default function InstructorsScreen({
   navigation,
@@ -23,8 +23,9 @@ export default function InstructorsScreen({
       backgroundColor: "#fff",
     },
   });
-  const instructorImage = require("../assets/images/instructor-1.jpg");
-
+  const instructorImage = require("../../assets/images/instructor-1.jpg");
+  
+  const onInstructorPress = () => navigation.push("Instructor");
   return (
     <View style={styles.containerInside}>
       <View style={styles.heading}>
@@ -34,21 +35,25 @@ export default function InstructorsScreen({
       <View style={stylesHere.dashboard}>
         <ScrollView>
           <InstructorCard
+            onPress={onInstructorPress}
             name="Valentina Casteline"
             category="reggaeton"
             image={instructorImage}
           />
           <InstructorCard
+          onPress={onInstructorPress}
             name="Valentina Casteline"
             category="reggaeton"
             image={instructorImage}
           />
           <InstructorCard
+            onPress={onInstructorPress}
             name="Valentina Casteline"
             category="reggaeton"
             image={instructorImage}
           />
           <InstructorCard
+            onPress={onInstructorPress}
             name="Valentina Casteline"
             category="reggaeton"
             image={instructorImage}

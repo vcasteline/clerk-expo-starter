@@ -4,10 +4,12 @@ import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { RootTabParamList } from '../types';
 import ScheduleScreen from '../screens/schedule/ScheduleScreen';
-import MyProfileScreen from '../screens/MyProfileScreen';
-import InstructorsScreen from '../screens/InstructorsScreen';
+import MyProfileScreen from '../screens/profile/MyProfileScreen';
+import InstructorsScreen from '../screens/instructors/InstructorsScreen';
 import HomeScreen from '../screens/HomeScreen';
 import ScheduleStack from '../screens/ScheduleStack';
+import InstructorStack from '../screens/InstructorStack';
+import ProfileStack from '../screens/ProfileStack';
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
@@ -21,9 +23,9 @@ const BottomNav: React.FC = () => {
             let iconName;
             if (route.name === 'ScheduleStack') {
               iconName = focused ? 'calendar' : 'calendar-outline';
-            } else if (route.name === 'MyProfile') {
+            } else if (route.name === 'ProfileStack') {
               iconName = focused ? 'person' : 'person-outline';
-            } else if (route.name === 'Instructors') {
+            } else if (route.name === 'InstructorStack') {
               iconName = focused ? 'people' : 'people-outline';
             } else if (route.name === 'Home') {
               iconName = focused ? 'home' : 'home-outline';
@@ -49,15 +51,15 @@ const BottomNav: React.FC = () => {
           }}
         />
         <Tab.Screen
-          name="Instructors"
-          component={InstructorsScreen}
+          name="InstructorStack"
+          component={InstructorStack}
           options={{
             tabBarIcon: ({ color, size }) => <Ionicons name="people" size={size} color={color} />,
           }}
         />
          <Tab.Screen
-          name="MyProfile"
-          component={MyProfileScreen}
+          name="ProfileStack"
+          component={ProfileStack}
           options={{
             tabBarIcon: ({ color, size }) => <Ionicons name="person" size={size} color={color} />,
           }}

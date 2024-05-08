@@ -1,6 +1,10 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
+  subtitle:{
+    fontSize: 18,
+    fontWeight: 'bold'
+  },
   container: {
     flex: 1,
     backgroundColor: "#3D4AF5",
@@ -147,5 +151,10 @@ export const styles = StyleSheet.create({
     flexDirection:"row",
     justifyContent: "space-between",
     gap: 10
+  },
+  spaceBetCol: {
+    flexDirection:"column",
+    justifyContent: "space-between",
+  
   },
 });

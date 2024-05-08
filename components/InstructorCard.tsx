@@ -6,11 +6,12 @@ interface InstructorCardProps {
   name: string;
   category: string;
   image: any;
+  onPress: any;
 }
 
-const InstructorCard: React.FC<InstructorCardProps> = ({ name, category, image }) => {
+const InstructorCard: React.FC<InstructorCardProps> = ({ name, category, image, onPress }) => {
   return (
-    <TouchableOpacity style={{ ...styles.instructorCard, ...styles.spaceBet }}>
+    <TouchableOpacity onPress={onPress} style={{ ...styles.instructorCard, ...styles.spaceBet }}>
       <View style={styles.half}>
         <Text style={styles.titleText}>{name}</Text>
         <Text style={styles.paragraph}>{category}</Text>
