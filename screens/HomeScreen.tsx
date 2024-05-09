@@ -33,7 +33,7 @@ export default function HomeScreen({
     }
   };
 
-  const onClassPress = () => navigation.replace("BikeSelection");
+  const onClassPress = () => navigation.push("Class");
   const onSchedulePress = () => navigation.replace("Schedule");
   const onInstructorPress = (instructor: Instructor) => {
 navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });};  
@@ -225,7 +225,7 @@ navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
               />
             </View>
 
-            {/* <ClassCard
+            <ClassCard
               onPress={onClassPress}
               image={null}
               date="Feb 20"
@@ -234,7 +234,7 @@ navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
               instructor="Sofis Chang"
               spots={20}
             />
-            <ClassCard
+            {/* <ClassCard
               onPress={onClassPress}
               image={null}
               date="Feb 20"

@@ -1,14 +1,14 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-  subtitle:{
+  subtitle: {
     fontSize: 18,
-    fontWeight: 'bold'
+    fontWeight: "bold",
   },
-  subtitleBig:{
+  subtitleBig: {
     fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom:10
+    fontWeight: "bold",
+    marginBottom: 10,
   },
   container: {
     flex: 1,
@@ -16,22 +16,22 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     paddingTop: 70,
-    overflow:"scroll",
+    overflow: "scroll",
   },
-  instructorImage:{
+  instructorImage: {
     width: 120,
     height: 120,
     marginLeft: 10,
     paddingBottom: 10,
     resizeMode: "contain",
-    borderRadius: 30
+    borderRadius: 30,
   },
-  instructorImageClass:{
+  instructorImageClass: {
     width: 50,
     height: 50,
     marginLeft: 0,
     resizeMode: "contain",
-    borderRadius: 50
+    borderRadius: 50,
   },
   containerInside: {
     flex: 1,
@@ -74,22 +74,22 @@ export const styles = StyleSheet.create({
   },
 
   instructorCard: {
-    backgroundColor:"#F5F8FE",
+    backgroundColor: "#F5F8FE",
     borderRadius: 24,
     padding: 30,
     height: 170,
-    width:350,
+    width: 350,
     marginRight: 10,
-    marginBottom: 10
+    marginBottom: 10,
   },
   titleText: {
     color: "#000",
-    fontSize:26,
+    fontSize: 26,
     fontWeight: "bold",
     marginBottom: 10,
   },
   half: {
-    width: "50%"
+    width: "50%",
   },
   footer: {
     color: "#000",
@@ -99,12 +99,14 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
   },
-
+  flex: {
+    flexDirection: "row",
+  },
   secondaryButton: {
     marginTop: 15,
     borderRadius: 15,
     width: "100%",
-    height:40,
+    height: 40,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#ffffff",
@@ -125,42 +127,41 @@ export const styles = StyleSheet.create({
   },
 
   logoSignUp: {
-    display:"flex",
-    justifyContent:"center"
+    display: "flex",
+    justifyContent: "center",
   },
   paragraph: {
     fontSize: 16,
   },
   center: {
-    flexDirection:"row",
-    justifyContent:"center",
-    gap: 7
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 7,
   },
   heading: {
     display: "flex",
     gap: 10,
-    flexDirection:"row",
+    flexDirection: "row",
     justifyContent: "flex-start",
     textAlign: "left",
     width: "100%",
     marginLeft: 60,
     marginBottom: 6,
   },
-  box:{
+  box: {
     backgroundColor: "#141414",
     borderRadius: 24,
-    padding:25,
+    padding: 25,
     height: 155,
-    width: 175
+    width: 175,
   },
   spaceBet: {
-    flexDirection:"row",
+    flexDirection: "row",
     justifyContent: "space-between",
-    gap: 10
+    gap: 10,
   },
   spaceBetCol: {
-    flexDirection:"column",
+    flexDirection: "column",
     justifyContent: "space-between",
-  
   },
 });

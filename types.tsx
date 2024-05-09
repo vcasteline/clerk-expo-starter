@@ -16,6 +16,7 @@ export type RootStackParamList = {
   Welcome: undefined;
   SignUp: undefined;
   SignIn: undefined;
+  HomeStack: undefined;
   Home: undefined;
   ScheduleStack: undefined;
   Schedule: undefined;
@@ -27,10 +28,10 @@ export type RootStackParamList = {
   RideHistory: undefined;
   ProfileStack: undefined;
   VerifyCode: undefined;
-  
+  Class: undefined;
 };
 export type RootTabParamList = {
-  Home: undefined;
+  HomeStack: undefined;
   ScheduleStack: undefined;
   ProfileStack: undefined;
   InstructorStack: undefined;

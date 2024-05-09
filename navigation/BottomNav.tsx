@@ -10,6 +10,7 @@ import HomeScreen from '../screens/HomeScreen';
 import ScheduleStack from '../screens/ScheduleStack';
 import InstructorStack from '../screens/InstructorStack';
 import ProfileStack from '../screens/ProfileStack';
+import HomeStack from '../screens/HomeStack';
 
 const Tab = createBottomTabNavigator<RootTabParamList>();
 
@@ -27,7 +28,7 @@ const BottomNav: React.FC = () => {
               iconName = focused ? 'person' : 'person-outline';
             } else if (route.name === 'InstructorStack') {
               iconName = focused ? 'people' : 'people-outline';
-            } else if (route.name === 'Home') {
+            } else if (route.name === 'HomeStack') {
               iconName = focused ? 'home' : 'home-outline';
             }
             return <Ionicons name={iconName as any} size={size} color={color} />;
@@ -37,8 +38,8 @@ const BottomNav: React.FC = () => {
         })}
       >
          <Tab.Screen
-          name="Home"
-          component={HomeScreen}
+          name="HomeStack"
+          component={HomeStack}
           options={{
             tabBarIcon: ({ color, size }) => <Ionicons name="home" size={size} color={color} />,
             tabBarLabel:() => {return null},
