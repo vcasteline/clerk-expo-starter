@@ -13,9 +13,10 @@ import { styles } from "../components/Styles";
 import ClassCard from "../components/ClassCard";
 import InstructorCard from "../components/InstructorCard";
 import { log } from "../logger";
-import { getClasses, getInstructors } from "../services/GlobalApi";
+import { getClasses, getInstructors, getUsers } from "../services/GlobalApi";
 import { Ionicons } from "@expo/vector-icons";
-import { Instructor } from "./instructors/InstructorsScreen";
+import { Instructor, User } from "../interfaces";
+
 
 export default function HomeScreen({
   navigation,
@@ -31,12 +32,39 @@ export default function HomeScreen({
       log("Error:> " + err?.errors ? JSON.stringify(err.errors) : err);
     }
   };
+
   const onClassPress = () => navigation.replace("BikeSelection");
   const onSchedulePress = () => navigation.replace("Schedule");
   const onInstructorPress = (instructor: Instructor) => {
-    navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
-  };  const instructorImage = require("../assets/images/instructor-1.jpg");
-  const [instructors, setInstructors] = useState<Instructor[]>([]); // Especifica el tipo de estado como Instructor[]
+navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });};  
+  const [instructors, setInstructors] = useState<Instructor[]>([]); 
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    getInstructors()
+      .then((response) => {
+        const instructorsData = response.data.data;
+        setInstructors(instructorsData);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+      getUsers()
+      .then((response) => {
+        const usersData = response.data;
+        setUsers(usersData);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+  }, []);
+
+  users.map((user) => {
+    console.log(user.bookings);
+    console.log(user.clasesDisponibles);
+  });
 
 
   const stylesHere = StyleSheet.create({

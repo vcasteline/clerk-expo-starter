@@ -14,40 +14,9 @@ import { RootStackScreenProps } from "../../types";
 import CalendarStrip from "react-native-calendar-strip";
 import { getClassesScheduleScreen } from "../../services/GlobalApi";
 import ClassCard from "../../components/ClassCard";
+import { Class } from "../../interfaces";
 
-interface Class {
-  id: number;
-  attributes: {
-    nombreClase: string;
-    horaInicio: string;
-    horaFin: string;
-    diaDeLaSemana:
-      | "Lunes"
-      | "Martes"
-      | "Miércoles"
-      | "Jueves"
-      | "Viernes"
-      | "Sábado"
-      | "Domingo";
-    instructor: {
-      data: Instructor;
-    };
-  };
-}
 
-interface Instructor {
-  id: number;
-  attributes: {
-    nombreCompleto: string;
-    fotoPerfil: {
-      data: {
-        attributes: {
-          url: string;
-        };
-      };
-    };
-  };
-}
 
 export default function InstructorScreen({
   navigation,

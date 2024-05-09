@@ -5,23 +5,8 @@ import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import InstructorCard from "../../components/InstructorCard";
 import { getInstructors } from "../../services/GlobalApi";
+import { Instructor } from "../../interfaces";
 
-// Define la interfaz para el objeto de instructor
-export interface Instructor {
-  id: number;
-  attributes: {
-    nombreCompleto: string;
-    estilo: string;
-    bio: string;
-    fotoPerfil: {
-      data: {
-        attributes: {
-          url: string;
-        };
-      };
-    };
-  };
-}
 
 export default function InstructorsScreen({ navigation, route }: RootStackScreenProps<"Instructors">) {
   const { signIn, setSession, isLoaded } = useSignIn();

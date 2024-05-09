@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Image,
   StyleSheet,
@@ -8,64 +8,64 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import { SignedIn, SignedOut, useAuth, useUser } from "@clerk/clerk-expo";
-import { log } from "../../logger";
+import axios from "axios";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import { Ionicons } from "@expo/vector-icons";
+import { logoutUser, getMe } from "../../services/AuthService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function SafeMyProfileScreen(
-  props: RootStackScreenProps<"MyProfile">
-) {
-  return (
-    <>
-      <SignedIn>
-        <MyProfileScreen {...props} />
-      </SignedIn>
-      <SignedOut>
-        <View style={styles.container}>
-          <Text>Unauthorized</Text>
-        </View>
-      </SignedOut>
-    </>
-  );
-}
+export default function MyProfileScreen({
+  navigation,
+}: RootStackScreenProps<"MyProfile">) {
+  const [user, setUser] = useState(Object);
+  const [loading, setLoading] = useState(true);
 
-function MyProfileScreen({ navigation }: RootStackScreenProps<"MyProfile">) {
-  const { user } = useUser();
-  const { signOut } = useAuth();
-  const [firstName, setFirstName] = React.useState(user?.firstName || "");
-  const [lastName, setLastName] = React.useState(user?.lastName || "");
-  const [email, setEmail] = React.useState(
-    user?.primaryEmailAddress?.emailAddress || ""
-  );
-  const [phoneNumber, setPhoneNumber] = React.useState(
-    user?.primaryPhoneNumber?.phoneNumber || ""
-  );
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = await AsyncStorage.getItem("userToken");
+        if (token) {
+          const userData = await getMe(token);
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
   const onSignOutPress = async () => {
     try {
-      await signOut();
-    } catch (err: any) {
-      log("Error:> " + err?.status || "");
-      log("Error:> " + err?.errors ? JSON.stringify(err.errors) : err);
+      const success = await logoutUser();
+      if (success) {
+        navigation.replace("SignIn");
+      } else {
+        console.error("No se pudo cerrar sesión correctamente.");
+      }
+    } catch (err) {
+      console.error("Error:> " + JSON.stringify(err));
     }
   };
   const onSettingsPress = () => navigation.push("SettingsProfile");
   const onRideHistoryPress = () => navigation.push("RideHistory");
 
-  const handleSaveChanges = async () => {
-    try {
-      await user?.update({
-        firstName: firstName,
-        lastName: lastName,
-        // primaryEmailAddressId: email,
-        // primaryPhoneNumberId: phoneNumber,
-      });
-      // Éxito al actualizar el usuario
-    } catch (error) {
-      console.error("Error al actualizar el usuario:", error);
-    }
-  };
+  // const handleSaveChanges = async () => {
+  //   try {
+  //     await user?.update({
+  //       firstName: firstName,
+  //       lastName: lastName,
+  //       // primaryEmailAddressId: email,
+  //       // primaryPhoneNumberId: phoneNumber,
+  //     });
+  //     // Éxito al actualizar el usuario
+  //   } catch (error) {
+  //     console.error("Error al actualizar el usuario:", error);
+  //   }
+  // };
 
   const handleButtonPress = (buttonName: string) => {
     console.log(`${buttonName} button pressed`);
@@ -73,78 +73,100 @@ function MyProfileScreen({ navigation }: RootStackScreenProps<"MyProfile">) {
   };
   return (
     <View style={styles.containerInside}>
-      <View style={styles.heading}>
-        <Text style={{ ...styles.titleText, color: "white" }}>Perfil</Text>
-      </View>
-      <View style={stylesHere.containerHeading}>
-        <Image
-          source={{
-            uri: "https://utfs.io/f/dd4fb05a-682a-49d6-b708-d847325c3bd8-4jboq.jpg",
-          }}
-          style={stylesHere.profilePicture}
-        />
-        <View style={stylesHere.userInfo}>
-          <Text style={stylesHere.userName}>{user?.fullName}</Text>
-          <Text style={stylesHere.userEmail}>
-            {user?.primaryEmailAddress?.emailAddress}
-          </Text>
-        </View>
-        <TouchableWithoutFeedback onPress={onSettingsPress}>
-          <Ionicons
-            name="settings-outline"
-            size={24}
-            color="white"
-            style={stylesHere.settingsIcon}
-          />
-        </TouchableWithoutFeedback>
-      </View>
-      <View style={stylesHere.dashboard}>
-        <View>
-          <TouchableOpacity
-            style={stylesHere.button}
-            onPress={onRideHistoryPress}
-          >
-            <View style={stylesHere.textAndIcon}>
-              
-                <Ionicons name="time" size={24} color="#3D4AF5" />
-            
-             
-              <Text style={stylesHere.buttonText}>Historial de Rides</Text>
+      {!loading && user ? (
+        <>
+          <View style={styles.heading}>
+            <Text style={{ ...styles.titleText, color: "white" }}>Perfil</Text>
+          </View>
+          <View style={stylesHere.containerHeading}>
+            <Image
+              source={{ uri: user.profilePicture || "default_image_url" }}
+              style={stylesHere.profilePicture}
+            />
+            <View style={stylesHere.userInfo}>
+              <Text style={stylesHere.userName}>{user.username}</Text>
+              <Text style={stylesHere.userEmail}>{user.email}</Text>
             </View>
-            <Ionicons name="chevron-forward-outline" size={24} color="black" />
-          </TouchableOpacity>
+            <TouchableWithoutFeedback
+              onPress={() => navigation.push("SettingsProfile")}
+            >
+              <Ionicons
+                name="settings-outline"
+                size={24}
+                color="white"
+                style={stylesHere.settingsIcon}
+              />
+            </TouchableWithoutFeedback>
+          </View>
+          <View style={stylesHere.dashboard}>
+            <View>
+              <TouchableOpacity
+                style={stylesHere.button}
+                onPress={onRideHistoryPress}
+              >
+                <View style={stylesHere.textAndIcon}>
+                  <Ionicons name="time" size={24} color="#3D4AF5" />
 
-          <TouchableOpacity
-            style={stylesHere.button}
-            onPress={() => handleButtonPress("Buy Rides")}
-          >
-            <View style={stylesHere.textAndIcon}>
-              <Ionicons name="bicycle" size={24} color="#3D4AF5" />
-              <Text style={stylesHere.buttonText}>Comprar Rides</Text>
-            </View>
-            <Ionicons name="chevron-forward-outline" size={24} color="black" />
-          </TouchableOpacity>
+                  <Text style={stylesHere.buttonText}>Historial de Rides</Text>
+                </View>
+                <Ionicons
+                  name="chevron-forward-outline"
+                  size={24}
+                  color="black"
+                />
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            style={stylesHere.button}
-            onPress={() => handleButtonPress("Edit password")}
-          >
-            <View style={stylesHere.textAndIcon}>
-              <Ionicons name="lock-closed" size={24} color="#3D4AF5" />
-              <Text style={stylesHere.buttonText}>Editar Clave</Text>
-            </View>
-            <Ionicons name="chevron-forward-outline" size={24} color="black" />
-          </TouchableOpacity>
+              <TouchableOpacity
+                style={stylesHere.button}
+                onPress={() => handleButtonPress("Buy Rides")}
+              >
+                <View style={stylesHere.textAndIcon}>
+                  <Ionicons name="bicycle" size={24} color="#3D4AF5" />
+                  <Text style={stylesHere.buttonText}>Comprar Rides</Text>
+                </View>
+                <Ionicons
+                  name="chevron-forward-outline"
+                  size={24}
+                  color="black"
+                />
+              </TouchableOpacity>
 
-          <TouchableOpacity style={stylesHere.button} onPress={onSignOutPress}>
-            <View style={stylesHere.textAndIcon}>
-              <Ionicons name="log-out" size={24} color="#3D4AF5" />
-              <Text style={stylesHere.buttonText}>Log Out</Text>
+              <TouchableOpacity
+                style={stylesHere.button}
+                onPress={() => handleButtonPress("Edit password")}
+              >
+                <View style={stylesHere.textAndIcon}>
+                  <Ionicons name="lock-closed" size={24} color="#3D4AF5" />
+                  <Text style={stylesHere.buttonText}>Editar Clave</Text>
+                </View>
+                <Ionicons
+                  name="chevron-forward-outline"
+                  size={24}
+                  color="black"
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={stylesHere.button}
+                onPress={onSignOutPress}
+              >
+                <View style={stylesHere.textAndIcon}>
+                  <Ionicons name="log-out" size={24} color="#3D4AF5" />
+                  <Text style={stylesHere.buttonText}>Log Out</Text>
+                </View>
+                <Ionicons
+                  name="chevron-forward-outline"
+                  size={24}
+                  color="black"
+                />
+              </TouchableOpacity>
             </View>
-            <Ionicons name="chevron-forward-outline" size={24} color="black" />
-          </TouchableOpacity>
-        </View>
-      </View>
+          </View>
+          {/* Otros componentes... */}
+        </>
+      ) : (
+        <Text>Cargando...</Text>
+      )}
     </View>
   );
 }

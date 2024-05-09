@@ -1,67 +1,66 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Text,
   TextInput,
   TouchableOpacity,
   View,
   StyleSheet,
-  Image
+  Image,
 } from "react-native";
-import { useSignIn } from "@clerk/clerk-expo";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { log } from "../logger";
 import { RootStackScreenProps } from "../types";
 import { OAuthButtons } from "../components/OAuth";
 import { styles } from "../components/Styles";
+import { loginUser } from "../services/AuthService";
+
+const API_URL = "https://tu-dominio-de-strapi.com"; // Asegúrate de cambiar esto por la URL de tu servidor de Strapi
 
 export default function SignInScreen({
   navigation,
 }: RootStackScreenProps<"SignIn">) {
-  const { signIn, setSession, isLoaded } = useSignIn();
-
-  const [emailAddress, setEmailAddress] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [emailAddress, setEmailAddress] = useState("");
+  const [password, setPassword] = useState("");
 
   const onSignInPress = async () => {
-    if (!isLoaded) {
-      return;
-    }
-
     try {
-      const completeSignIn = await signIn.create({
-        identifier: emailAddress,
-        password,
-      });
-
-      await setSession(completeSignIn.createdSessionId);
-    } catch (err: any) {
-      log("Error:> " + err?.status || "");
-      log("Error:> " + err?.errors ? JSON.stringify(err.errors) : err);
+      const success = await loginUser(emailAddress, password);
+      if (success) {
+        navigation.replace('Main'); 
+      } else {
+        console.error("No se pudo cerrar sesión correctamente.");
+      }
+    } catch (err) {
+      console.error("Error:> " + JSON.stringify(err));
     }
   };
 
-  const onSignUpPress = () => navigation.replace("SignUp");
+  const onSignUpPress = () => {
+    navigation.replace("SignUp");
+  };
+
   const stylesHere = StyleSheet.create({
     container: {
       padding: 0,
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-  
     },
     rightImage: {
-      position:"absolute",
+      position: "absolute",
       top: -60,
       left: 180,
-      width: 210, 
-      resizeMode: "contain"
+      width: 210,
+      resizeMode: "contain",
     },
     heading: {
-      display:"flex",
-      justifyContent:"flex-start",
-      textAlign:"left",
-      width:"100%",
-      marginLeft:60,
-      marginBottom:20
+      display: "flex",
+      justifyContent: "flex-start",
+      textAlign: "left",
+      width: "100%",
+      marginLeft: 60,
+      marginBottom: 20,
     },
     inputs: {
       borderRadius: 30,
@@ -75,20 +74,21 @@ export default function SignInScreen({
     },
   });
   return (
-    
     <View style={styles.container}>
-       <Image
-            style={stylesHere.rightImage}
-            source={require("../assets/images/wheel-1.png")}
-          />
+      <Image
+        style={stylesHere.rightImage}
+        source={require("../assets/images/wheel-1.png")}
+      />
       <View style={stylesHere.heading}>
-        
-        <Text style={{...styles.titleText, marginTop:70, color:"white"}}>Login </Text>
-        <Text style={{...styles.paragraph, color:"white"}}>Login to continue to Volta </Text>
+        <Text style={{ ...styles.titleText, marginTop: 70, color: "white" }}>
+          Login{" "}
+        </Text>
+        <Text style={{ ...styles.paragraph, color: "white" }}>
+          Login to continue to Volta{" "}
+        </Text>
       </View>
 
       <View style={stylesHere.inputs}>
-        
         <View style={styles.oauthView}>
           <OAuthButtons />
         </View>

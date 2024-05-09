@@ -1,5 +1,5 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Instructor } from './screens/instructors/InstructorsScreen';
+import { Instructor } from "./interfaces";
 
 // ...
 
