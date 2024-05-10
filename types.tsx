@@ -12,7 +12,15 @@ declare global {
 export type RootStackParamList = {
   Root: undefined;
   Main: undefined;
-  BikeSelection: undefined;
+  BikeSelection: {
+    instructor: {
+      name: string;
+      image: string;
+    };
+    convertedDate: any;
+    rawDate: any;
+    time: any;
+  };
   Welcome: undefined;
   SignUp: undefined;
   SignIn: undefined;

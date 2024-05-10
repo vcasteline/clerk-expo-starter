@@ -8,7 +8,6 @@ import {
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import axios from "axios";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import { Ionicons } from "@expo/vector-icons";
@@ -79,10 +78,10 @@ export default function MyProfileScreen({
             <Text style={{ ...styles.titleText, color: "white" }}>Perfil</Text>
           </View>
           <View style={stylesHere.containerHeading}>
-            <Image
+            {/* <Image
               source={{ uri: user.profilePicture || "default_image_url" }}
               style={stylesHere.profilePicture}
-            />
+            /> */}
             <View style={stylesHere.userInfo}>
               <Text style={stylesHere.userName}>{user.username}</Text>
               <Text style={stylesHere.userEmail}>{user.email}</Text>

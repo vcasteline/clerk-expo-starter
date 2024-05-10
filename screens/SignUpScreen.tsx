@@ -26,8 +26,8 @@ export default function SignUpScreen({
   const onSignUpPress = async () => {
     try {
       const userData = {
-        firstName,
-        lastName,
+        // firstName,
+        // lastName,
         username,
         email,
         password,
@@ -102,7 +102,7 @@ export default function SignUpScreen({
           <OAuthButtons />
         </View>
 
-        <View style={styles.inputView}>
+        {/* <View style={styles.inputView}>
           <TextInput
             value={firstName}
             style={styles.textInput}
@@ -120,7 +120,7 @@ export default function SignUpScreen({
             placeholderTextColor="#000"
             onChangeText={(lastName) => setLastName(lastName)}
           />
-        </View>
+        </View> */}
 
         <View style={styles.inputView}>
           <TextInput

@@ -22,7 +22,6 @@ export default function Navigation() {
         setIsSignedIn(!!token);
         setIsLoaded(true);
         SplashScreen.hideAsync();
-        console.log(isSignedIn);
       } catch (e) {
         console.log('Failed to load the token');
       }

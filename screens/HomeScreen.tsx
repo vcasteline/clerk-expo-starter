@@ -16,6 +16,8 @@ import { log } from "../logger";
 import { getClasses, getInstructors, getUsers } from "../services/GlobalApi";
 import { Ionicons } from "@expo/vector-icons";
 import { Instructor, User } from "../interfaces";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getMe } from "../services/AuthService";
 
 
 export default function HomeScreen({
@@ -38,7 +40,8 @@ export default function HomeScreen({
   const onInstructorPress = (instructor: Instructor) => {
 navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });};  
   const [instructors, setInstructors] = useState<Instructor[]>([]); 
-  const [users, setUsers] = useState<User[]>([]);
+  const [user, setUser] = useState<User>();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getInstructors()
@@ -49,23 +52,24 @@ navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
       .catch((error) => {
         console.error(error);
       });
-
-      getUsers()
-      .then((response) => {
-        const usersData = response.data;
-        setUsers(usersData);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-
+  
+      const fetchUserData = async () => {
+        try {
+          const token = await AsyncStorage.getItem("userToken");
+          if (token) {
+            const userData = await getMe(token);
+            setUser(userData);
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchUserData();
   }, []);
-
-  users.map((user) => {
-    console.log(user.bookings);
-    console.log(user.clasesDisponibles);
-  });
-
+  
 
   const stylesHere = StyleSheet.create({
     container: {
@@ -145,16 +149,8 @@ navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
       padding: 10,
     },
   });
-  useEffect(() => {
-    getInstructors()
-      .then((response) => {
-        const instructorsData = response.data.data;
-        setInstructors(instructorsData);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
+
+
   return (
     <View style={stylesHere.containerInside}>
       <View style={stylesHere.heading}>
@@ -166,7 +162,7 @@ navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
       <View style={styles.center}>
         <View style={styles.box}>
           <View style={styles.spaceBet}>
-            <Text style={stylesHere.boxTitle}>Rides Lifetime</Text>
+            <Text style={stylesHere.boxTitle}>Bookings</Text>
             {/* <View style={stylesHere.iconBg}>
               <Ionicons name="flame" color={"white"} size={15} />
             </View> */}
@@ -176,9 +172,9 @@ navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
             />
           </View>
 
-          <Text style={stylesHere.boxContent}>17</Text>
+          <Text style={stylesHere.boxContent}> {!loading && user? user.bookings.length : "Loading"}</Text>
           <Text style={stylesHere.boxContentBottom}>
-            Rides Completados
+            {user?.bookings.length === 1 ? "Realizado" : "Realizados"}
           </Text>
         </View>
         <View style={styles.box}>
@@ -190,7 +186,7 @@ navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
             />
           </View>
 
-          <Text style={stylesHere.boxContent}>12</Text>
+          <Text style={stylesHere.boxContent}>{!loading && user? user.clasesDisponibles : "Loading"}</Text>
           <Text style={stylesHere.boxContentBottom}>Disponibles</Text>
         </View>
       </View>

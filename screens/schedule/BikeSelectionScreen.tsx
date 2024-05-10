@@ -15,6 +15,7 @@ export default function BikeSelectionScreen({
   navigation,
   route,
 }: RootStackScreenProps<"BikeSelection">) {
+  const { instructor, convertedDate, rawDate, time } = route.params;
   const [selectedBike, setSelectedBike] = useState(null);
 
   const bikes = [
@@ -80,14 +81,14 @@ export default function BikeSelectionScreen({
             <Ionicons name="calendar" color={"#F6FD91"} size={28} />
           </View>
           <Text style={stylesHere.boxContentBottom}>Date & Time</Text>
-          <Text style={stylesHere.boxContentBottomTwo}>21 WED - 9:00AM</Text>
+          <Text style={stylesHere.boxContentBottomTwo}>{convertedDate} - {time}</Text>
         </View>
         <View style={stylesHere.box}>
           <View style={styles.spaceBet}>
             <Ionicons name="person" color={"#F6FD91"} size={28} />
           </View>
           <Text style={stylesHere.boxContentBottom}>Instructor</Text>
-          <Text style={stylesHere.boxContentBottomTwo}>Sofia Chang</Text>
+          <Text style={stylesHere.boxContentBottomTwo}>{instructor.name}</Text>
         </View>
       </View>
       <View style={stylesHere.dashboard}>
@@ -108,12 +109,10 @@ export default function BikeSelectionScreen({
         </View>
         <View style={stylesHere.bikeGrid}>{bikes.map(renderBikeButton)}</View>
         <Image
-          source={{
-            uri: "https://utfs.io/f/dd4fb05a-682a-49d6-b708-d847325c3bd8-4jboq.jpg",
-          }}
+          source={{ uri: instructor.image }}
           style={stylesHere.instructorImage}
         />
-        <Text style={stylesHere.instructorName}>Sofia Chang</Text>
+        <Text style={stylesHere.instructorName}>{instructor.name}</Text>
         <View style={stylesHere.bottomContainer}>
           <Ionicons name="bicycle" color={"black"} size={28} />
           <Text style={stylesHere.bikeNumber}>

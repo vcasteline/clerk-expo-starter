@@ -13,8 +13,8 @@ export const logoutUser = async () => {
   }
 };
 export const registerUser = async (userData: {
-  firstName: string;
-  lastName: string;
+  // firstName: string;
+  // lastName: string;
   username: string;
   email: string;
   password: string;
@@ -76,7 +76,7 @@ export const resetPassword = async (
 
 export const getMe = async (token: string) => {
   try {
-    const response = await axios.get(`${API_URL}/users/me`, {
+    const response = await axios.get(`${API_URL}/users/me?populate=bookings`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

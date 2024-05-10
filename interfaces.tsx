@@ -42,6 +42,9 @@ export interface Class {
     instructor: {
       data: Instructor;
     };
+    room: {
+      data: Room;
+    };
   };
 }
 
@@ -71,9 +74,11 @@ export interface Bicycle {
 }
 
 export interface Room {
-  id: number;
-  attributes: {
+    id: number;
+    attributes: {
     roomNumber: number;
-    bicycles: Bicycle[];
+    bicycles: {
+      data: Bicycle[]
+    };
   };
 }

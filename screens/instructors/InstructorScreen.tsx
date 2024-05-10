@@ -23,7 +23,7 @@ export default function InstructorScreen({
   route,
 }: RootStackScreenProps<"Instructor">) {
   const { instructorData } = route.params;
-  const onClassPress = () => navigation.push("BikeSelection");
+  // const onClassPress = () => navigation.navigate("BikeSelection");
 
   const onBackPress = () => navigation.popToTop();
 
@@ -53,8 +53,16 @@ export default function InstructorScreen({
     return dayOfWeek;
   };
 
+  const [convertedDate, setConvertedDate] = useState('');
+  const [rawDate, setRawDate] = useState('');
   const [classes, setClasses] = useState<Class[]>([]);
   const [filteredClasses, setFilteredClasses] = useState<Class[]>([]);
+  
+  const convertDate = (date: string) => {
+    const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+    const formattedDate = new Date(date).toLocaleDateString('en-US', options);
+    setConvertedDate(formattedDate);
+  };
 
   const getFilteredClasses = (date: any, instructorName: string) => {
     const diaSelecionado = getDayOfWeek(date);
@@ -66,6 +74,12 @@ export default function InstructorScreen({
     );
     setFilteredClasses(filtered);
   };
+
+  const getFilteredClassesAndDate = (date: any) => {
+    getFilteredClasses(date, instructorData.attributes.nombreCompleto);
+    convertDate(date);
+    setRawDate(date);
+    }
 
   function redondearHora(hora: string) {
     const [horas, minutos] = hora.split(":");
@@ -128,10 +142,7 @@ export default function InstructorScreen({
                 highlightColor: "#F6FD91",
               }}
               onDateSelected={(date) =>
-                getFilteredClasses(
-                  date,
-                  instructorData.attributes.nombreCompleto
-                )
+                getFilteredClassesAndDate(date)
               }
               highlightDateNumberStyle={{ color: "black" }}
               highlightDateNameStyle={{ color: "black" }}
@@ -174,27 +185,28 @@ export default function InstructorScreen({
                 </View>
               ) : (
                 filteredClasses.map((classItem) => {
-                  // console.log(classItem.attributes);
 
                   return (
                     <ClassCard
                       key={classItem.id}
-                      onPress={onClassPress}
-                      image={{
-                        uri:
-                          process.env.EXPO_PUBLIC_IMG_URL +
-                          classItem.attributes.instructor.data.attributes
-                            .fotoPerfil.data.attributes.url,
-                      }}
-                      date={null}
+                      onPress={() => navigation.navigate("BikeSelection", {
+                        instructor: {
+                          name: classItem.attributes.instructor.data.attributes
+                            .nombreCompleto,
+                          image: process.env.EXPO_PUBLIC_IMG_URL +
+                            classItem.attributes.instructor.data.attributes
+                              .fotoPerfil.data.attributes.url,
+                        },
+                        convertedDate: convertedDate ? convertedDate : null,
+                        rawDate: rawDate,
+                        time: redondearHora(classItem.attributes.horaInicio),
+                      })}
+                      date={convertedDate}
                       className={classItem.attributes.nombreClase}
                       time={redondearHora(classItem.attributes.horaInicio)}
-                      instructor={
-                        classItem.attributes.instructor.data.attributes
-                          .nombreCompleto
-                      }
-                      spots={null}
-                    />
+                      instructor={classItem.attributes.instructor.data.attributes
+                        .nombreCompleto}
+                      spots={null} image={undefined}                    />
                   );
                 })
               )}
