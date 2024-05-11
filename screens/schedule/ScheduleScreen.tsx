@@ -17,7 +17,7 @@ export default function ScheduleScreen({
   const stylesHere = StyleSheet.create({
     dashboard: {
       borderRadius: 30,
-      padding: 24,
+      padding: 18,
       marginTop: 30,
       paddingBottom: 40,
       width: "100%",
@@ -93,7 +93,7 @@ export default function ScheduleScreen({
   return (
     <View style={styles.containerInside}>
       <View style={styles.heading}>
-        <Text style={{ ...styles.titleText, color: "white" }}>Schedule</Text>
+        <Text style={{ ...styles.titleText, color: "white" }}>Horario</Text>
       </View>
       <View style={{ width: "100%" }}>
         <CalendarStrip
@@ -107,9 +107,9 @@ export default function ScheduleScreen({
           highlightDateNumberStyle={{ color: "black" }}
           highlightDateNameStyle={{ color: "black" }}
           onDateSelected={(date) => getFilteredClassesAndDate(date)}
-          calendarHeaderStyle={{ color: "white", alignItems: "flex-start" }}
-          calendarHeaderContainerStyle={{ display: "flex", width: "100%" }}
-          dateNumberStyle={{ color: "white" }}
+          calendarHeaderStyle={{ color: "white", alignItems: "flex-start", textAlign:'left', fontSize:14, fontWeight:'400' }}
+          calendarHeaderContainerStyle={{marginLeft: 31,marginBottom: 15, flexDirection:'row', justifyContent:'flex-start'}}
+          dateNumberStyle={{ color: "white", fontWeight: '500' }}
           dateNameStyle={{ color: "white" }}
         />
       </View>

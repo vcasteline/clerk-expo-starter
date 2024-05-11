@@ -6,11 +6,15 @@ import { styles } from "../../components/Styles";
 import InstructorCard from "../../components/InstructorCard";
 import { getInstructors } from "../../services/GlobalApi";
 import { Instructor } from "../../interfaces";
+import SpinningLogo from "../../components/SpinningLogo";
 
-
-export default function InstructorsScreen({ navigation, route }: RootStackScreenProps<"Instructors">) {
+export default function InstructorsScreen({
+  navigation,
+  route,
+}: RootStackScreenProps<"Instructors">) {
   const { signIn, setSession, isLoaded } = useSignIn();
   const [instructors, setInstructors] = useState<Instructor[]>([]); // Especifica el tipo de estado como Instructor[]
+  const [loading, setLoading] = useState(true);
 
   const stylesHere = StyleSheet.create({
     dashboard: {
@@ -31,19 +35,35 @@ export default function InstructorsScreen({ navigation, route }: RootStackScreen
         const instructorsData = response.data.data;
         setInstructors(instructorsData);
       })
+      .finally(() => {
+        setLoading(false);
+      })
       .catch((error) => {
         console.error(error);
       });
   }, []);
 
   const onInstructorPress = (instructor: Instructor) => {
-    navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
+    navigation.navigate<"Instructor">("Instructor", {
+      instructorData: instructor,
+    });
   };
 
-  return (
+  return loading ? (
+    <View style={styles.loadingScreen}>
+      <SpinningLogo />
+    </View>
+  ) : (
     <View style={styles.containerInside}>
       <View style={styles.heading}>
-        <Text style={{ ...styles.titleText, color: "white" }}>Instructores</Text>
+        <Text style={{ ...styles.titleText, color: "white" }}>
+          Instructores
+        </Text>
+      </View>
+      <View style={styles.centerToLeft}>
+        <Text style={styles.description}>
+          Conoce a tus instructores. A dar la Volta!
+        </Text>
       </View>
       <View style={stylesHere.dashboard}>
         <ScrollView>

@@ -5,6 +5,25 @@ export const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
+  centerToLeft:{
+    flexDirection: "row",
+    justifyContent: "flex-start", 
+    width:'100%', 
+    marginLeft:60, 
+    marginVertical:0
+  },
+  loadingScreen:{
+    backgroundColor:'black',
+    height:'100%',
+    flexDirection:'row',
+    justifyContent:'center',
+    alignItems:'center'
+  },
+  description: {
+    fontSize: 16,
+    color: "gray",
+  
+  },
   subtitleBig: {
     fontSize: 22,
     fontWeight: "bold",
@@ -38,7 +57,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#000000",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingTop: 100,
+    paddingTop: 75,
   },
   inputView: {
     borderRadius: 5,
@@ -152,7 +171,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#141414",
     borderRadius: 24,
     padding: 25,
-    height: 155,
+    height: 165,
     width: 175,
   },
   spaceBet: {

@@ -22,6 +22,7 @@ export type RootStackParamList = {
     time: any;
     classId: number;
   };
+  BuyRides: undefined;
   Welcome: undefined;
   SignUp: undefined;
   SignIn: undefined;

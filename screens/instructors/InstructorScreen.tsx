@@ -93,14 +93,17 @@ export default function InstructorScreen({
         <TouchableWithoutFeedback onPress={onBackPress}>
           <Ionicons name="chevron-back-outline" size={30} color={"white"} />
         </TouchableWithoutFeedback>
-        <Text style={{ ...styles.titleText, color: "white" }}>
+      
+      </View>
+      {/* <View style={{...styles.centerToLeft, marginLeft:70, marginTop:20, marginBottom:0}}>
+      <Text style={{ ...styles.titleText, color: "white" }}>
           {instructorData.attributes.nombreCompleto.substring(
             0,
             instructorData.attributes.nombreCompleto.indexOf(" ")
           )}
           's Profile
         </Text>
-      </View>
+      </View> */}
       <View style={stylesHere.dashboard}>
         <View style={stylesHere.containerHere}>
           <View style={stylesHere.instructorInfo}>
@@ -200,6 +203,7 @@ export default function InstructorScreen({
                         convertedDate: convertedDate ? convertedDate : null,
                         rawDate: rawDate,
                         time: redondearHora(classItem.attributes.horaInicio),
+                        classId: classItem.id
                       })}
                       date={convertedDate}
                       className={classItem.attributes.nombreClase}
@@ -222,10 +226,10 @@ const stylesHere = StyleSheet.create({
   dashboard: {
     borderRadius: 30,
     padding: 24,
-    marginTop: 30,
+    marginTop: 20,
     paddingBottom: 40,
     width: "100%",
-    height: 630,
+    height: 665,
     justifyContent: "flex-start",
     backgroundColor: "#fff",
   },

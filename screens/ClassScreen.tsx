@@ -32,11 +32,11 @@ export default function ClassScreen({
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      marginTop: 5,
-      marginRight: 10,
+      marginTop: 0,
+      marginRight:3,
     },
     dashboard: {
-      borderRadius: 30,
+      //borderRadius: 30,
       padding: 24,
       marginTop: 0,
       paddingBottom: 40,
@@ -47,10 +47,11 @@ export default function ClassScreen({
     },
     containerInside: {
       flex: 1,
-      backgroundColor: "#fff",
+    //   backgroundColor: "#3D4AF5",
+    backgroundColor:"white",
       alignItems: "flex-start",
       justifyContent: "flex-start",
-      paddingTop: 80,
+      paddingTop: 75,
     },
     box: {
       backgroundColor: "#141414",
@@ -58,8 +59,8 @@ export default function ClassScreen({
       justifyContent: "space-between",
       borderRadius: 24,
       padding: 30,
-      height: 135,
-      width: 175,
+      height: 125,
+      width: 183,
     },
     boxTitle: {
       color: "rgba(255, 255, 255, 0.8)",
@@ -85,15 +86,13 @@ export default function ClassScreen({
     },
     instructorImage: {
       marginLeft: 0,
-      width: 110,
-      height: 130,
-      borderRadius: 5,
-      //   width: 100,
-      //   height: 100,
-      marginBottom: 20,
-      marginTop: 20,
-      //   resizeMode: "contain",
-      //   borderRadius: 50,
+      width: 300,
+      height: 154,
+      borderRadius: 10,
+      borderColor:'black',
+      borderWidth:2,
+      marginBottom: 16,
+      marginTop: 16,
     },
     classHeading: {
       marginLeft: 50,
@@ -126,8 +125,8 @@ export default function ClassScreen({
         {/* <Text style={{ ...styles.titleText }}>Clase</Text> */}
       </View>
       <View style={stylesHere.classHeading}>
-        <Text style={styles.subtitle}>Sofia Chang</Text>
-        <Text style={{ ...styles.titleText, marginBottom: 0 }}>
+        <Text style={{...styles.subtitle, color:"black", marginBottom:4, fontWeight:"500"}}>Sofia Chang</Text>
+        <Text style={{ ...styles.titleText, marginBottom: 6, color:"black" }}>
           Rider Rythm
         </Text>
         <View style={styles.flex}>
@@ -145,9 +144,9 @@ export default function ClassScreen({
             source={{
               uri: "https://utfs.io/f/bf77a67e-af87-47f1-92c3-c129615e27c0-4nhplr.jpg",
             }}
-            style={{...stylesHere.instructorImage, marginLeft:25}}
+            style={{...stylesHere.instructorImage, marginLeft:0}}
           />
-          <Text style={{fontSize:17, ...styles.half, marginLeft:10}}>All Set! Listo para ride con Sofia.</Text>
+          {/* <Text style={{fontSize:17, ...styles.half, marginLeft:10}}>All Set! Listo para ride con Sofia.</Text> */}
         </View>
       <View style={stylesHere.dashboard}>
         <View>

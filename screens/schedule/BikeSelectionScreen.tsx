@@ -6,6 +6,7 @@ import {
   Image,
   StyleSheet,
   TouchableWithoutFeedback,
+  StatusBar
 } from "react-native";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
@@ -53,14 +54,14 @@ export default function BikeSelectionScreen({
         onPress={() => isAvailable && handleBikeSelect(bike.id)}
         disabled={!isAvailable}
       >
-        <Text style={stylesHere.bikeButtonText}>
+        <Text style={isSelected && stylesHere.selectedBikeButtonText}>
           {bike.attributes.bicycleNumber}
         </Text>
       </TouchableOpacity>
     );
   };
   const onBackPress = () => navigation.popToTop();
-
+  const onBikeReservePress = () => navigation.navigate("BuyRides");
   // const instructorImage = require("../../assets/images/instructor-1.jpg");
 
   return (
@@ -69,17 +70,20 @@ export default function BikeSelectionScreen({
         <TouchableWithoutFeedback onPress={onBackPress}>
           <Ionicons name="chevron-back-outline" size={30} color={"white"} />
         </TouchableWithoutFeedback>
-        <Text style={{ ...styles.titleText, color: "white" }}>Select Bike</Text>
       </View>
+      <View style={{...styles.flex, flexDirection: "row",
+    justifyContent: "flex-start", width:'100%', marginLeft:60, marginVertical:10}}>
+      <Text style={{ ...styles.titleText, color: "white" }}>Selecciona tu Bici</Text>
+
+      </View>
+
       <View style={styles.center}>
         <View style={stylesHere.box}>
           <View style={styles.spaceBet}>
             <Ionicons name="calendar" color={"#F6FD91"} size={28} />
           </View>
-          <Text style={stylesHere.boxContentBottom}>Date & Time</Text>
-          <Text style={stylesHere.boxContentBottomTwo}>
-            {convertedDate} - {time}
-          </Text>
+          <Text style={stylesHere.boxContentBottom}>Día y Hora</Text>
+          <Text style={stylesHere.boxContentBottomTwo}>{convertedDate} - {time}</Text>
         </View>
         <View style={stylesHere.box}>
           <View style={styles.spaceBet}>
@@ -90,19 +94,19 @@ export default function BikeSelectionScreen({
         </View>
       </View>
       <View style={stylesHere.dashboard}>
-        <Text style={styles.subtitle}>Select Bike</Text>
+        {/* <Text style={styles.subtitle}>Select Bike</Text> */}
         <View style={stylesHere.legendContainer}>
           <View style={stylesHere.legendItem}>
             <View style={[stylesHere.colorBox, stylesHere.selectedColor]} />
-            <Text style={stylesHere.legendText}>Selected</Text>
+            <Text style={stylesHere.legendText}>Tu selección</Text>
           </View>
           <View style={stylesHere.legendItem}>
             <View style={[stylesHere.colorBox, stylesHere.availableColor]} />
-            <Text style={stylesHere.legendText}>Available</Text>
+            <Text style={stylesHere.legendText}>Disponible</Text>
           </View>
           <View style={stylesHere.legendItem}>
             <View style={[stylesHere.colorBox, stylesHere.unavailableColor]} />
-            <Text style={stylesHere.legendText}>Unavailable</Text>
+            <Text style={stylesHere.legendText}>Ocupada</Text>
           </View>
         </View>
         <View style={stylesHere.bikeGrid}>
@@ -116,18 +120,14 @@ export default function BikeSelectionScreen({
         <View style={stylesHere.bottomContainer}>
           <Ionicons name="bicycle" color={"black"} size={28} />
           <Text style={stylesHere.bikeNumber}>
-            {selectedBike || "Select Bike"}
+            {selectedBike || "# Bici"}
           </Text>
           <TouchableOpacity
-            style={
-              selectedBike
-                ? stylesHere.reserveButton
-                : stylesHere.reserveButtonDisabled
-            }
-            onPress={() => console.log(`Reserved bike ${selectedBike}`)}
+            style={selectedBike ? stylesHere.reserveButton : stylesHere.reserveButtonDisabled}
+            onPress={onBikeReservePress}
             disabled={!selectedBike}
           >
-            <Text style={stylesHere.reserveButtonText}>Reserve Bike</Text>
+            <Text style={stylesHere.reserveButtonText}>Reservar Bici</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -187,7 +187,7 @@ const stylesHere = StyleSheet.create({
   dashboard: {
     borderRadius: 30,
     padding: 24,
-    marginTop: 30,
+    marginTop: 20,
     paddingBottom: 40,
     width: "100%",
     height: 630,
@@ -221,14 +221,17 @@ const stylesHere = StyleSheet.create({
     backgroundColor: "#CDDDFC",
     justifyContent: "center",
     alignItems: "center",
-    margin: 10,
+    margin: 7,
   },
   unavailableBikeButton: {
     backgroundColor: "#D8D8D8",
   },
   bikeButtonText: {
     fontSize: 18,
-    // color: "white"
+  },
+  selectedBikeButtonText: {
+    fontSize: 18,
+    color: "white"
   },
   instructorImage: {
     width: 40,
@@ -240,7 +243,7 @@ const stylesHere = StyleSheet.create({
   instructorName: {
     fontSize: 18,
     alignSelf: "center",
-    marginBottom: 20,
+    marginBottom: 10,
   },
   reserveButton: {
     backgroundColor: "black",
@@ -255,7 +258,7 @@ const stylesHere = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 15,
-    width: "70%",
+    width: "60%",
     alignSelf: "center",
   },
   reserveButtonText: {

@@ -13,12 +13,12 @@ import { styles } from "../components/Styles";
 import ClassCard from "../components/ClassCard";
 import InstructorCard from "../components/InstructorCard";
 import { log } from "../logger";
-import { getClasses, getInstructors, getUsers } from "../services/GlobalApi";
+import { getClasses, getInstructors } from "../services/GlobalApi";
 import { Ionicons } from "@expo/vector-icons";
 import { Instructor, User } from "../interfaces";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getMe } from "../services/AuthService";
-
+import SpinningLogo from "../components/SpinningLogo";
 
 export default function HomeScreen({
   navigation,
@@ -38,8 +38,11 @@ export default function HomeScreen({
   const onClassPress = () => navigation.push("Class");
   const onSchedulePress = () => navigation.replace("Schedule");
   const onInstructorPress = (instructor: Instructor) => {
-navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });};  
-  const [instructors, setInstructors] = useState<Instructor[]>([]); 
+    navigation.navigate<"Instructor">("Instructor", {
+      instructorData: instructor,
+    });
+  };
+  const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
 
@@ -52,24 +55,23 @@ navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
       .catch((error) => {
         console.error(error);
       });
-  
-      const fetchUserData = async () => {
-        try {
-          const token = await AsyncStorage.getItem("userToken");
-          if (token) {
-            const userData = await getMe(token);
-            setUser(userData);
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        } finally {
-          setLoading(false);
+
+    const fetchUserData = async () => {
+      try {
+        const token = await AsyncStorage.getItem("userToken");
+        if (token) {
+          const userData = await getMe(token);
+          setUser(userData);
         }
-      };
-  
-      fetchUserData();
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
   }, []);
-  
 
   const stylesHere = StyleSheet.create({
     container: {
@@ -106,12 +108,12 @@ navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
       textAlign: "left",
       width: "100%",
       marginLeft: 60,
-      marginBottom: 6,
+      marginBottom: 0,
     },
     dashboard: {
       borderRadius: 30,
       padding: 24,
-      marginTop: 28,
+      marginTop: 20,
       paddingBottom: 40,
       width: "100%",
       height: 600,
@@ -141,7 +143,7 @@ navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
       backgroundColor: "#000000",
       alignItems: "center",
       justifyContent: "flex-start",
-      paddingTop: 70,
+      paddingTop: 50,
     },
     iconBg: {
       backgroundColor: "#3D4AF5",
@@ -150,8 +152,11 @@ navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
     },
   });
 
-
-  return (
+  return loading ? (
+    <View style={styles.loadingScreen}>
+      <SpinningLogo />
+    </View>
+  ) : (
     <View style={stylesHere.containerInside}>
       <View style={stylesHere.heading}>
         <Image
@@ -163,16 +168,16 @@ navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
         <View style={styles.box}>
           <View style={styles.spaceBet}>
             <Text style={stylesHere.boxTitle}>Bookings</Text>
-            {/* <View style={stylesHere.iconBg}>
-              <Ionicons name="flame" color={"white"} size={15} />
-            </View> */}
             <Image
               style={stylesHere.iconImage}
               source={require("../assets/images/fire-icon.png")}
             />
           </View>
 
-          <Text style={stylesHere.boxContent}> {!loading && user? user.bookings.length : "Loading"}</Text>
+          <Text style={stylesHere.boxContent}>
+            {" "}
+            {!loading && user ? user.bookings.length : "Loading"}
+          </Text>
           <Text style={stylesHere.boxContentBottom}>
             {user?.bookings.length === 1 ? "Realizado" : "Realizados"}
           </Text>
@@ -186,7 +191,9 @@ navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
             />
           </View>
 
-          <Text style={stylesHere.boxContent}>{!loading && user? user.clasesDisponibles : "Loading"}</Text>
+          <Text style={stylesHere.boxContent}>
+            {!loading && user ? user.clasesDisponibles : "Loading"}
+          </Text>
           <Text style={stylesHere.boxContentBottom}>Disponibles</Text>
         </View>
       </View>
@@ -194,7 +201,7 @@ navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
       <View style={stylesHere.dashboard}>
         <View style={stylesHere.rides}>
           <View style={styles.spaceBet}>
-            <Text style={styles.titleText}>Proximos Rides</Text>
+            <Text style={styles.titleText}>Próximos Rides</Text>
             <TouchableWithoutFeedback onPress={onSchedulePress}>
               <Text style={styles.titleText}>&#8594;</Text>
             </TouchableWithoutFeedback>
@@ -208,10 +215,11 @@ navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
                   marginTop: 40,
                   marginBottom: 10,
                   color: "#3D4AF5",
-                  fontWeight:'400'
+                  fontWeight: "400",
                 }}
               >
-                No has reservado ningun ride, has click en el horario para ver clases disponibles.
+                No has reservado ningun ride, has click en el horario para ver
+                clases disponibles.
               </Text>
               <Ionicons
                 style={{ textAlign: "center", marginBottom: 40 }}
@@ -258,21 +266,21 @@ navigation.navigate<'Instructor'>('Instructor', { instructorData: instructor });
             </TouchableWithoutFeedback>
           </View>
           <ScrollView horizontal={true}>
-          {instructors.map((instructor) => {
-            return (
-              <InstructorCard
-                key={instructor.id}
-                onPress={() => onInstructorPress(instructor)}
-                name={instructor.attributes.nombreCompleto}
-                category={instructor.attributes.estilo}
-                image={{
-                  uri:
-                    process.env.EXPO_PUBLIC_IMG_URL +
-                    instructor.attributes.fotoPerfil.data.attributes.url,
-                }}
-              />
-            );
-          })}
+            {instructors.map((instructor) => {
+              return (
+                <InstructorCard
+                  key={instructor.id}
+                  onPress={() => onInstructorPress(instructor)}
+                  name={instructor.attributes.nombreCompleto}
+                  category={instructor.attributes.estilo}
+                  image={{
+                    uri:
+                      process.env.EXPO_PUBLIC_IMG_URL +
+                      instructor.attributes.fotoPerfil.data.attributes.url,
+                  }}
+                />
+              );
+            })}
           </ScrollView>
         </View>
       </View>

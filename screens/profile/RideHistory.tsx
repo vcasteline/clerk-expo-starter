@@ -29,7 +29,9 @@ export default function RideHistoryScreen({
       <View style={styles.heading}>
         <Text style={{ ...styles.titleText, color: "white" }}>Ride History</Text>
       </View>
-
+        <View style={styles.centerToLeft}>
+            <Text style={styles.description}>Registro de tu historia en Volta.</Text>
+        </View>
       <View style={stylesHere.dashboard}>
         <ScrollView>
             <ClassCard
