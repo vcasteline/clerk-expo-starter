@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,56 +10,52 @@ import {
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import { Ionicons } from "@expo/vector-icons";
+import { Bicycle } from "../../interfaces";
+import { getClassBicycles } from "../../services/GlobalApi";
 
 export default function BikeSelectionScreen({
   navigation,
   route,
 }: RootStackScreenProps<"BikeSelection">) {
-  const { instructor, convertedDate, rawDate, time } = route.params;
+  const { instructor, convertedDate, rawDate, time, classId } = route.params;
   const [selectedBike, setSelectedBike] = useState(null);
+  const [bicycles, setBicycles] = useState<Bicycle[]>([]);
 
-  const bikes = [
-    { id: 1, available: true },
-    { id: 2, available: true },
-    { id: 3, available: false },
-    { id: 4, available: true },
-    { id: 5, available: false },
-    { id: 6, available: true },
-    { id: 7, available: false },
-    { id: 8, available: true },
-    { id: 9, available: true },
-    { id: 10, available: true },
-    { id: 11, available: false },
-    { id: 12, available: true },
-    { id: 13, available: false },
-    { id: 14, available: true },
-    { id: 15, available: false },
-    { id: 16, available: true },
-    { id: 17, available: true },
-    { id: 18, available: true },
-    // ... rest of the bikes
-  ];
+  useEffect(() => {
+    getClassBicycles(classId)
+      .then((response) => {
+        const classBicycles = response.data.attributes.room.data.attributes.bicycles.data;
+          console.log(classBicycles)
+        setBicycles(classBicycles);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [classId]);
 
   const handleBikeSelect = (bikeId: any) => {
     setSelectedBike(bikeId);
   };
 
-  const renderBikeButton = (bike: any) => {
+  const renderBikeButton = (bike: Bicycle) => {
     const isSelected = selectedBike === bike.id;
+    const isAvailable = !bike.attributes.isBooked;
     const buttonStyle = [
       stylesHere.bikeButton,
       isSelected && stylesHere.selectedBikeButton,
-      !bike.available && stylesHere.unavailableBikeButton,
+      !isAvailable && stylesHere.unavailableBikeButton,
     ];
 
     return (
       <TouchableOpacity
         key={bike.id}
         style={buttonStyle}
-        onPress={() => bike.available && handleBikeSelect(bike.id)}
-        disabled={!bike.available}
+        onPress={() => isAvailable && handleBikeSelect(bike.id)}
+        disabled={!isAvailable}
       >
-        <Text style={stylesHere.bikeButtonText}>{bike.id}</Text>
+        <Text style={stylesHere.bikeButtonText}>
+          {bike.attributes.bicycleNumber}
+        </Text>
       </TouchableOpacity>
     );
   };
@@ -81,7 +77,9 @@ export default function BikeSelectionScreen({
             <Ionicons name="calendar" color={"#F6FD91"} size={28} />
           </View>
           <Text style={stylesHere.boxContentBottom}>Date & Time</Text>
-          <Text style={stylesHere.boxContentBottomTwo}>{convertedDate} - {time}</Text>
+          <Text style={stylesHere.boxContentBottomTwo}>
+            {convertedDate} - {time}
+          </Text>
         </View>
         <View style={stylesHere.box}>
           <View style={styles.spaceBet}>
@@ -107,7 +105,9 @@ export default function BikeSelectionScreen({
             <Text style={stylesHere.legendText}>Unavailable</Text>
           </View>
         </View>
-        <View style={stylesHere.bikeGrid}>{bikes.map(renderBikeButton)}</View>
+        <View style={stylesHere.bikeGrid}>
+          {bicycles.map(renderBikeButton)}
+        </View>
         <Image
           source={{ uri: instructor.image }}
           style={stylesHere.instructorImage}
@@ -119,7 +119,11 @@ export default function BikeSelectionScreen({
             {selectedBike || "Select Bike"}
           </Text>
           <TouchableOpacity
-            style={selectedBike ? stylesHere.reserveButton : stylesHere.reserveButtonDisabled}
+            style={
+              selectedBike
+                ? stylesHere.reserveButton
+                : stylesHere.reserveButtonDisabled
+            }
             onPress={() => console.log(`Reserved bike ${selectedBike}`)}
             disabled={!selectedBike}
           >
@@ -178,7 +182,7 @@ const stylesHere = StyleSheet.create({
   },
   bikeNumber: {
     fontSize: 16,
-    marginHorizontal: 10
+    marginHorizontal: 10,
   },
   dashboard: {
     borderRadius: 30,

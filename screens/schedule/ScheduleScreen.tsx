@@ -163,7 +163,6 @@ export default function ScheduleScreen({
             const availableSpots = totalBicycles - reservedBicycles;
 
             // console.log(classItem.attributes);
-
             return (
               <ClassCard
                 key={classItem.id}
@@ -180,6 +179,7 @@ export default function ScheduleScreen({
                     convertedDate: convertedDate ? convertedDate : null,
                     rawDate: rawDate,
                     time: redondearHora(classItem.attributes.horaInicio),
+                    classId: classItem.id,
                   })
                 }
                 image={{

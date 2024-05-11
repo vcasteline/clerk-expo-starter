@@ -20,6 +20,7 @@ export type RootStackParamList = {
     convertedDate: any;
     rawDate: any;
     time: any;
+    classId: number;
   };
   Welcome: undefined;
   SignUp: undefined;
