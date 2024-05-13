@@ -180,6 +180,7 @@ export default function ScheduleScreen({
                     rawDate: rawDate,
                     time: redondearHora(classItem.attributes.horaInicio),
                     classId: classItem.id,
+                    className: classItem.attributes.nombreClase,
                   })
                 }
                 image={{

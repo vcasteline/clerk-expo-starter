@@ -12,21 +12,35 @@ import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import { Ionicons } from "@expo/vector-icons";
 import { Bicycle } from "../../interfaces";
-import { getClassBicycles } from "../../services/GlobalApi";
+import { getBookings, getClassBicycles, reserveBike, updateUserClases } from "../../services/GlobalApi";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getMe } from "../../services/AuthService";
+
 
 export default function BikeSelectionScreen({
   navigation,
   route,
 }: RootStackScreenProps<"BikeSelection">) {
-  const { instructor, convertedDate, rawDate, time, classId } = route.params;
+  const { instructor, convertedDate, rawDate, time, classId, className } = route.params;
   const [selectedBike, setSelectedBike] = useState(null);
+  const [bikeId, setBikeId] = useState(null);
   const [bicycles, setBicycles] = useState<Bicycle[]>([]);
+
+  // useEffect(() => {
+  //   getBookings()
+  //     .then((response) => {
+  //       const bookingData = response.data;
+  //       console.log(bookingData)
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     });
+  //   }, []);
 
   useEffect(() => {
     getClassBicycles(classId)
       .then((response) => {
         const classBicycles = response.data.attributes.room.data.attributes.bicycles.data;
-          console.log(classBicycles)
         setBicycles(classBicycles);
       })
       .catch((error) => {
@@ -34,12 +48,13 @@ export default function BikeSelectionScreen({
       });
   }, [classId]);
 
-  const handleBikeSelect = (bikeId: any) => {
-    setSelectedBike(bikeId);
+  const handleBikeSelect = (bikeNum: any, bikeIdentification: any) => {
+    setSelectedBike(bikeNum);
+    setBikeId(bikeIdentification);
   };
 
   const renderBikeButton = (bike: Bicycle) => {
-    const isSelected = selectedBike === bike.id;
+    const isSelected = selectedBike === bike.attributes.bicycleNumber;
     const isAvailable = !bike.attributes.isBooked;
     const buttonStyle = [
       stylesHere.bikeButton,
@@ -51,7 +66,7 @@ export default function BikeSelectionScreen({
       <TouchableOpacity
         key={bike.id}
         style={buttonStyle}
-        onPress={() => isAvailable && handleBikeSelect(bike.id)}
+        onPress={() => isAvailable && handleBikeSelect(bike.attributes.bicycleNumber, bike.id)}
         disabled={!isAvailable}
       >
         <Text style={isSelected && stylesHere.selectedBikeButtonText}>
@@ -61,8 +76,44 @@ export default function BikeSelectionScreen({
     );
   };
   const onBackPress = () => navigation.popToTop();
-  const onBikeReservePress = () => navigation.navigate("BuyRides");
-  // const instructorImage = require("../../assets/images/instructor-1.jpg");
+  
+  const onBikeReservePress = async () => {
+    try {
+      const token = await AsyncStorage.getItem("userToken");
+      if (token) {
+      const userData = await getMe(token);
+      const dateString = rawDate.toISOString().slice(0,11);
+      const fechaHora = `${dateString}${time}:00.000Z`;
+
+      // Verificar si el usuario tiene clases disponibles
+      if (userData.clasesDisponibles > 0) {
+
+        // Realizar el POST request para reservar la bicicleta
+        await reserveBike({
+          class: classId,
+          bicycle: bikeId,
+          paymentStatus: "completed",
+          user: userData.id,
+          fechaHora: fechaHora,
+        }, token);
+  
+        // Restar una clase disponible al usuario
+        await updateUserClases(userData.id, userData.clasesDisponibles - 1, token);
+  
+        console.log("Reserva exitosa");
+        // Realizar cualquier otra acción necesaria después de la reserva exitosa
+      } else {
+        console.log("No tienes clases disponibles");
+        // Manejar el caso cuando el usuario no tiene clases disponibles
+        navigation.navigate("BuyRides");
+      }
+    }
+    } catch (error) {
+      console.error("Error al reservar la bicicleta:", error);
+      // Manejar el error de reserva
+    }
+  };
+  // const onBikeReservePress = () => navigation.navigate("BuyRides");
 
   return (
     <View style={styles.containerInside}>

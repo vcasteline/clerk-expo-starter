@@ -21,6 +21,7 @@ export type RootStackParamList = {
     rawDate: any;
     time: any;
     classId: number;
+    className: string;
   };
   BuyRides: undefined;
   Welcome: undefined;
