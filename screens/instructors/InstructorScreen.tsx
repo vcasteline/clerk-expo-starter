@@ -203,14 +203,17 @@ export default function InstructorScreen({
                         convertedDate: convertedDate ? convertedDate : null,
                         rawDate: rawDate,
                         time: redondearHora(classItem.attributes.horaInicio),
-                        classId: classItem.id
+                        classId: classItem.id,
+                        className:classItem.attributes.nombreClase
                       })}
                       date={convertedDate}
                       className={classItem.attributes.nombreClase}
                       time={redondearHora(classItem.attributes.horaInicio)}
                       instructor={classItem.attributes.instructor.data.attributes
                         .nombreCompleto}
-                      spots={null} image={undefined}                    />
+                      spots={null} image={undefined}
+                                          />
+                     
                   );
                 })
               )}

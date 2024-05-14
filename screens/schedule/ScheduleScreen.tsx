@@ -53,8 +53,8 @@ export default function ScheduleScreen({
     return dayOfWeek;
   };
   const [hasClicked, setHasClicked] = useState(false);
-  const [convertedDate, setConvertedDate] = useState('');
-  const [rawDate, setRawDate] = useState('');
+  const [convertedDate, setConvertedDate] = useState("");
+  const [rawDate, setRawDate] = useState("");
   const [classes, setClasses] = useState<Class[]>([]);
   const [filteredClasses, setFilteredClasses] = useState<Class[]>([]);
 
@@ -69,16 +69,19 @@ export default function ScheduleScreen({
   };
 
   const convertDate = (date: string) => {
-    const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
-    const formattedDate = new Date(date).toLocaleDateString('en-US', options);
+    const options: Intl.DateTimeFormatOptions = {
+      month: "short",
+      day: "numeric",
+    };
+    const formattedDate = new Date(date).toLocaleDateString("en-US", options);
     setConvertedDate(formattedDate);
   };
 
   const getFilteredClassesAndDate = (date: any) => {
-  getFilteredClasses(date);
-  convertDate(date);
-  setRawDate(date);
-  }
+    getFilteredClasses(date);
+    convertDate(date);
+    setRawDate(date);
+  };
 
   function redondearHora(hora: string) {
     const [horas, minutos, segundos, milisegundos] = hora.split(":");
@@ -107,9 +110,20 @@ export default function ScheduleScreen({
           highlightDateNumberStyle={{ color: "black" }}
           highlightDateNameStyle={{ color: "black" }}
           onDateSelected={(date) => getFilteredClassesAndDate(date)}
-          calendarHeaderStyle={{ color: "white", alignItems: "flex-start", textAlign:'left', fontSize:14, fontWeight:'400' }}
-          calendarHeaderContainerStyle={{marginLeft: 31,marginBottom: 15, flexDirection:'row', justifyContent:'flex-start'}}
-          dateNumberStyle={{ color: "white", fontWeight: '500' }}
+          calendarHeaderStyle={{
+            color: "white",
+            alignItems: "flex-start",
+            textAlign: "left",
+            fontSize: 14,
+            fontWeight: "400",
+          }}
+          calendarHeaderContainerStyle={{
+            marginLeft: 31,
+            marginBottom: 15,
+            flexDirection: "row",
+            justifyContent: "flex-start",
+          }}
+          dateNumberStyle={{ color: "white", fontWeight: "500" }}
           dateNameStyle={{ color: "white" }}
         />
       </View>
@@ -161,8 +175,6 @@ export default function ScheduleScreen({
               classItem.attributes.room.data.attributes.bicycles.data.length;
             const reservedBicycles = 0; // Aquí debes obtener el número de bicicletas reservadas para esa clase
             const availableSpots = totalBicycles - reservedBicycles;
-
-            // console.log(classItem.attributes);
             return (
               <ClassCard
                 key={classItem.id}

@@ -202,12 +202,9 @@ export default function HomeScreen({
         <View style={stylesHere.rides}>
           <View style={styles.spaceBet}>
             <Text style={styles.titleText}>Próximos Rides</Text>
-            <TouchableWithoutFeedback onPress={onSchedulePress}>
-              <Text style={styles.titleText}>&#8594;</Text>
-            </TouchableWithoutFeedback>
           </View>
           <View style={stylesHere.ridesSection}>
-            <View>
+            {/* for when there are no fetched classes <View>
               <Text
                 style={{
                   ...styles.subtitle,
@@ -227,7 +224,7 @@ export default function HomeScreen({
                 color={"#3D4AF5"}
                 size={25}
               />
-            </View>
+            </View> */}
 
             <ClassCard
               onPress={onClassPress}
@@ -261,9 +258,6 @@ export default function HomeScreen({
         <View style={stylesHere.instructors}>
           <View style={styles.spaceBet}>
             <Text style={styles.titleText}>Instructores</Text>
-            <TouchableWithoutFeedback>
-              <Text style={styles.titleText}>&#8594;</Text>
-            </TouchableWithoutFeedback>
           </View>
           <ScrollView horizontal={true}>
             {instructors.map((instructor) => {

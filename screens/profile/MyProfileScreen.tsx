@@ -51,6 +51,8 @@ export default function MyProfileScreen({
   };
   const onSettingsPress = () => navigation.push("SettingsProfile");
   const onRideHistoryPress = () => navigation.push("RideHistory");
+  const onBuyRidesPress = () => navigation.navigate("BuyRides");
+
 
   // const handleSaveChanges = async () => {
   //   try {
@@ -74,14 +76,24 @@ export default function MyProfileScreen({
     <View style={styles.containerInside}>
       {!loading && user ? (
         <>
-          <View style={styles.heading}>
+          <View style={{...styles.heading, justifyContent: 'space-between'}}>
             <Text style={{ ...styles.titleText, color: "white" }}>Perfil</Text>
+            <View style={stylesHere.smallBox}>
+              <Image
+                style={stylesHere.iconImage}
+                source={require("../../assets/images/wheel-icon.png")}
+              />
+              <Text style={{color: 'white'}}>{user ? user.clasesDisponibles: '...'}</Text>
+            </View>
           </View>
           <View style={stylesHere.containerHeading}>
             {/* <Image
               source={{ uri: user.profilePicture || "default_image_url" }}
               style={stylesHere.profilePicture}
             /> */}
+            <View style={stylesHere.profileIcon}>
+              <Ionicons name='happy-outline' size={30} />
+            </View>
             <View style={stylesHere.userInfo}>
               <Text style={stylesHere.userName}>{user.username}</Text>
               <Text style={stylesHere.userEmail}>{user.email}</Text>
@@ -117,7 +129,7 @@ export default function MyProfileScreen({
 
               <TouchableOpacity
                 style={stylesHere.button}
-                onPress={() => handleButtonPress("Buy Rides")}
+                onPress={onBuyRidesPress}
               >
                 <View style={stylesHere.textAndIcon}>
                   <Ionicons name="bicycle" size={24} color="#3D4AF5" />
@@ -177,6 +189,30 @@ const stylesHere = StyleSheet.create({
     // backgroundColor: '#F0F0F0',
     paddingVertical: 12,
     paddingHorizontal: 16,
+  },
+  profileIcon: {
+    width: 50,
+    height: 50,
+    backgroundColor: '#F6FD91',
+    borderRadius:60,
+    marginLeft: 10,
+    justifyContent:'center',
+    alignItems:'center'
+  },
+  smallBox: {
+    backgroundColor: "#141414",
+    paddingHorizontal: 15,
+    paddingVertical: 0,
+    borderRadius: 10,
+    flexDirection:'row',
+    justifyContent: 'center',
+    alignItems:'center',
+    marginRight:60
+  },
+  iconImage: {
+    marginRight: 10,
+    width: 15,
+    height: 15
   },
   // iconContainer: {
   //   backgroundColor: '#3D4AF5',
