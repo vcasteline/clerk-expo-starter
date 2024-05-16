@@ -35,6 +35,9 @@ export type RootStackParamList = {
   Instructor: { instructorData: Instructor };
   InstructorStack: undefined;
   MyProfile: undefined;
+  EnterName: undefined;
+  EnterDOB: undefined;
+  EnterNumber: undefined;
   SettingsProfile: undefined;
   RideHistory: undefined;
   ProfileStack: undefined;

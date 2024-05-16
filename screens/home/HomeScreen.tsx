@@ -8,17 +8,17 @@ import {
   ScrollView,
 } from "react-native";
 import { useAuth, useSignIn } from "@clerk/clerk-expo";
-import { RootStackScreenProps } from "../types";
-import { styles } from "../components/Styles";
-import ClassCard from "../components/ClassCard";
-import InstructorCard from "../components/InstructorCard";
-import { log } from "../logger";
-import { getClasses, getInstructors } from "../services/GlobalApi";
+import { RootStackScreenProps } from "../../types";
+import { styles } from "../../components/Styles";
+import ClassCard from "../../components/ClassCard";
+import InstructorCard from "../../components/InstructorCard";
+import { log } from "../../logger";
+import { getClasses, getInstructors } from "../../services/GlobalApi";
 import { Ionicons } from "@expo/vector-icons";
-import { Instructor, User } from "../interfaces";
+import { Instructor, User } from "../../interfaces";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getMe } from "../services/AuthService";
-import SpinningLogo from "../components/SpinningLogo";
+import { getMe } from "../../services/AuthService";
+import SpinningLogo from "../../components/SpinningLogo";
 
 export default function HomeScreen({
   navigation,
@@ -161,7 +161,7 @@ export default function HomeScreen({
       <View style={stylesHere.heading}>
         <Image
           style={stylesHere.logoImage}
-          source={require("../assets/images/volta-logo-white.png")}
+          source={require("../../assets/images/volta-logo-white.png")}
         />
       </View>
       <View style={styles.center}>
@@ -170,7 +170,7 @@ export default function HomeScreen({
             <Text style={stylesHere.boxTitle}>Bookings</Text>
             <Image
               style={stylesHere.iconImage}
-              source={require("../assets/images/fire-icon.png")}
+              source={require("../../assets/images/fire-icon.png")}
             />
           </View>
 
@@ -187,7 +187,7 @@ export default function HomeScreen({
             <Text style={stylesHere.boxTitle}>Tus Clases</Text>
             <Image
               style={stylesHere.iconImage}
-              source={require("../assets/images/wheel-icon.png")}
+              source={require("../../assets/images/wheel-icon.png")}
             />
           </View>
 

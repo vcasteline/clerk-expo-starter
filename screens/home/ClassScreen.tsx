@@ -8,11 +8,11 @@ import {
   Image,
   TouchableWithoutFeedback,
 } from "react-native";
-import { RootStackScreenProps } from "../types";
-import { styles } from "../components/Styles";
-import InstructorCard from "../components/InstructorCard";
-import { getInstructors } from "../services/GlobalApi";
-import { Instructor } from "../interfaces";
+import { RootStackScreenProps } from "../../types";
+import { styles } from "../../components/Styles";
+import InstructorCard from "../../components/InstructorCard";
+import { getInstructors } from "../../services/GlobalApi";
+import { Instructor } from "../../interfaces";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function ClassScreen({

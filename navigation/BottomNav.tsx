@@ -6,7 +6,7 @@ import { RootTabParamList } from '../types';
 import ScheduleScreen from '../screens/schedule/ScheduleScreen';
 import MyProfileScreen from '../screens/profile/MyProfileScreen';
 import InstructorsScreen from '../screens/instructors/InstructorsScreen';
-import HomeScreen from '../screens/HomeScreen';
+import HomeScreen from '../screens/home/HomeScreen';
 import ScheduleStack from '../screens/ScheduleStack';
 import InstructorStack from '../screens/InstructorStack';
 import ProfileStack from '../screens/ProfileStack';

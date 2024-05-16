@@ -12,8 +12,8 @@ export default function MainScreen({
   }: RootStackScreenProps<"Main">) {
   return (
     <>
-    <StatusBar translucent/>
-    <BottomNav/>
+      <StatusBar translucent/>
+      <BottomNav/>
     </>
     
   );

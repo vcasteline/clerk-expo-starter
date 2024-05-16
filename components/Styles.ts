@@ -34,7 +34,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#3D4AF5",
     alignItems: "center",
     justifyContent: "flex-start",
-    paddingTop: 70,
+    paddingTop: 50,
     overflow: "scroll",
   },
   instructorImage: {
@@ -60,15 +60,20 @@ export const styles = StyleSheet.create({
     paddingTop: 75,
   },
   inputView: {
-    borderRadius: 5,
+    borderRadius: 14,
     width: "100%",
     height: 45,
     marginBottom: 20,
-    borderColor: "#000",
+    borderColor: "#CDCDCD",
     borderStyle: "solid",
     borderWidth: 1,
   },
-
+  label: {
+    color: 'gray',
+    marginBottom:6,
+    marginLeft: 13,
+    fontSize: 12
+  },
   textInput: {
     height: 50,
     flex: 1,
@@ -78,8 +83,8 @@ export const styles = StyleSheet.create({
 
   primaryButton: {
     width: "100%",
-    borderRadius: 15,
-    height: 45,
+    borderRadius: 16,
+    height: 48,
     alignItems: "center",
     justifyContent: "center",
     marginTop: 24,
@@ -89,7 +94,8 @@ export const styles = StyleSheet.create({
 
   primaryButtonText: {
     color: "#ffffff",
-    fontWeight: "bold",
+    fontWeight:'500',
+    fontSize: 14
   },
 
   instructorCard: {
@@ -122,26 +128,27 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
   },
   secondaryButton: {
-    marginTop: 15,
-    borderRadius: 15,
+    marginTop: 8,
+    borderRadius: 16,
     width: "100%",
-    height: 40,
+    height: 48,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#ffffff",
     borderWidth: 1,
-    borderColor: "#000",
+    borderColor: "#CDCDCD",
   },
 
   secondaryButtonText: {
     color: "#000",
-    fontWeight: "bold",
+    fontWeight: '400',
+    fontSize: 14
   },
 
   oauthView: {
     width: "100%",
     borderBottomWidth: 1,
-    borderBottomColor: "#000",
+    borderBottomColor: "#CDCDCD",
     marginBottom: 20,
   },
 

@@ -42,7 +42,7 @@ export function OAuthButtons() {
         source={require("../assets/google-icon.png")}
         style={{ width: 30, height: 30, marginRight:10 }}
       />
-      <Text style={styles.secondaryButtonText}>Continue with Google</Text>
+      <Text style={styles.secondaryButtonText}>Continuar con Google</Text>
     </TouchableOpacity>
   );
 }

@@ -6,31 +6,33 @@ import {
   View,
   Image,
   StyleSheet,
+  TouchableWithoutFeedback,
 } from "react-native";
-import { log } from "../logger";
-import { RootStackScreenProps } from "../types";
-import { styles } from "../components/Styles";
-import { OAuthButtons } from "../components/OAuth";
-import { registerUser } from "../services/AuthService";
+import { log } from "../../logger";
+import { RootStackScreenProps } from "../../types";
+import { styles } from "../../components/Styles";
+import { OAuthButtons } from "../../components/OAuth";
+import { registerUser } from "../../services/AuthService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { UserContext } from "../../utils/UserContext";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function SignUpScreen({
   navigation,
 }: RootStackScreenProps<"SignUp">) {
-  const [firstName, setFirstName] = React.useState("");
-  const [lastName, setLastName] = React.useState("");
-  const [username, setUsername] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+ 
+  const { user, setUser } = React.useContext(UserContext);
 
   const onSignUpPress = async () => {
     try {
       const userData = {
-        // firstName,
-        // lastName,
-        username,
-        email,
-        password,
+        nombre: user.firstName,
+        apellido: user.lastName,
+        username: user.username,
+        password: user.password,
+        email: user.email,
+        birthday: user.dateOfBirth,
+        telefono: user.number
       };
 
       // Registro del usuario
@@ -47,8 +49,7 @@ export default function SignUpScreen({
       log("Error:> " + err?.message || "");
     }
   };
-
-  const onSignInPress = () => navigation.replace("SignIn");
+  const onBackPress = () => navigation.pop();
   const stylesHere = StyleSheet.create({
     container: {
       padding: 0,
@@ -86,89 +87,62 @@ export default function SignUpScreen({
     <View style={styles.container}>
       <Image
         style={stylesHere.rightImage}
-        source={require("../assets/images/wheel-1.png")}
+        source={require("../../assets/images/wheel-1.png")}
       />
-      <View style={stylesHere.heading}>
-        <Text style={{ ...styles.titleText, marginTop: 70, color: "white" }}>
-          Create Account{" "}
+      <View style={{...stylesHere.heading,  marginTop: 40}}>
+      <TouchableWithoutFeedback onPress={onBackPress}>
+          <Ionicons name="chevron-back-outline" size={30} color={"white"} />
+        </TouchableWithoutFeedback>
+        <Text style={{ ...styles.titleText, marginTop: 20, color: "white" }}>
+          Crear Nueva Cuenta{" "}
         </Text>
-        <Text style={{ ...styles.paragraph, color: "white" }}>
-          Please enter your information{" "}
+        <Text style={{ ...styles.paragraph, color: "white", marginRight:30 }}>
+          Ultimo paso! Entra tu información.{" "}
         </Text>
       </View>
 
       <View style={stylesHere.inputs}>
-        <View style={styles.oauthView}>
+        {/* <View style={styles.oauthView}>
           <OAuthButtons />
-        </View>
-
-        {/* <View style={styles.inputView}>
-          <TextInput
-            value={firstName}
-            style={styles.textInput}
-            placeholder="First name..."
-            placeholderTextColor="#000"
-            onChangeText={(firstName) => setFirstName(firstName)}
-          />
-        </View>
-
-        <View style={styles.inputView}>
-          <TextInput
-            value={lastName}
-            style={styles.textInput}
-            placeholder="Last name..."
-            placeholderTextColor="#000"
-            onChangeText={(lastName) => setLastName(lastName)}
-          />
         </View> */}
-
         <View style={styles.inputView}>
           <TextInput
-            value={username}
+            value={user.username}
             style={styles.textInput}
             placeholder="Username..."
-            placeholderTextColor="#000"
-            onChangeText={(username) => setUsername(username)}
+            placeholderTextColor="gray"
+            onChangeText={(username) => setUser({...user, username: username})}
           />
         </View>
 
         <View style={styles.inputView}>
           <TextInput
             autoCapitalize="none"
-            value={email}
+            value={user.email}
             style={styles.textInput}
             placeholder="Email..."
-            placeholderTextColor="#000"
-            onChangeText={(email) => setEmail(email)}
+            placeholderTextColor="gray"
+            onChangeText={(email) => setUser({...user, email: email})}
           />
         </View>
 
         <View style={styles.inputView}>
           <TextInput
-            value={password}
+            value={user.password}
             style={styles.textInput}
             placeholder="Password..."
-            placeholderTextColor="#000"
+            placeholderTextColor="gray"
             secureTextEntry={true}
-            onChangeText={(password) => setPassword(password)}
+            onChangeText={(password) => setUser({...user, password: password})}
           />
         </View>
 
-        <TouchableOpacity
-          style={{ ...styles.primaryButton, marginTop: 0 }}
-          onPress={onSignUpPress}
-        >
-          <Text style={styles.primaryButtonText}>Sign up</Text>
-        </TouchableOpacity>
-
-        <View style={styles.footer}>
-          <Text>Have an account?</Text>
-
+        <View style={{...styles.footer, marginTop: 0}}>
           <TouchableOpacity
-            style={styles.secondaryButton}
-            onPress={onSignInPress}
+            style={styles.primaryButton}
+            onPress={onSignUpPress}
           >
-            <Text style={styles.secondaryButtonText}>Sign in</Text>
+            <Text style={styles.primaryButtonText}>Crear Nueva Cuenta</Text>
           </TouchableOpacity>
         </View>
       </View>

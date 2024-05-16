@@ -9,11 +9,11 @@ import {
 } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { log } from "../logger";
-import { RootStackScreenProps } from "../types";
-import { OAuthButtons } from "../components/OAuth";
-import { styles } from "../components/Styles";
-import { loginUser } from "../services/AuthService";
+import { log } from "../../logger";
+import { RootStackScreenProps } from "../../types";
+import { OAuthButtons } from "../../components/OAuth";
+import { styles } from "../../components/Styles";
+import { loginUser } from "../../services/AuthService";
 
 const API_URL = "https://tu-dominio-de-strapi.com"; // Asegúrate de cambiar esto por la URL de tu servidor de Strapi
 
@@ -37,7 +37,7 @@ export default function SignInScreen({
   };
 
   const onSignUpPress = () => {
-    navigation.replace("SignUp");
+    navigation.navigate("EnterName");
   };
 
   const stylesHere = StyleSheet.create({
@@ -77,14 +77,14 @@ export default function SignInScreen({
     <View style={styles.container}>
       <Image
         style={stylesHere.rightImage}
-        source={require("../assets/images/wheel-1.png")}
+        source={require("../../assets/images/wheel-1.png")}
       />
       <View style={stylesHere.heading}>
         <Text style={{ ...styles.titleText, marginTop: 70, color: "white" }}>
-          Login{" "}
+          Iniciar Sesión
         </Text>
         <Text style={{ ...styles.paragraph, color: "white" }}>
-          Login to continue to Volta{" "}
+          Inicia sesión para continuar a Volta{" "}
         </Text>
       </View>
 
@@ -92,40 +92,41 @@ export default function SignInScreen({
         <View style={styles.oauthView}>
           <OAuthButtons />
         </View>
+        <Text style={styles.label}>ESCRIBE TU EMAIL</Text>
         <View style={styles.inputView}>
           <TextInput
             autoCapitalize="none"
             value={emailAddress}
             style={styles.textInput}
             placeholder="Email..."
-            placeholderTextColor="#000"
+            placeholderTextColor="gray"
             onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
           />
         </View>
-
+        <Text style={styles.label}>TU CLAVE</Text>
         <View style={styles.inputView}>
           <TextInput
             value={password}
             style={styles.textInput}
-            placeholder="Password..."
-            placeholderTextColor="#000"
+            placeholder="Clave..."
+            placeholderTextColor="gray"
             secureTextEntry={true}
             onChangeText={(password) => setPassword(password)}
           />
         </View>
 
         <TouchableOpacity style={styles.primaryButton} onPress={onSignInPress}>
-          <Text style={styles.primaryButtonText}>Sign in</Text>
+          <Text style={styles.primaryButtonText}>Iniciar Sesión</Text>
         </TouchableOpacity>
 
         <View style={styles.footer}>
-          <Text>Don't have an account?</Text>
+          <Text>No tienes cuenta?</Text>
 
           <TouchableOpacity
             style={styles.secondaryButton}
             onPress={onSignUpPress}
           >
-            <Text style={styles.secondaryButtonText}>Sign up</Text>
+            <Text style={styles.secondaryButtonText}>Crear Nueva Cuenta</Text>
           </TouchableOpacity>
         </View>
       </View>

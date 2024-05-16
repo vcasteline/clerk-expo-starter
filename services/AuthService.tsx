@@ -13,11 +13,13 @@ export const logoutUser = async () => {
   }
 };
 export const registerUser = async (userData: {
-  // firstName: string;
-  // lastName: string;
+  // nombre: string;
+  // apellido: string;
   username: string;
-  email: string;
   password: string;
+  email: string;
+  // birthday: Date;
+  // telefono: string;
 }) => {
   try {
     const response = await axios.post(

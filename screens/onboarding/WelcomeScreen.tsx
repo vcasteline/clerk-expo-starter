@@ -7,19 +7,15 @@ import {
   Image,
   StyleSheet,
 } from "react-native";
-import { useSignUp } from "@clerk/clerk-expo";
-import { log } from "../logger";
-import { RootStackScreenProps } from "../types";
-import { styles } from "../components/Styles";
-import { OAuthButtons } from "../components/OAuth";
+import { RootStackScreenProps } from "../../types";
+import { styles } from "../../components/Styles";
+import { OAuthButtons } from "../../components/OAuth";
 
 export default function WelcomeScreen({
   navigation,
 }: RootStackScreenProps<"Welcome">) {
-  const { isLoaded, signUp } = useSignUp();
-
-  const onSignInPress = () => navigation.replace("SignIn");
-  const onSignUpPress = () => navigation.replace("SignUp");
+  const onSignInPress = () => navigation.navigate("SignIn");
+  const onSignUpPress = () => navigation.navigate("EnterName");
 
   const stylesHere = StyleSheet.create({
     container: {
@@ -41,9 +37,10 @@ export default function WelcomeScreen({
       marginLeft: 0,
     },
     inputs: {
-      borderRadius:30,
-      padding: 24,
-      paddingBottom:40,
+      borderRadius: 30,
+      padding: 26,
+      paddingTop: 30,
+      paddingBottom: 60,
       width: "100%",
       justifyContent: "space-between",
       backgroundColor: "#fff",
@@ -54,36 +51,47 @@ export default function WelcomeScreen({
     <View style={styles.container}>
       <View style={styles.logoSignUp}>
         <Image
-          style={{ width: 210, resizeMode: "contain", paddingBottom:0 }}
-          source={require("../assets/images/volta-logo-slogan.png")}
+          style={{ width: 190, resizeMode: "contain", paddingBottom: 0 }}
+          source={require("../../assets/images/volta-logo-slogan.png")}
         />
       </View>
       <View style={stylesHere.container}>
         <Image
           style={stylesHere.centeredImage}
-          source={require("../assets/images/woman-wheel.png")}
+          source={require("../../assets/images/woman-wheel.png")}
         />
         <Image
           style={stylesHere.rightImage}
-          source={require("../assets/images/wheel.png")}
+          source={require("../../assets/images/wheel.png")}
         />
       </View>
       <View style={stylesHere.inputs}>
-        <Text style={styles.titleText}>Let's Get Started </Text>
-        <Text style={styles.paragraph}>Sign in to your account or create a new one </Text>
+        <Text style={styles.titleText}>Empecemos</Text>
+        <Text style={styles.paragraph}>
+          Inicia sesión o crea una nueva cuenta{" "}
+        </Text>
 
         <TouchableOpacity style={styles.primaryButton} onPress={onSignUpPress}>
-          <Text style={styles.primaryButtonText}>Sign up</Text>
+          <Text style={styles.primaryButtonText}>Crear Nueva Cuenta</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.secondaryButton}
           onPress={onSignInPress}
         >
-          <Text style={styles.secondaryButtonText}>Sign in</Text>
+          <Text style={styles.secondaryButtonText}>Iniciar Sesión</Text>
         </TouchableOpacity>
-        <View style={styles.center}> 
-            <Text style={{...styles.paragraph, marginTop:15}}>-or-</Text>
+        <View style={styles.center}>
+          <Text style={{ ...styles.paragraph, marginTop: 15 }}></Text>
+          <View
+            style={{
+              ...styles.center,
+              borderBottomColor: "#CDCDCD",
+              borderBottomWidth: 1,
+              width: 200,
+              marginVertical: 10,
+            }}
+          ></View>
         </View>
         <View style={styles.center}>
           <OAuthButtons />
