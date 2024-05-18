@@ -19,8 +19,13 @@ export default function EnterNumberScreen({
 }: RootStackScreenProps<"EnterNumber">) {
   const { user, setUser } = React.useContext(UserContext);
   const phoneInput = React.useRef<PhoneInput>(null);
+  const [countryCode, setCountryCode] = React.useState(["+593"])
+  const [phoneNumber, setPhoneNumber] = React.useState("")
 
-  const onNextPress = () => navigation.navigate("SignUp");
+  const onNextPress = () => {
+    setUser({...user, number: '+' + countryCode + phoneNumber})
+    navigation.navigate("SignUp")
+  }
   const onBackPress = () => navigation.pop();
 
 
@@ -70,20 +75,21 @@ export default function EnterNumberScreen({
       </View>
 
       <View style={stylesHere.inputs}>
-        {/* <Text style={{...styles.subtitle, marginVertical: 20, marginLeft:10}}>¿Como te llamas?</Text> */}
         <Text style={styles.label}>NUMERO DE TELF</Text>
         {/* @ts-ignore */}
         <PhoneInput
             ref={phoneInput}
             defaultValue={user.number}
             defaultCode="EC"
+            onChangeCountry={(c)=> setCountryCode(c.callingCode)}
             layout="first"
             onChangeText={
-                (text) => setUser({ ...user, number: text })
+                (p) => setPhoneNumber(p)
             }
             withShadow
             autoFocus
           />
+       
         <TextInput></TextInput>
         <View style={{ ...styles.footer, marginTop: 0 }}>
           <TouchableOpacity style={styles.primaryButton} onPress={onNextPress}>

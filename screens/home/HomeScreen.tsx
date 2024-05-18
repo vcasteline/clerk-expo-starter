@@ -176,10 +176,10 @@ export default function HomeScreen({
 
           <Text style={stylesHere.boxContent}>
             {" "}
-            {!loading && user ? user.bookings.length : "Loading"}
+            {!loading && user ? user.bookings?.length : "Loading"}
           </Text>
           <Text style={stylesHere.boxContentBottom}>
-            {user?.bookings.length === 1 ? "Realizado" : "Realizados"}
+            {user?.bookings?.length === 1 ? "Realizado" : "Realizados"}
           </Text>
         </View>
         <View style={styles.box}>
