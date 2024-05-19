@@ -49,29 +49,11 @@ export default function MyProfileScreen({
       console.error("Error:> " + JSON.stringify(err));
     }
   };
-  const onSettingsPress = () => navigation.push("SettingsProfile");
-  const onRideHistoryPress = () => navigation.push("RideHistory");
+  const onSettingsPress = () => navigation.navigate("SettingsProfile");
+  const onRideHistoryPress = () => navigation.navigate("RideHistory");
   const onBuyRidesPress = () => navigation.navigate("BuyRides");
+  const onChangePasswordPress = () => navigation.navigate("ChangePassword")
 
-
-  // const handleSaveChanges = async () => {
-  //   try {
-  //     await user?.update({
-  //       firstName: firstName,
-  //       lastName: lastName,
-  //       // primaryEmailAddressId: email,
-  //       // primaryPhoneNumberId: phoneNumber,
-  //     });
-  //     // Éxito al actualizar el usuario
-  //   } catch (error) {
-  //     console.error("Error al actualizar el usuario:", error);
-  //   }
-  // };
-
-  const handleButtonPress = (buttonName: string) => {
-    console.log(`${buttonName} button pressed`);
-    // Agrega la lógica para cada botón aquí
-  };
   return (
     <View style={styles.containerInside}>
       {!loading && user ? (
@@ -87,10 +69,6 @@ export default function MyProfileScreen({
             </View>
           </View>
           <View style={stylesHere.containerHeading}>
-            {/* <Image
-              source={{ uri: user.profilePicture || "default_image_url" }}
-              style={stylesHere.profilePicture}
-            /> */}
             <View style={stylesHere.profileIcon}>
               <Ionicons name='happy-outline' size={30} />
             </View>
@@ -99,7 +77,7 @@ export default function MyProfileScreen({
               <Text style={stylesHere.userEmail}>{user.email}</Text>
             </View>
             <TouchableWithoutFeedback
-              onPress={() => navigation.push("SettingsProfile")}
+              onPress={onSettingsPress}
             >
               <Ionicons
                 name="settings-outline"
@@ -144,7 +122,7 @@ export default function MyProfileScreen({
 
               <TouchableOpacity
                 style={stylesHere.button}
-                onPress={() => handleButtonPress("Edit password")}
+                onPress={onChangePasswordPress}
               >
                 <View style={stylesHere.textAndIcon}>
                   <Ionicons name="lock-closed" size={24} color="#3D4AF5" />
@@ -214,11 +192,6 @@ const stylesHere = StyleSheet.create({
     width: 15,
     height: 15
   },
-  // iconContainer: {
-  //   backgroundColor: '#3D4AF5',
-  //   borderRadius: 10,
-  //   padding: 8
-  // },
   textAndIcon: {
     display: "flex",
     flexDirection: "row",
@@ -280,11 +253,6 @@ const stylesHere = StyleSheet.create({
     fontSize: 18,
     textAlign: "center",
   },
-  // container: {
-  //   flex: 1,
-  //   justifyContent: "center",
-  //   paddingHorizontal: 20,
-  // },
   button: {
     flexDirection: "row",
     alignItems: "center",

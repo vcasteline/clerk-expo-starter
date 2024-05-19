@@ -1,10 +1,15 @@
 import React from "react";
-import { Text, View, StyleSheet, ScrollView } from "react-native";
-import { useSignIn } from "@clerk/clerk-expo";
+import {
+  Text,
+  View,
+  StyleSheet,
+  ScrollView,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import ClassCard from "../../components/ClassCard";
-import InstructorCard from "../../components/InstructorCard";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function RideHistoryScreen({
   navigation,
@@ -23,18 +28,38 @@ export default function RideHistoryScreen({
     },
   });
   const instructorImage = require("../../assets/images/instructor-1.jpg");
-  
+  const onBackPress = () => navigation.popToTop();
+
   return (
     <View style={styles.containerInside}>
       <View style={styles.heading}>
-        <Text style={{ ...styles.titleText, color: "white" }}>Ride History</Text>
+        <TouchableWithoutFeedback onPress={onBackPress}>
+          <Ionicons name="chevron-back-outline" size={30} color={"white"} />
+        </TouchableWithoutFeedback>
       </View>
-        <View style={styles.centerToLeft}>
-            <Text style={styles.description}>Registro de tu historia en Volta.</Text>
-        </View>
+      <View
+        style={{
+          ...styles.flex,
+          flexDirection: "row",
+          justifyContent: "flex-start",
+          width: "100%",
+          marginLeft: 60,
+          marginTop: 10,
+        }}
+      >
+        <Text style={{ ...styles.titleText, color: "white" }}>
+          Historial de Rides
+        </Text>
+      </View>
+
+      <View style={styles.centerToLeft}>
+        <Text style={styles.description}>
+          Registro de tu historia en Volta.
+        </Text>
+      </View>
       <View style={stylesHere.dashboard}>
         <ScrollView>
-            <ClassCard
+          <ClassCard
             onPress={null}
             image={null}
             date="Feb 20"
@@ -42,8 +67,8 @@ export default function RideHistoryScreen({
             time="20:30"
             instructor="Valentina Casteline"
             spots={20}
-            />       
-         </ScrollView>
+          />
+        </ScrollView>
       </View>
 
       {/* fetch the instructors */}

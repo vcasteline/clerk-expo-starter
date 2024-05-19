@@ -47,6 +47,7 @@ export type RootStackParamList = {
     bookingData: Booking;
     userData?: User;
   };
+  ChangePassword: undefined;
 };
 export type RootTabParamList = {
   HomeStack: undefined;

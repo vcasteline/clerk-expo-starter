@@ -12,6 +12,28 @@ export const logoutUser = async () => {
     return false; // Indica fracaso
   }
 };
+
+export const changePassword = async (currentPassword: string, password: string, passwordConfirmation: string, token: string) => {
+  const passwordData = {
+    currentPassword,
+    password,
+    passwordConfirmation
+  };
+  try {
+    const response = await axios.post(
+      `${API_URL}/auth/change-password`,
+      passwordData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 export const registerUser = async (userData: {
   nombre: string;
   apellido: string;
@@ -43,6 +65,28 @@ export const loginUser = async (identifier: string, password: string) => {
       await AsyncStorage.setItem("userToken", jwt);
       return true;
     }
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const updateUser = async (
+  userData: {
+    nombre: string;
+    apellido: string;
+    email: string;
+    telefono: string;
+  },
+  userId: any,
+  token: string
+) => {
+  try {
+    const response = await axios.put(`${API_URL}/users/${userId}`, userData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
   } catch (err) {
     throw err;
   }
