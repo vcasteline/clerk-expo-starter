@@ -59,7 +59,7 @@ export default function ClassScreen({
         // Hacer la solicitud PUT para actualizar clasesDisponibles
         const response = await updateUserClases(userId, nuevasClasesDisponibles, token);
   
-        console.log("Clases disponibles actualizadas:", response);
+        console.log("Clases disponibles actualizadas:", response.clasesDisponibles);
         // Puedes realizar acciones adicionales después de la actualización exitosa
   
         // Actualizar el estado del booking a "Refunded"

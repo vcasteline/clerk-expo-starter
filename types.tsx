@@ -20,10 +20,19 @@ export type RootStackParamList = {
     convertedDate: any;
     rawDate: any;
     time: any;
+    timeFin: any;
     classId: number;
     className: string;
+    dia: string;
   };
-  Successful: undefined;
+  Successful: {
+    instructor: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    bicycleNumber: any;
+    dayOfWeek: string;
+  };
   BuyRides: undefined;
   Welcome: undefined;
   SignUp: undefined;

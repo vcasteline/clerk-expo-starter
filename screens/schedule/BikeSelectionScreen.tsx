@@ -10,8 +10,8 @@ import {
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import { Ionicons } from "@expo/vector-icons";
-import { Bicycle } from "../../interfaces";
-import { getClassBicycles, reserveBike, updateBookingStatus, updateUserClases } from "../../services/GlobalApi";
+import { Bicycle, Booking } from "../../interfaces";
+import { getBookings, getClassBicycles, getUserBookings, reserveBike, updateBookingStatus, updateUserClases } from "../../services/GlobalApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getMe } from "../../services/AuthService";
 
@@ -20,10 +20,11 @@ export default function BikeSelectionScreen({
   navigation,
   route,
 }: RootStackScreenProps<"BikeSelection">) {
-  const { instructor, convertedDate, rawDate, time, classId, className } = route.params;
+  const { instructor, convertedDate, rawDate, time, timeFin, classId, dia } = route.params;
   const [selectedBike, setSelectedBike] = useState(null);
   const [bikeId, setBikeId] = useState(null);
   const [bicycles, setBicycles] = useState<Bicycle[]>([]);
+  const [classBookings, setClassBookings] = useState<Booking[]>([]);
 
 
   useEffect(() => {
@@ -37,6 +38,17 @@ export default function BikeSelectionScreen({
       });
   }, [classId]);
 
+  useEffect(() => {
+    getBookings()
+      .then((response) => {
+        const bookings = response.data.data;
+        setClassBookings(bookings);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [classId]);
+
   const handleBikeSelect = (bikeNum: any, bikeIdentification: any) => {
     setSelectedBike(bikeNum);
     setBikeId(bikeIdentification);
@@ -44,19 +56,26 @@ export default function BikeSelectionScreen({
 
   const renderBikeButton = (bike: Bicycle) => {
     const isSelected = selectedBike === bike.attributes.bicycleNumber;
-    const isAvailable = !bike.attributes.isBooked;
+    if (classBookings) {
+      const isBikeBooked = classBookings.length > 0 && classBookings.some(
+        (booking) =>
+          booking.attributes.bicycle.data.attributes.bicycleNumber === bike.attributes.bicycleNumber &&
+          booking.attributes.class.data.id === classId &&
+          booking.attributes.bookingStatus === "completed"
+      );
+    
     const buttonStyle = [
       stylesHere.bikeButton,
       isSelected && stylesHere.selectedBikeButton,
-      !isAvailable && stylesHere.unavailableBikeButton,
+      isBikeBooked && stylesHere.unavailableBikeButton,
     ];
-
+  
     return (
       <TouchableOpacity
         key={bike.id}
         style={buttonStyle}
-        onPress={() => isAvailable && handleBikeSelect(bike.attributes.bicycleNumber, bike.id)}
-        disabled={!isAvailable}
+        onPress={() => !isBikeBooked && handleBikeSelect(bike.attributes.bicycleNumber, bike.id)}
+        disabled={false}
       >
         <Text style={isSelected && stylesHere.selectedBikeButtonText}>
           {bike.attributes.bicycleNumber}
@@ -64,9 +83,31 @@ export default function BikeSelectionScreen({
       </TouchableOpacity>
     );
   };
+
+    // Si classBookings no está definido, renderizar el botón sin la verificación de isBikeBooked
+  const buttonStyle = [
+    stylesHere.bikeButton,
+    isSelected && stylesHere.selectedBikeButton,
+  ];
+  
+  return (
+    <TouchableOpacity
+      key={bike.id}
+      style={buttonStyle}
+      onPress={() => handleBikeSelect(bike.attributes.bicycleNumber, bike.id)}
+    >
+      <Text style={isSelected && stylesHere.selectedBikeButtonText}>
+        {bike.attributes.bicycleNumber}
+      </Text>
+    </TouchableOpacity>
+  );
+}
+
+
+
   const onBackPress = () => navigation.popToTop();
   
-  const onBikeReservePress = async () => {
+  const onBikeReservePress = async (classBookings: any) => {
     try {
       const token = await AsyncStorage.getItem("userToken");
       if (token) {
@@ -76,6 +117,40 @@ export default function BikeSelectionScreen({
   
         // Verificar si el usuario tiene clases disponibles
         if (userData.clasesDisponibles > 0) {
+          // Obtener todas las reservas de la clase específica
+          // const classBookingsResponse = await getBookings();
+          // const classBookings = classBookingsResponse.data.data;
+  
+          // Verificar si la bicicleta seleccionada ya está reservada para la clase
+          const isBikeBooked = classBookings.length > 0 && classBookings.some(
+            (booking: any) =>
+            booking.attributes.bicycle.data.attributes.bicycleNumber === selectedBike &&
+            booking.attributes.class.data.id === classId &&
+            booking.attributes.bookingStatus === "completed"
+          );
+  
+          if (isBikeBooked) {
+            console.log("La bicicleta seleccionada ya está reservada para esta clase");
+            // Manejar el caso cuando la bicicleta ya está reservada
+            return;
+          }
+  
+          // Obtener todas las reservas del usuario
+          const userBookings = await getUserBookings(token, userData.id);
+  
+          // Verificar si el usuario ya ha reservado la misma clase anteriormente
+          const hasUserBookedClass = userBookings.length > 0 && userBookings.some(
+            (booking) => 
+            booking.attributes.class.data.id === classId &&
+            booking.attributes.bookingStatus === 'completed'
+          );
+  
+          if (hasUserBookedClass) {
+            console.log("Ya has reservado esta clase anteriormente");
+            // Manejar el caso cuando el usuario ya ha reservado la misma clase
+            return;
+          }
+  
           // Realizar el POST request para reservar la bicicleta
           const bookingResponse = await reserveBike({
             class: classId,
@@ -91,9 +166,15 @@ export default function BikeSelectionScreen({
           // Actualizar el estado del booking a "completed"
           await updateBookingStatus(bookingResponse.data.id, "completed", token);
   
-          navigation.navigate('Successful');
+          navigation.navigate('Successful', {
+            instructor: instructor.name,
+            date: convertedDate,
+            startTime: time,
+            endTime: timeFin,
+            bicycleNumber: bikeId,
+            dayOfWeek: dia
+          });
           console.log("Reserva exitosa");
-          // Realizar cualquier otra acción necesaria después de la reserva exitosa
         } else {
           console.log("No tienes clases disponibles");
           // Manejar el caso cuando el usuario no tiene clases disponibles

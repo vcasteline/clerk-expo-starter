@@ -203,8 +203,10 @@ export default function InstructorScreen({
                         convertedDate: convertedDate ? convertedDate : null,
                         rawDate: rawDate,
                         time: redondearHora(classItem.attributes.horaInicio),
+                        timeFin: redondearHora(classItem.attributes.horaFin),
                         classId: classItem.id,
-                        className:classItem.attributes.nombreClase
+                        className:classItem.attributes.nombreClase,
+                        dia: classItem.attributes.diaDeLaSemana
                       })}
                       date={convertedDate}
                       className={classItem.attributes.nombreClase}

@@ -95,7 +95,6 @@ export interface Bicycle {
   id: number;
   attributes: {
     bicycleNumber: number;
-    isBooked: boolean;
     room: Room;
   };
 }
@@ -105,7 +104,6 @@ export interface BicycleThroughBookings {
   id: number;
   attributes: {
     bicycleNumber: number;
-    isBooked: boolean;
     room: Room;
     };
   };  

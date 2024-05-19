@@ -1,19 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-  ScrollView,
-} from "react-native";
+import { Text, View, StyleSheet, Image, ScrollView } from "react-native";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import ClassCard from "../../components/ClassCard";
 import InstructorCard from "../../components/InstructorCard";
-import {
-  getInstructors,
-  getUserBookings,
-} from "../../services/GlobalApi";
+import { getInstructors, getUserBookings } from "../../services/GlobalApi";
 import { Ionicons } from "@expo/vector-icons";
 import { Instructor, User, Booking } from "../../interfaces";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -25,7 +16,6 @@ export default function HomeScreen({
   navigation,
   route,
 }: RootStackScreenProps<"Home">) {
-
   const onInstructorPress = (instructor: Instructor) => {
     navigation.navigate<"Instructor">("Instructor", {
       instructorData: instructor,
@@ -221,10 +211,18 @@ export default function HomeScreen({
 
             <Text style={stylesHere.boxContent}>
               {" "}
-              {!loading && userBookings ? userBookings.filter((booking: Booking) => booking.attributes.bookingStatus === "completed").length : "Loading"}
+              {!loading && userBookings
+                ? userBookings.filter(
+                    (booking: Booking) =>
+                      booking.attributes.bookingStatus === "completed"
+                  ).length
+                : "Loading"}
             </Text>
             <Text style={stylesHere.boxContentBottom}>
-              {user?.bookings?.length === 1 ? "Realizado" : "Realizados"}
+              {userBookings.filter(
+                    (booking: Booking) =>
+                      booking.attributes.bookingStatus === "completed"
+                  ).length === 1 ? "Realizado" : "Realizados"}
             </Text>
           </View>
           <View style={styles.box}>
@@ -249,61 +247,84 @@ export default function HomeScreen({
               <Text style={styles.titleText}>Próximos Rides</Text>
             </View>
             <View style={stylesHere.ridesSection}>
-  {userBookings.length === 0 ? (
-    <View>
-      <Text
-        style={{
-          ...styles.subtitle,
-          textAlign: "center",
-          marginTop: 40,
-          marginBottom: 10,
-          color: "#3D4AF5",
-          fontWeight: "400",
-        }}
-      >
-        No has reservado ningún ride, haz click en el horario para ver clases disponibles.
-      </Text>
-      <Ionicons
-        style={{ textAlign: "center", marginBottom: 40 }}
-        name="sad-outline"
-        color={"#3D4AF5"}
-        size={25}
-      />
-    </View>
-  ) : (
-    userBookings
-      .filter((booking: Booking) => booking.attributes.bookingStatus === "completed")
-      .map((booking: Booking) => {
-      const usuarioId = user?.id;
-      const clasesDisponibles = user?.clasesDisponibles;
-      const classData = booking?.attributes?.class?.data?.attributes;
-      const instructor = classData?.instructor?.data?.attributes;
-      const instructorImage = instructor?.fotoPerfil?.data?.attributes?.url;
-      const room = booking?.attributes?.class?.data?.attributes?.room?.data?.attributes?.roomNumber;
-      const bicycle = booking?.attributes?.bicycle?.data?.attributes?.bicycleNumber;
-      const convertedFecha = convertDate(booking?.attributes?.fechaHora);
-      const horaRedondeadaInicio = redondearHora(classData?.horaInicio);
-      const horaRedondeadaFin = redondearHora(classData?.horaFin);
-      return (
-        <ClassCard
-          key={booking.id}
-          onPress={() =>
-            navigation.navigate("Class", {
-              bookingData: booking,
-              userData: user,
-            })
-          }
-          image={null}
-          date={convertedFecha}
-          className={classData?.nombreClase || ""}
-          time={`${horaRedondeadaInicio} - ${horaRedondeadaFin}`}
-          instructor={instructor?.nombreCompleto || ""}
-          spots={null}
-        />
-      );
-    })
-  )}
-</View>
+              {userBookings.filter(
+                    (booking: Booking) =>
+                      booking.attributes.bookingStatus === "completed"
+                  ).length === 0 ? (
+                <View>
+                  <Text
+                    style={{
+                      ...styles.subtitle,
+                      textAlign: "center",
+                      marginTop: 40,
+                      marginBottom: 10,
+                      color: "#3D4AF5",
+                      fontWeight: "400",
+                    }}
+                  >
+                    No has reservado ningún ride, haz click en el horario para
+                    ver clases disponibles.
+                  </Text>
+                  <Ionicons
+                    style={{ textAlign: "center", marginBottom: 40 }}
+                    name="sad-outline"
+                    color={"#3D4AF5"}
+                    size={25}
+                  />
+                </View>
+              ) : (
+                userBookings
+                  .sort(
+                    (a, b) =>
+                      new Date(a.attributes.fechaHora).getTime() -
+                      new Date(b.attributes.fechaHora).getTime()
+                  )
+                  .filter(
+                    (booking: Booking) =>
+                      booking.attributes.bookingStatus === "completed"
+                  )
+                  .slice(0, 3)
+                  .map((booking: Booking) => {
+                    const usuarioId = user?.id;
+                    const clasesDisponibles = user?.clasesDisponibles;
+                    const classData =
+                      booking?.attributes?.class?.data?.attributes;
+                    const instructor = classData?.instructor?.data?.attributes;
+                    const instructorImage =
+                      instructor?.fotoPerfil?.data?.attributes?.url;
+                    const room =
+                      booking?.attributes?.class?.data?.attributes?.room?.data
+                        ?.attributes?.roomNumber;
+                    const bicycle =
+                      booking?.attributes?.bicycle?.data?.attributes
+                        ?.bicycleNumber;
+                    const convertedFecha = convertDate(
+                      booking?.attributes?.fechaHora
+                    );
+                    const horaRedondeadaInicio = redondearHora(
+                      classData?.horaInicio
+                    );
+                    const horaRedondeadaFin = redondearHora(classData?.horaFin);
+                    return (
+                      <ClassCard
+                        key={booking.id}
+                        onPress={() =>
+                          navigation.navigate("Class", {
+                            bookingData: booking,
+                            userData: user,
+                          })
+                        }
+                        image={null}
+                        date={convertedFecha}
+                        className={classData?.nombreClase || ""}
+                        time={`${horaRedondeadaInicio} - ${horaRedondeadaFin}`}
+                        instructor={instructor?.nombreCompleto || ""}
+                        spots={null}
+                      />
+                    );
+                  })
+              )}
+            </View>
           </View>
           <View style={stylesHere.instructors}>
             <View style={styles.spaceBet}>

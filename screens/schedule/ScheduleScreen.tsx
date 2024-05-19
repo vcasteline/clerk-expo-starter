@@ -191,8 +191,10 @@ export default function ScheduleScreen({
                     convertedDate: convertedDate ? convertedDate : null,
                     rawDate: rawDate,
                     time: redondearHora(classItem.attributes.horaInicio),
+                    timeFin: redondearHora(classItem.attributes.horaFin),
                     classId: classItem.id,
                     className: classItem.attributes.nombreClase,
+                    dia: classItem.attributes.diaDeLaSemana
                   })
                 }
                 image={{

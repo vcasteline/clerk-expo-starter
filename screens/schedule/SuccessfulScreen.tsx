@@ -3,23 +3,17 @@ import {
   Text,
   View,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
-  Image,
-  TouchableWithoutFeedback,
 } from "react-native";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
-import InstructorCard from "../../components/InstructorCard";
-import { getInstructors } from "../../services/GlobalApi";
-import { Instructor } from "../../interfaces";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function SuccessfulScreen({
   navigation,
   route,
 }: RootStackScreenProps<"Successful">) {
-  const [instructors, setInstructors] = useState<Instructor[]>([]); // Especifica el tipo de estado como Instructor[]
+  const { instructor, date, startTime, endTime, bicycleNumber, dayOfWeek } = route.params;
 
   const stylesHere = StyleSheet.create({
     tag: {
@@ -101,17 +95,6 @@ export default function SuccessfulScreen({
     },
   });
 
-  useEffect(() => {
-    getInstructors()
-      .then((response) => {
-        const instructorsData = response.data.data;
-        setInstructors(instructorsData);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
-
   const onSeeMorePress = () => navigation.popToTop();
   return (
     <View style={stylesHere.containerInside}>
@@ -127,7 +110,10 @@ export default function SuccessfulScreen({
           Clase Reservada
         </Text>
         <Text style={{ fontSize: 17, color: "white" }}>
-          Preparate para ride con Sofia
+        {`Preparate para ride con ${instructor.substring(
+                      0,
+                      instructor.indexOf(" ")
+                    )}`}
         </Text>
       </View>
       <View style={{alignItems:'flex-start', marginTop:30}}>
@@ -136,23 +122,23 @@ export default function SuccessfulScreen({
           <Text
             style={{ ...styles.paragraph, color: "white", fontWeight: "400" }}
           >
-            Wed, Feb 21
+            {dayOfWeek}, {date}
           </Text>
         </View>
         <View style={{ ...styles.center, alignItems: "center", marginTop: 10 }}>
           <Ionicons name="time" color={"#F6FD91"} size={24} />
           <Text style={{ ...styles.paragraph, color: "white", fontWeight: "400"  }}>
-            9:00AM - 10:00AM
+            {startTime} - {endTime}
           </Text>
         </View>
         <View style={{ ...styles.center, alignItems: "center", marginTop: 10 }}>
           <Ionicons name="bicycle" color={"#F6FD91"} size={24} />
-          <Text style={{ ...styles.paragraph, color: "white" , fontWeight: "400" }}>10</Text>
+          <Text style={{ ...styles.paragraph, color: "white" , fontWeight: "400" }}>{bicycleNumber}</Text>
         </View>
         <View style={{ ...styles.center, alignItems: "center", marginTop: 10 }}>
           <Ionicons name="person" color={"#F6FD91"} size={24} />
           <Text style={{ ...styles.paragraph, color: "white", fontWeight: "400"  }}>
-            Sofia Chang
+            {instructor}
           </Text>
         </View>
       </View>
