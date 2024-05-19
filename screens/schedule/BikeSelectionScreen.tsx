@@ -6,13 +6,12 @@ import {
   Image,
   StyleSheet,
   TouchableWithoutFeedback,
-  StatusBar
 } from "react-native";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import { Ionicons } from "@expo/vector-icons";
 import { Bicycle } from "../../interfaces";
-import { getBookings, getClassBicycles, reserveBike, updateUserClases } from "../../services/GlobalApi";
+import { getClassBicycles, reserveBike, updateBookingStatus, updateUserClases } from "../../services/GlobalApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getMe } from "../../services/AuthService";
 
@@ -26,16 +25,6 @@ export default function BikeSelectionScreen({
   const [bikeId, setBikeId] = useState(null);
   const [bicycles, setBicycles] = useState<Bicycle[]>([]);
 
-  // useEffect(() => {
-  //   getBookings()
-  //     .then((response) => {
-  //       const bookingData = response.data;
-  //       console.log(bookingData)
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //     });
-  //   }, []);
 
   useEffect(() => {
     getClassBicycles(classId)
@@ -81,33 +70,36 @@ export default function BikeSelectionScreen({
     try {
       const token = await AsyncStorage.getItem("userToken");
       if (token) {
-      const userData = await getMe(token);
-      const dateString = rawDate.toISOString().slice(0,11);
-      const fechaHora = `${dateString}${time}:00.000Z`;
-
-      // Verificar si el usuario tiene clases disponibles
-      if (userData.clasesDisponibles > 0) {
-
-        // Realizar el POST request para reservar la bicicleta
-        await reserveBike({
-          class: classId,
-          bicycle: bikeId,
-          bookingStatus: "completed",
-          user: userData.id,
-          fechaHora: fechaHora,
-        }, token);
+        const userData = await getMe(token);
+        const dateString = rawDate.toISOString().slice(0, 11);
+        const fechaHora = `${dateString}${time}:00.000Z`;
   
-        // Restar una clase disponible al usuario
-        await updateUserClases(userData.id, userData.clasesDisponibles - 1, token);
-        navigation.navigate('Successful');
-        console.log("Reserva exitosa");
-        // Realizar cualquier otra acción necesaria después de la reserva exitosa
-      } else {
-        console.log("No tienes clases disponibles");
-        // Manejar el caso cuando el usuario no tiene clases disponibles
-        navigation.navigate("BuyRides");
+        // Verificar si el usuario tiene clases disponibles
+        if (userData.clasesDisponibles > 0) {
+          // Realizar el POST request para reservar la bicicleta
+          const bookingResponse = await reserveBike({
+            class: classId,
+            bicycle: bikeId,
+            bookingStatus: "completed",
+            user: userData.id,
+            fechaHora: fechaHora,
+          }, token);
+  
+          // Restar una clase disponible al usuario
+          await updateUserClases(userData.id, userData.clasesDisponibles - 1, token);
+  
+          // Actualizar el estado del booking a "completed"
+          await updateBookingStatus(bookingResponse.data.id, "completed", token);
+  
+          navigation.navigate('Successful');
+          console.log("Reserva exitosa");
+          // Realizar cualquier otra acción necesaria después de la reserva exitosa
+        } else {
+          console.log("No tienes clases disponibles");
+          // Manejar el caso cuando el usuario no tiene clases disponibles
+          navigation.navigate("BuyRides");
+        }
       }
-    }
     } catch (error) {
       console.error("Error al reservar la bicicleta:", error);
       // Manejar el error de reserva

@@ -1,25 +1,78 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Text,
   View,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
   Image,
   TouchableWithoutFeedback,
 } from "react-native";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
-import InstructorCard from "../../components/InstructorCard";
-import { getInstructors } from "../../services/GlobalApi";
-import { Instructor } from "../../interfaces";
 import { Ionicons } from "@expo/vector-icons";
+import { updateBookingStatus, updateUserClases } from "../../services/GlobalApi";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ClassScreen({
   navigation,
   route,
 }: RootStackScreenProps<"Class">) {
-  const [instructors, setInstructors] = useState<Instructor[]>([]); // Especifica el tipo de estado como Instructor[]
+  const { bookingData, userData } = route.params;
+
+  const convertDate = (date: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      month: "short",
+      day: "numeric",
+    };
+    const formattedDate = new Date(date).toLocaleDateString("en-US", options);
+    return formattedDate;
+  };
+
+  function redondearHora(hora: string) {
+    const [horas, minutos] = hora.split(":");
+    const minutosRedondeados = Math.round(Number(minutos) / 5) * 5;
+    const nuevaHora = `${horas}:${minutosRedondeados
+      .toString()
+      .padStart(2, "0")}`;
+    return nuevaHora;
+  }
+  const usuarioId = userData?.id;
+  const clasesDisponibles = userData?.clasesDisponibles;
+  const classData = bookingData?.attributes?.class?.data?.attributes;
+  const instructor = classData?.instructor?.data?.attributes;
+  const instructorImage = instructor?.fotoPerfil?.data?.attributes?.url;
+  const room = bookingData?.attributes?.class?.data?.attributes?.room?.data?.attributes?.roomNumber;
+  const bicycle = bookingData?.attributes?.bicycle?.data?.attributes?.bicycleNumber;
+  const convertedFecha = convertDate(bookingData?.attributes?.fechaHora);
+  const horaRedondeadaInicio = redondearHora(classData?.horaInicio);
+  const horaRedondeadaFin = redondearHora(classData?.horaFin);
+
+  const handleCancelRide = async () => {
+    try {
+      const userId = usuarioId;
+      const token = await AsyncStorage.getItem("userToken");
+  
+      if (clasesDisponibles !== undefined && token) {
+        // Incrementar el valor de clasesDisponibles
+        const nuevasClasesDisponibles = clasesDisponibles + 1;
+  
+        // Hacer la solicitud PUT para actualizar clasesDisponibles
+        const response = await updateUserClases(userId, nuevasClasesDisponibles, token);
+  
+        console.log("Clases disponibles actualizadas:", response);
+        // Puedes realizar acciones adicionales después de la actualización exitosa
+  
+        // Actualizar el estado del booking a "Refunded"
+        await updateBookingStatus(bookingData.id, "refunded", token);
+  
+        // Navegar al HomeScreen después de cancelar el ride
+        navigation.navigate("Home");
+      }
+    } catch (error) {
+      console.error("Error al actualizar clases disponibles:", error);
+      // Manejar el error de forma adecuada
+    }
+  };
 
   const stylesHere = StyleSheet.create({
     tag: {
@@ -99,22 +152,6 @@ export default function ClassScreen({
     },
   });
 
-  useEffect(() => {
-    getInstructors()
-      .then((response) => {
-        const instructorsData = response.data.data;
-        setInstructors(instructorsData);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
-
-  const onInstructorPress = (instructor: Instructor) => {
-    navigation.navigate<"Instructor">("Instructor", {
-      instructorData: instructor,
-    });
-  };
   const onBackPress = () => navigation.popToTop();
   return (
     <View style={stylesHere.containerInside}>
@@ -125,25 +162,25 @@ export default function ClassScreen({
         {/* <Text style={{ ...styles.titleText }}>Clase</Text> */}
       </View>
       <View style={stylesHere.classHeading}>
-        <Text style={{...styles.subtitle, color:"black", marginBottom:4, fontWeight:"500"}}>Sofia Chang</Text>
+        <Text style={{...styles.subtitle, color:"black", marginBottom:4, fontWeight:"500"}}>{instructor.nombreCompleto}</Text>
         <Text style={{ ...styles.titleText, marginBottom: 6, color:"black" }}>
-          Rider Rythm
+          {classData.nombreClase}
         </Text>
         <View style={styles.flex}>
           <View style={stylesHere.tag}>
-            <Text style={styles.paragraph}>Flamenco</Text>
+            <Text style={styles.paragraph}>{instructor.estilo}</Text>
           </View>
-          <View style={stylesHere.tag}>
+          {/* <View style={stylesHere.tag}>
             <Text style={styles.paragraph}>Fast Paced</Text>
-          </View>
+          </View> */}
         </View>
        
       </View>
       <View style={{...styles.center, alignItems: 'center', width:'100%', gap:0}}>
           <Image
-            source={{
-              uri: "https://utfs.io/f/bf77a67e-af87-47f1-92c3-c129615e27c0-4nhplr.jpg",
-            }}
+          source={{
+            uri: `${process.env.EXPO_PUBLIC_IMG_URL}${instructorImage}`,
+          }}
             style={{...stylesHere.instructorImage, marginLeft:0}}
           />
           {/* <Text style={{fontSize:17, ...styles.half, marginLeft:10}}>All Set! Listo para ride con Sofia.</Text> */}
@@ -156,14 +193,14 @@ export default function ClassScreen({
                 <Ionicons name="calendar" color={"#F6FD91"} size={28} />
               </View>
               <Text style={stylesHere.boxContentBottom}>Fecha</Text>
-              <Text style={stylesHere.boxContentBottomTwo}>WED, FEB 21</Text>
+              <Text style={stylesHere.boxContentBottomTwo}>{classData.diaDeLaSemana} - {convertedFecha}</Text>
             </View>
             <View style={stylesHere.box}>
               <View style={styles.spaceBet}>
                 <Ionicons name="time" color={"#F6FD91"} size={28} />
               </View>
               <Text style={stylesHere.boxContentBottom}>Hora</Text>
-              <Text style={stylesHere.boxContentBottomTwo}>9:00AM-10:00AM</Text>
+              <Text style={stylesHere.boxContentBottomTwo}>{horaRedondeadaInicio} - {horaRedondeadaFin}</Text>
             </View>
           </View>
           <View style={{ ...styles.center, marginTop: 10 }}>
@@ -172,18 +209,19 @@ export default function ClassScreen({
                 <Ionicons name="bicycle" color={"#F6FD91"} size={28} />
               </View>
               <Text style={stylesHere.boxContentBottom}>Tu Bici</Text>
-              <Text style={stylesHere.boxContentBottomTwo}># 10</Text>
+              <Text style={stylesHere.boxContentBottomTwo}># {bicycle}</Text>
             </View>
             <View style={stylesHere.box}>
               <View style={styles.spaceBet}>
                 <Ionicons name="person" color={"#F6FD91"} size={28} />
               </View>
               <Text style={stylesHere.boxContentBottom}>Instructor</Text>
-              <Text style={stylesHere.boxContentBottomTwo}>Sofia Chang</Text>
+              <Text style={stylesHere.boxContentBottomTwo}>{instructor.nombreCompleto}</Text>
             </View>
           </View>
           <TouchableOpacity
             style={{ ...styles.primaryButton, backgroundColor: "#282828" }}
+            onPress={handleCancelRide}
           >
             <Text style={{...styles.paragraph, color:'white'}}> Cancelar Ride</Text>
           </TouchableOpacity>

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Booking } from "../interfaces";
 const API_URL = process.env.EXPO_PUBLIC_BASE_URL;
 
 const AxioInstance = axios.create({
@@ -56,6 +57,40 @@ export const updateUserClases = async (userId: any, clasesDisponibles: any, toke
         Authorization: `Bearer ${token}`,
       },
     });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getUserBookings = async (token: string, userId: number) => {
+  try {
+    const response = await axios.get(`${API_URL}/bookings?populate[class][populate][instructor][populate]=*&populate[bicycle][populate]=*&filters[user][id][$eq]=${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data.data as Booking[];
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateBookingStatus = async (bookingId: number, status: string, token: string) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/bookings/${bookingId}`,
+      {
+        data: {
+          bookingStatus: status,
+        },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     throw error;

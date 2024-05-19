@@ -18,11 +18,13 @@ export interface User {
 
 export interface Booking {
   id: number;
-  class: Class;
-  bicycle: Bicycle;
+  attributes: {
+  class: ClassThroughBookings;
+  bicycle: BicycleThroughBookings;
   bookingStatus: "refunded" | "completed";
   user: User;
-  fechaHora: Date;
+  fechaHora: string;
+  };
 }
 
 export interface Class {
@@ -48,6 +50,31 @@ export interface Class {
   };
 }
 
+export interface ClassThroughBookings {
+  data: {
+  id: number;
+  attributes: {
+    nombreClase: string;
+    horaInicio: string;
+    horaFin: string;
+    diaDeLaSemana:
+      | "Lunes"
+      | "Martes"
+      | "Miércoles"
+      | "Jueves"
+      | "Viernes"
+      | "Sábado"
+      | "Domingo";
+    instructor: {
+      data: Instructor;
+    };
+    room: {
+      data: Room;
+    };
+  };
+};
+}
+
 export interface Instructor {
   id: number;
   attributes: {
@@ -71,6 +98,17 @@ export interface Bicycle {
     isBooked: boolean;
     room: Room;
   };
+}
+
+export interface BicycleThroughBookings {
+  data: {
+  id: number;
+  attributes: {
+    bicycleNumber: number;
+    isBooked: boolean;
+    room: Room;
+    };
+  };  
 }
 
 export interface Room {

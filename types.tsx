@@ -1,5 +1,5 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Instructor } from "./interfaces";
+import { Instructor, Booking, User } from "./interfaces";
 
 // ...
 
@@ -43,7 +43,10 @@ export type RootStackParamList = {
   RideHistory: undefined;
   ProfileStack: undefined;
   VerifyCode: undefined;
-  Class: undefined;
+  Class: {
+    bookingData: Booking;
+    userData?: User;
+  };
 };
 export type RootTabParamList = {
   HomeStack: undefined;
