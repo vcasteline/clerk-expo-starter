@@ -99,7 +99,7 @@ export default function BikeSelectionScreen({
   
         // Restar una clase disponible al usuario
         await updateUserClases(userData.id, userData.clasesDisponibles - 1, token);
-  
+        navigation.navigate('Successful');
         console.log("Reserva exitosa");
         // Realizar cualquier otra acción necesaria después de la reserva exitosa
       } else {

@@ -1,12 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { RootTabParamList } from '../types';
-import ScheduleScreen from '../screens/schedule/ScheduleScreen';
-import MyProfileScreen from '../screens/profile/MyProfileScreen';
-import InstructorsScreen from '../screens/instructors/InstructorsScreen';
-import HomeScreen from '../screens/home/HomeScreen';
 import ScheduleStack from '../screens/ScheduleStack';
 import InstructorStack from '../screens/InstructorStack';
 import ProfileStack from '../screens/ProfileStack';
