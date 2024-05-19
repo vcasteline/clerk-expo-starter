@@ -31,7 +31,7 @@ export const reserveBike = async (bookingData: any, token: any) => {
     class: bookingData.class,
     bicycle: bookingData.bicycle,
     user: bookingData.user,
-    paymentStatus: bookingData.paymentStatus,
+    bookingStatus: bookingData.bookingStatus,
     fechaHora: bookingData.fechaHora
   };
 

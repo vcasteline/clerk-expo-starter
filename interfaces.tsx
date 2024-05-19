@@ -20,7 +20,7 @@ export interface Booking {
   id: number;
   class: Class;
   bicycle: Bicycle;
-  paymentStatus: "Pending" | "Paid" | "Cancelled";
+  bookingStatus: "refunded" | "completed";
   user: User;
   fechaHora: Date;
 }

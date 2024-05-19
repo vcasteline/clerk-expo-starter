@@ -92,7 +92,7 @@ export default function BikeSelectionScreen({
         await reserveBike({
           class: classId,
           bicycle: bikeId,
-          paymentStatus: "completed",
+          bookingStatus: "completed",
           user: userData.id,
           fechaHora: fechaHora,
         }, token);

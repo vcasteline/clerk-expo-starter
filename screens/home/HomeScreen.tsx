@@ -19,6 +19,7 @@ import { Instructor, User } from "../../interfaces";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getMe } from "../../services/AuthService";
 import SpinningLogo from "../../components/SpinningLogo";
+import { RefreshControl } from 'react-native';
 
 export default function HomeScreen({
   navigation,
@@ -45,6 +46,22 @@ export default function HomeScreen({
   const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+const onRefresh = async () => {
+  setRefreshing(true);
+  try {
+    const token = await AsyncStorage.getItem("userToken");
+    if (token) {
+      const userData = await getMe(token);
+      setUser(userData);
+    }
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  } finally {
+    setRefreshing(false);
+  }
+};
 
   useEffect(() => {
     getInstructors()
@@ -157,6 +174,9 @@ export default function HomeScreen({
       <SpinningLogo />
     </View>
   ) : (
+    <ScrollView refreshControl={
+      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+    } >
     <View style={stylesHere.containerInside}>
       <View style={stylesHere.heading}>
         <Image
@@ -235,24 +255,7 @@ export default function HomeScreen({
               instructor="Sofis Chang"
               spots={20}
             />
-            {/* <ClassCard
-              onPress={onClassPress}
-              image={null}
-              date="Feb 20"
-              className="Rider Rythm"
-              time="20:30"
-              instructor="Sofis Chang"
-              spots={20}
-            />
-            <ClassCard
-              onPress={onClassPress}
-              image={null}
-              date="Feb 20"
-              className="Rider Rythm"
-              time="20:30"
-              instructor="Sofis Chang"
-              spots={20}
-            /> */}
+            
           </View>
         </View>
         <View style={stylesHere.instructors}>
@@ -278,6 +281,7 @@ export default function HomeScreen({
           </ScrollView>
         </View>
       </View>
-    </View>
+      </View>
+      </ScrollView>
   );
 }
