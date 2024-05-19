@@ -268,15 +268,19 @@ export default function SettingsProfileScreen({
           </Text>
         )}
         {error && (
-          <Text style={{ ...styles.subtitle, color: "red" }}>
-            Hubo un error al intentar de cambiar tus datos, revisa que esten
-            correctos e inténtalo de nuevo
-          </Text>
+          <View style={styles.center}>
+            <Text style={{ ...styles.subtitle, color: "red" }}>
+              Hubo un error al intentar de cambiar tus datos, revisa que esten
+              correctos e inténtalo de nuevo
+            </Text>
+          </View>
         )}
         {success && (
-          <Text style={{ ...styles.paragraph, color: "green" }}>
-            Éxito! Tus datos fueron actualizados
-          </Text>
+          <View style={styles.center}>
+            <Text style={{ ...styles.paragraph, color: "green" }}>
+              Éxito! Tus datos fueron actualizados
+            </Text>
+          </View>
         )}
 
         <TouchableOpacity

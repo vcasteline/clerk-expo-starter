@@ -3,16 +3,12 @@ import {
   Text,
   View,
   StyleSheet,
-  ScrollView,
   TouchableWithoutFeedback,
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import { useSignIn } from "@clerk/clerk-expo";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
-import ClassCard from "../../components/ClassCard";
-import InstructorCard from "../../components/InstructorCard";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { changePassword, getMe } from "../../services/AuthService";
@@ -33,34 +29,23 @@ export default function ChangePasswordScreen({
       backgroundColor: "#fff",
     },
   });
-  const instructorImage = require("../../assets/images/instructor-1.jpg");
   const onBackPress = () => navigation.popToTop();
-  const [user, setUser] = useState(Object);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordConfirm, setNewPasswordConfirm] = useState("");
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const token = await AsyncStorage.getItem("userToken");
-        if (token) {
-          const userData = await getMe(token);
-          setUser(userData);
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-
-    fetchUserData();
-  }, []);
+  const [toggle, setToggle] = React.useState({
+    currentPass: true,
+    newPass: true,
+    confirmNewPass: true,
+  });
 
   const handleSaveChanges = async () => {
     try {
       setSuccess(false);
-      //   setError(false);
+      setError(false);
       const token = await AsyncStorage.getItem("userToken");
       if (token) {
         await changePassword(
@@ -73,7 +58,7 @@ export default function ChangePasswordScreen({
       setSuccess(true);
       // Éxito al actualizar el usuario
     } catch (error) {
-      //   setError(true);
+      setError(true);
       console.error("Error al actualizar el usuario:", error);
     }
   };
@@ -99,16 +84,17 @@ export default function ChangePasswordScreen({
           Cambiar Clave
         </Text>
       </View>
-
-      {/* <View style={styles.centerToLeft}>
-        <Text style={styles.description}>
-          Registro de tu historia en Volta.
-        </Text>
-      </View> */}
       <View style={stylesHere.dashboard}>
         <View>
           <Text style={styles.label}>CLAVE ACTUAL</Text>
-          <View style={styles.inputView}>
+          <View
+            style={{
+              ...styles.inputView,
+              ...styles.spaceBet,
+              alignItems: "center",
+              paddingRight: 20,
+            }}
+          >
             <TextInput
               autoCapitalize="none"
               value={currentPassword}
@@ -116,10 +102,25 @@ export default function ChangePasswordScreen({
               placeholder="Clave Actual..."
               placeholderTextColor="gray"
               onChangeText={(password) => setCurrentPassword(password)}
+              secureTextEntry={toggle.currentPass}
             />
+            <TouchableWithoutFeedback
+              onPress={() =>
+                setToggle({ ...toggle, currentPass: !toggle.currentPass })
+              }
+            >
+              <Ionicons name="eye" color={"#CDCDCD"} size={20} />
+            </TouchableWithoutFeedback>
           </View>
           <Text style={styles.label}>NUEVA CLAVE</Text>
-          <View style={styles.inputView}>
+          <View
+            style={{
+              ...styles.inputView,
+              ...styles.spaceBet,
+              alignItems: "center",
+              paddingRight: 20,
+            }}
+          >
             <TextInput
               autoCapitalize="none"
               value={newPassword}
@@ -127,10 +128,23 @@ export default function ChangePasswordScreen({
               placeholder="Nueva Clave..."
               placeholderTextColor="gray"
               onChangeText={(password) => setNewPassword(password)}
+              secureTextEntry={toggle.newPass}
             />
+            <TouchableWithoutFeedback
+              onPress={() => setToggle({ ...toggle, newPass: !toggle.newPass })}
+            >
+              <Ionicons name="eye" color={"#CDCDCD"} size={20} />
+            </TouchableWithoutFeedback>
           </View>
           <Text style={styles.label}>CONFIRMAR NUEVA CLAVE</Text>
-          <View style={styles.inputView}>
+          <View
+            style={{
+              ...styles.inputView,
+              ...styles.spaceBet,
+              alignItems: "center",
+              paddingRight: 20,
+            }}
+          >
             <TextInput
               autoCapitalize="none"
               value={newPasswordConfirm}
@@ -138,7 +152,15 @@ export default function ChangePasswordScreen({
               placeholder="Nueva Clave..."
               placeholderTextColor="gray"
               onChangeText={(password) => setNewPasswordConfirm(password)}
+              secureTextEntry={toggle.confirmNewPass}
             />
+            <TouchableWithoutFeedback
+              onPress={() =>
+                setToggle({ ...toggle, confirmNewPass: !toggle.confirmNewPass })
+              }
+            >
+              <Ionicons name="eye" color={"#CDCDCD"} size={20} />
+            </TouchableWithoutFeedback>
           </View>
           <TouchableOpacity
             style={styles.primaryButton}
@@ -152,6 +174,17 @@ export default function ChangePasswordScreen({
                 style={{ ...styles.subtitle, color: "green", marginTop: 20 }}
               >
                 Clave cambiada exitosamente!
+              </Text>
+            </View>
+          )}
+          {error && (
+            <View style={styles.center}>
+              <Text
+                style={{ ...styles.subtitle, color: "red", marginTop: 20 }}
+              >
+                Hubo un error al actualizar tu clave, 
+                revisa que estes escribiendo tu clave actual 
+                correctamente, y que las nuevas claves sean iguales 
               </Text>
             </View>
           )}
