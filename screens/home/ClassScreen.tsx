@@ -152,7 +152,7 @@ export default function ClassScreen({
     },
   });
 
-  const onBackPress = () => navigation.popToTop();
+  const onBackPress = () => navigation.pop();
   return (
     <View style={stylesHere.containerInside}>
       <View style={{ ...styles.heading, marginLeft: 20, marginBottom: 10 }}>

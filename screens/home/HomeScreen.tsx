@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet, Image, ScrollView } from "react-native";
+import { Text, View, StyleSheet, Image, ScrollView, TouchableWithoutFeedback } from "react-native";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import ClassCard from "../../components/ClassCard";
@@ -245,6 +245,9 @@ export default function HomeScreen({
           <View style={stylesHere.rides}>
             <View style={styles.spaceBet}>
               <Text style={styles.titleText}>Próximos Rides</Text>
+              <TouchableWithoutFeedback onPress={()=> navigation.navigate('NextRides', {user: user, bookings: userBookings})}>
+                 <Ionicons name="chevron-forward-outline" size={30} />
+              </TouchableWithoutFeedback>
             </View>
             <View style={stylesHere.ridesSection}>
               {userBookings.filter(
@@ -320,6 +323,7 @@ export default function HomeScreen({
                         time={`${horaRedondeadaInicio} - ${horaRedondeadaFin}`}
                         instructor={instructor?.nombreCompleto || ""}
                         spots={null}
+                        isPastClass={false}
                       />
                     );
                   })

@@ -103,9 +103,7 @@ export default function SuccessfulScreen({
            <Ionicons name={"checkmark-circle-outline"} size={60} color={"#F6FD91"} />
 
         </View>
-          {/* <Image style={{width:150, height:150}} source={require('../../assets/images/woman-wheel.png')}/> */}
-        {/* <Ionicons name={"bicycle-outline"} size={80} color={"#F6FD91"} /> */}
-
+         
         <Text style={{ ...styles.titleText, color: "white" }}>
           Clase Reservada
         </Text>

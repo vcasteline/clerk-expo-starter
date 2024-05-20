@@ -16,8 +16,6 @@ import { getClassesScheduleScreen } from "../../services/GlobalApi";
 import ClassCard from "../../components/ClassCard";
 import { Class } from "../../interfaces";
 
-
-
 export default function InstructorScreen({
   navigation,
   route,
@@ -53,14 +51,17 @@ export default function InstructorScreen({
     return dayOfWeek;
   };
 
-  const [convertedDate, setConvertedDate] = useState('');
-  const [rawDate, setRawDate] = useState('');
+  const [convertedDate, setConvertedDate] = useState("");
+  const [rawDate, setRawDate] = useState(Object);
   const [classes, setClasses] = useState<Class[]>([]);
   const [filteredClasses, setFilteredClasses] = useState<Class[]>([]);
-  
+
   const convertDate = (date: string) => {
-    const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
-    const formattedDate = new Date(date).toLocaleDateString('en-US', options);
+    const options: Intl.DateTimeFormatOptions = {
+      month: "short",
+      day: "numeric",
+    };
+    const formattedDate = new Date(date).toLocaleDateString("en-US", options);
     setConvertedDate(formattedDate);
   };
 
@@ -79,8 +80,16 @@ export default function InstructorScreen({
     getFilteredClasses(date, instructorData.attributes.nombreCompleto);
     convertDate(date);
     setRawDate(date);
-    }
+  };
 
+  function redondearHoraHelp(hora: string) {
+    const [horas, minutos, segundos, milisegundos] = hora.split(":");
+    const minutosRedondeados = Math.round(Number(minutos) / 5) * 5;
+    return {
+      horas: Number(horas),
+      minutos: minutosRedondeados,
+    };
+  }
   function redondearHora(hora: string) {
     const [horas, minutos] = hora.split(":");
     const minutosRedondeados = Math.round(Number(minutos) / 5) * 5;
@@ -93,17 +102,7 @@ export default function InstructorScreen({
         <TouchableWithoutFeedback onPress={onBackPress}>
           <Ionicons name="chevron-back-outline" size={30} color={"white"} />
         </TouchableWithoutFeedback>
-      
       </View>
-      {/* <View style={{...styles.centerToLeft, marginLeft:70, marginTop:20, marginBottom:0}}>
-      <Text style={{ ...styles.titleText, color: "white" }}>
-          {instructorData.attributes.nombreCompleto.substring(
-            0,
-            instructorData.attributes.nombreCompleto.indexOf(" ")
-          )}
-          's Profile
-        </Text>
-      </View> */}
       <View style={stylesHere.dashboard}>
         <View style={stylesHere.containerHere}>
           <View style={stylesHere.instructorInfo}>
@@ -122,10 +121,6 @@ export default function InstructorScreen({
               <Text style={stylesHere.instructorSpecialty}>
                 {instructorData.attributes.estilo}
               </Text>
-              <View style={stylesHere.ratingContainer}>
-                {/* <Text style={stylesHere.ratingText}>5+ years</Text> */}
-                {/* <Text style={stylesHere.ratingText}>4.8 ★</Text> */}
-              </View>
             </View>
           </View>
 
@@ -144,9 +139,7 @@ export default function InstructorScreen({
                 duration: 200,
                 highlightColor: "#F6FD91",
               }}
-              onDateSelected={(date) =>
-                getFilteredClassesAndDate(date)
-              }
+              onDateSelected={(date) => getFilteredClassesAndDate(date)}
               highlightDateNumberStyle={{ color: "black" }}
               highlightDateNameStyle={{ color: "black" }}
               calendarHeaderStyle={{
@@ -154,11 +147,6 @@ export default function InstructorScreen({
                 alignItems: "flex-start",
                 fontSize: 16,
               }}
-              // calendarHeaderContainerStyle={{
-              //   marginLeft: 1,
-              //   flexDirection: "row",
-              //   justifyContent: "flex-start",
-              // }}
               dateNumberStyle={{ color: "black" }}
               dateNameStyle={{ color: "black" }}
             />
@@ -188,34 +176,49 @@ export default function InstructorScreen({
                 </View>
               ) : (
                 filteredClasses.map((classItem) => {
+                  const classDate = new Date(rawDate);
+                  const { horas, minutos } = redondearHoraHelp(
+                    classItem.attributes.horaInicio
+                  );
 
+                  classDate.setHours(horas, minutos, 0, 0);
+
+                  const currentDate = new Date();
+
+                  const isPastClass = classDate < currentDate;
                   return (
                     <ClassCard
                       key={classItem.id}
-                      onPress={() => navigation.navigate("BikeSelection", {
-                        instructor: {
-                          name: classItem.attributes.instructor.data.attributes
-                            .nombreCompleto,
-                          image: process.env.EXPO_PUBLIC_IMG_URL +
-                            classItem.attributes.instructor.data.attributes
-                              .fotoPerfil.data.attributes.url,
-                        },
-                        convertedDate: convertedDate ? convertedDate : null,
-                        rawDate: rawDate,
-                        time: redondearHora(classItem.attributes.horaInicio),
-                        timeFin: redondearHora(classItem.attributes.horaFin),
-                        classId: classItem.id,
-                        className:classItem.attributes.nombreClase,
-                        dia: classItem.attributes.diaDeLaSemana
-                      })}
+                      onPress={() =>
+                        navigation.navigate("BikeSelection", {
+                          instructor: {
+                            name: classItem.attributes.instructor.data
+                              .attributes.nombreCompleto,
+                            image:
+                              process.env.EXPO_PUBLIC_IMG_URL +
+                              classItem.attributes.instructor.data.attributes
+                                .fotoPerfil.data.attributes.url,
+                          },
+                          convertedDate: convertedDate ? convertedDate : null,
+                          rawDate: rawDate.toISOString().slice(0, 11),
+                          time: redondearHora(classItem.attributes.horaInicio),
+                          timeFin: redondearHora(classItem.attributes.horaFin),
+                          classId: classItem.id,
+                          className: classItem.attributes.nombreClase,
+                          dia: classItem.attributes.diaDeLaSemana,
+                        })
+                      }
                       date={convertedDate}
                       className={classItem.attributes.nombreClase}
                       time={redondearHora(classItem.attributes.horaInicio)}
-                      instructor={classItem.attributes.instructor.data.attributes
-                        .nombreCompleto}
-                      spots={null} image={undefined}
-                                          />
-                     
+                      instructor={
+                        classItem.attributes.instructor.data.attributes
+                          .nombreCompleto
+                      }
+                      spots={null}
+                      image={undefined}
+                      isPastClass={isPastClass}
+                    />
                   );
                 })
               )}

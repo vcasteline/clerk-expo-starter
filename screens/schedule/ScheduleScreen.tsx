@@ -13,7 +13,6 @@ export default function ScheduleScreen({
   navigation,
   route,
 }: RootStackScreenProps<"Schedule">) {
-
   const stylesHere = StyleSheet.create({
     dashboard: {
       borderRadius: 30,
@@ -91,6 +90,14 @@ export default function ScheduleScreen({
       "0"
     )}`;
     return horaRedondeada;
+  }
+  function redondearHoraHelp(hora: string) {
+    const [horas, minutos, segundos, milisegundos] = hora.split(":");
+    const minutosRedondeados = Math.round(Number(minutos) / 5) * 5;
+    return {
+      horas: Number(horas),
+      minutos: minutosRedondeados,
+    };
   }
 
   return (
@@ -175,6 +182,16 @@ export default function ScheduleScreen({
               classItem.attributes.room.data.attributes.bicycles.data.length;
             const reservedBicycles = 0; // Aquí debes obtener el número de bicicletas reservadas para esa clase
             const availableSpots = totalBicycles - reservedBicycles;
+            const classDate = new Date(rawDate);
+            const { horas, minutos } = redondearHoraHelp(
+              classItem.attributes.horaInicio
+            );
+
+            classDate.setHours(horas, minutos, 0, 0);
+
+            const currentDate = new Date();
+
+            const isPastClass = classDate < currentDate;
             return (
               <ClassCard
                 key={classItem.id}
@@ -194,7 +211,7 @@ export default function ScheduleScreen({
                     timeFin: redondearHora(classItem.attributes.horaFin),
                     classId: classItem.id,
                     className: classItem.attributes.nombreClase,
-                    dia: classItem.attributes.diaDeLaSemana
+                    dia: classItem.attributes.diaDeLaSemana,
                   })
                 }
                 image={{
@@ -210,6 +227,7 @@ export default function ScheduleScreen({
                   classItem.attributes.instructor.data.attributes.nombreCompleto
                 }
                 spots={availableSpots}
+                isPastClass={isPastClass}
               />
             );
           })

@@ -11,6 +11,7 @@ interface ClassCardProps {
   spots: any;
   image: any;
   onPress: any;
+  isPastClass: any;
 }
 
 const ClassCard: React.FC<ClassCardProps> = ({
@@ -21,19 +22,28 @@ const ClassCard: React.FC<ClassCardProps> = ({
   time,
   instructor,
   spots,
+  isPastClass,
 }) => {
   const dateElements = date?.split(" ");
 
   return (
-    <TouchableOpacity onPress={onPress} style={stylesHere.container}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={stylesHere.container}
+      disabled={isPastClass}
+    >
       {image && (
         <View style={stylesHere.imageContainer}>
-          <Image style={styles.instructorImageClass} source={image} />
+          <Image
+            style={!isPastClass ? styles.instructorImageClass : { ...styles.instructorImageClass,  opacity: 0.4  }}
+            source={image}
+          />
+          
         </View>
       )}
 
       {date && (
-        <View style={stylesHere.dateContainer}>
+        <View style={ isPastClass? {...stylesHere.dateContainer, opacity:0.5 } : stylesHere.dateContainer}>
           <View style={{ alignItems: "center" }}>
             <Text style={stylesHere.dateText}>{dateElements[0]}</Text>
             <Text style={stylesHere.dateTextNumber}>{dateElements[1]}</Text>
@@ -41,14 +51,14 @@ const ClassCard: React.FC<ClassCardProps> = ({
         </View>
       )}
 
-      <View style={stylesHere.infoContainer}>
+      <View style={isPastClass? {...stylesHere.infoContainer, opacity: 0.5 } : stylesHere.infoContainer}>
         <Text style={stylesHere.className}>{className}</Text>
         <Text style={stylesHere.timeInstructor}>
           {time} · {instructor}
         </Text>
       </View>
 
-      {spots && (
+      {spots && !isPastClass && (
         <View style={stylesHere.spotsContainer}>
           <Ionicons name="bicycle" color={"black"} size={20} />
           <Text style={stylesHere.spotsText}>{spots}</Text>
@@ -65,10 +75,11 @@ const stylesHere = StyleSheet.create({
     borderRadius: 20,
     borderColor: "#CDCDCD",
     borderStyle: "solid",
-    borderWidth:1,
+    borderWidth: 1,
     padding: 10,
     marginBottom: 2,
   },
+  
   dateContainer: {
     backgroundColor: "#F6FD91",
     borderRadius: 20,

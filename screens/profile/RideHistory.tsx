@@ -67,6 +67,7 @@ export default function RideHistoryScreen({
             time="20:30"
             instructor="Valentina Casteline"
             spots={20}
+            isPastClass={null}
           />
         </ScrollView>
       </View>

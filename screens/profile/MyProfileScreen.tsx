@@ -266,7 +266,7 @@ const stylesHere = StyleSheet.create({
   },
   buttonText: {
     marginLeft: 10,
-    fontWeight: "bold",
+    fontWeight: "500",
     fontSize: 16,
     color: "black",
   },
