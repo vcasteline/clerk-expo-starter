@@ -1,5 +1,6 @@
 import * as React from "react";
 import {
+  Alert,
   StyleSheet,
   Text,
   TextInput,
@@ -70,11 +71,23 @@ export default function SettingsProfileScreen({
         );
         setUser(updatedUser);
       }
-      setSuccess(true);
-      // Éxito al actualizar el usuario
+      Alert.alert("Éxito", "Tus datos fueron actualizados", [
+        {
+          text: "Listo",
+          style: "default",
+        },
+      ]);
     } catch (error) {
-      setError(true);
-      console.error("Error al actualizar el usuario:", error);
+      Alert.alert(
+        "Hubo un error :(",
+        "Hubo un error al intentar de cambiar tus datos, revisa que esten correctos e inténtalo de nuevo",
+        [
+          {
+            text: "Listo",
+            style: "default",
+          },
+        ]
+      );
     }
   };
 
@@ -267,22 +280,6 @@ export default function SettingsProfileScreen({
             {user.telefono}
           </Text>
         )}
-        {error && (
-          <View style={styles.center}>
-            <Text style={{ ...styles.subtitle, color: "red" }}>
-              Hubo un error al intentar de cambiar tus datos, revisa que esten
-              correctos e inténtalo de nuevo
-            </Text>
-          </View>
-        )}
-        {success && (
-          <View style={styles.center}>
-            <Text style={{ ...styles.paragraph, color: "green" }}>
-              Éxito! Tus datos fueron actualizados
-            </Text>
-          </View>
-        )}
-
         <TouchableOpacity
           style={styles.primaryButton}
           onPress={handleSaveChanges}

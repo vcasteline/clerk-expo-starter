@@ -146,7 +146,7 @@ export default function HomeScreen({
       marginTop: 20,
       paddingBottom: 40,
       width: "100%",
-      height: 600,
+      height: '90%',
       justifyContent: "flex-start",
       backgroundColor: "#fff",
     },
@@ -283,7 +283,7 @@ export default function HomeScreen({
                     (booking: Booking) =>
                       booking.attributes.bookingStatus === "completed"
                   )
-                  .slice(0, 3)
+                  .slice(0, 2)
                   .map((booking: Booking) => {
                     const usuarioId = user?.id;
                     const clasesDisponibles = user?.clasesDisponibles;
@@ -330,7 +330,7 @@ export default function HomeScreen({
             <View style={styles.spaceBet}>
               <Text style={styles.titleText}>Instructores</Text>
             </View>
-            <ScrollView horizontal={true}>
+            <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
               {instructors.map((instructor) => {
                 return (
                   <InstructorCard

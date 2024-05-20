@@ -54,7 +54,7 @@ export default function ScheduleScreen({
   };
   const [hasClicked, setHasClicked] = useState(false);
   const [convertedDate, setConvertedDate] = useState("");
-  const [rawDate, setRawDate] = useState("");
+  const [rawDate, setRawDate] = useState(Object);
   const [classes, setClasses] = useState<Class[]>([]);
   const [filteredClasses, setFilteredClasses] = useState<Class[]>([]);
 
@@ -189,7 +189,7 @@ export default function ScheduleScreen({
                           .fotoPerfil.data.attributes.url,
                     },
                     convertedDate: convertedDate ? convertedDate : null,
-                    rawDate: rawDate,
+                    rawDate: rawDate.toISOString().slice(0, 11),
                     time: redondearHora(classItem.attributes.horaInicio),
                     timeFin: redondearHora(classItem.attributes.horaFin),
                     classId: classItem.id,

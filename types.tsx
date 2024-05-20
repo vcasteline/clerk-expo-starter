@@ -18,7 +18,7 @@ export type RootStackParamList = {
       image: string;
     };
     convertedDate: any;
-    rawDate: any;
+    rawDate: string;
     time: any;
     timeFin: any;
     classId: number;

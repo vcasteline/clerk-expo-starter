@@ -6,6 +6,7 @@ import {
   TouchableWithoutFeedback,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
@@ -33,8 +34,6 @@ export default function ChangePasswordScreen({
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordConfirm, setNewPasswordConfirm] = useState("");
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState(false);
 
   const [toggle, setToggle] = React.useState({
     currentPass: true,
@@ -44,8 +43,6 @@ export default function ChangePasswordScreen({
 
   const handleSaveChanges = async () => {
     try {
-      setSuccess(false);
-      setError(false);
       const token = await AsyncStorage.getItem("userToken");
       if (token) {
         await changePassword(
@@ -55,11 +52,24 @@ export default function ChangePasswordScreen({
           token
         );
       }
-      setSuccess(true);
+      Alert.alert("Éxito", "Tu clave fue actualizada", [
+        {
+          text: "Listo",
+          style: "default",
+        },
+      ]);
       // Éxito al actualizar el usuario
     } catch (error) {
-      setError(true);
-      console.error("Error al actualizar el usuario:", error);
+      Alert.alert(
+        "Hubo un error :(",
+        "Hubo un error al actualizar tu clave, revisa que estes escribiendo tu clave actual correctamente, y que las nuevas claves sean iguales",
+        [
+          {
+            text: "Listo",
+            style: "default",
+          },
+        ]
+      );
     }
   };
 
@@ -168,30 +178,9 @@ export default function ChangePasswordScreen({
           >
             <Text style={styles.primaryButtonText}>Guardar Cambios</Text>
           </TouchableOpacity>
-          {success && (
-            <View style={styles.center}>
-              <Text
-                style={{ ...styles.subtitle, color: "green", marginTop: 20 }}
-              >
-                Clave cambiada exitosamente!
-              </Text>
-            </View>
-          )}
-          {error && (
-            <View style={styles.center}>
-              <Text
-                style={{ ...styles.subtitle, color: "red", marginTop: 20 }}
-              >
-                Hubo un error al actualizar tu clave, 
-                revisa que estes escribiendo tu clave actual 
-                correctamente, y que las nuevas claves sean iguales 
-              </Text>
-            </View>
-          )}
         </View>
       </View>
 
-      {/* fetch the instructors */}
     </View>
   );
 }

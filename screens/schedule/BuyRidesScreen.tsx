@@ -154,7 +154,7 @@ export default function BuyRidesScreen({
             ))}
           </ScrollView>
         ) : (
-          <ScrollView>
+          <ScrollView showsVerticalScrollIndicator={false}> 
             <View style={stylesHere.containerSingle}>
               {singleRidePackages.map((ridePackage) => (
                 <TouchableOpacity

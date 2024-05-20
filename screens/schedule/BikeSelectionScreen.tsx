@@ -6,6 +6,7 @@ import {
   Image,
   StyleSheet,
   TouchableWithoutFeedback,
+  Alert,
 } from "react-native";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
@@ -112,15 +113,10 @@ export default function BikeSelectionScreen({
       const token = await AsyncStorage.getItem("userToken");
       if (token) {
         const userData = await getMe(token);
-        const dateString = rawDate.toISOString().slice(0, 11);
-        const fechaHora = `${dateString}${time}:00.000Z`;
+        const fechaHora = `${rawDate}${time}:00.000Z`;
   
         // Verificar si el usuario tiene clases disponibles
         if (userData.clasesDisponibles > 0) {
-          // Obtener todas las reservas de la clase específica
-          // const classBookingsResponse = await getBookings();
-          // const classBookings = classBookingsResponse.data.data;
-  
           // Verificar si la bicicleta seleccionada ya está reservada para la clase
           const isBikeBooked = classBookings.length > 0 && classBookings.some(
             (booking: any) =>
@@ -146,7 +142,16 @@ export default function BikeSelectionScreen({
           );
   
           if (hasUserBookedClass) {
-            console.log("Ya has reservado esta clase anteriormente");
+            Alert.alert(
+              "Ya tienes bici",
+              "Ya has reservado esta clase anteriormente",
+              [
+                {
+                  text: "Listo",
+                  style: "default",
+                },
+              ]
+            );
             // Manejar el caso cuando el usuario ya ha reservado la misma clase
             return;
           }
@@ -174,7 +179,6 @@ export default function BikeSelectionScreen({
             bicycleNumber: bikeId,
             dayOfWeek: dia
           });
-          console.log("Reserva exitosa");
         } else {
           console.log("No tienes clases disponibles");
           // Manejar el caso cuando el usuario no tiene clases disponibles

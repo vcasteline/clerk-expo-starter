@@ -101,7 +101,7 @@ export default function ClassScreen({
     containerInside: {
       flex: 1,
     //   backgroundColor: "#3D4AF5",
-    backgroundColor:"white",
+    backgroundColor:"#141414",
       alignItems: "flex-start",
       justifyContent: "flex-start",
       paddingTop: 75,
@@ -157,22 +157,19 @@ export default function ClassScreen({
     <View style={stylesHere.containerInside}>
       <View style={{ ...styles.heading, marginLeft: 20, marginBottom: 10 }}>
         <TouchableWithoutFeedback onPress={onBackPress}>
-          <Ionicons name="chevron-back-outline" size={30} color={"black"} />
+          <Ionicons name="chevron-back-outline" size={30} color={"white"} />
         </TouchableWithoutFeedback>
-        {/* <Text style={{ ...styles.titleText }}>Clase</Text> */}
       </View>
       <View style={stylesHere.classHeading}>
-        <Text style={{...styles.subtitle, color:"black", marginBottom:4, fontWeight:"500"}}>{instructor.nombreCompleto}</Text>
-        <Text style={{ ...styles.titleText, marginBottom: 6, color:"black" }}>
+        <Text style={{...styles.subtitle, color:"white", marginBottom:4, fontWeight:"500"}}>{instructor.nombreCompleto}</Text>
+        <Text style={{ ...styles.titleText, marginBottom: 6, color:"white" }}>
           {classData.nombreClase}
         </Text>
         <View style={styles.flex}>
           <View style={stylesHere.tag}>
             <Text style={styles.paragraph}>{instructor.estilo}</Text>
           </View>
-          {/* <View style={stylesHere.tag}>
-            <Text style={styles.paragraph}>Fast Paced</Text>
-          </View> */}
+ 
         </View>
        
       </View>

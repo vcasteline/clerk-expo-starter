@@ -17,8 +17,8 @@ export default function ScheduleStack({
       }}>
       <Stack.Screen name="Schedule" component={ScheduleScreen} />
       <Stack.Screen name="BikeSelection" component={BikeSelectionScreen} />
-      <Stack.Screen name="BuyRides" component={BuyRidesScreen}/>
-      <Stack.Screen name="Successful" component={SuccessfulScreen}/>
+      <Stack.Screen name="BuyRides" component={BuyRidesScreen} />
+      <Stack.Screen name="Successful" component={SuccessfulScreen} />
     </Stack.Navigator>
   );
 };
