@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
 import { useSignIn } from "@clerk/clerk-expo";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
@@ -21,7 +27,6 @@ export default function ScheduleScreen({
       paddingBottom: 40,
       width: "100%",
       height: 630,
-      justifyContent: "flex-start",
       backgroundColor: "#fff",
     },
   });
@@ -56,7 +61,22 @@ export default function ScheduleScreen({
   const [rawDate, setRawDate] = useState(Object);
   const [classes, setClasses] = useState<Class[]>([]);
   const [filteredClasses, setFilteredClasses] = useState<Class[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    getClassesScheduleScreen()
+      .then((response: { data: { data: any } }) => {
+        const allClasses = response.data.data;
+        setClasses(allClasses);
+      })
+      .catch((error: any) => {
+        console.error(error);
+      })
+      .finally(() => {
+        setRefreshing(false);
+      });
+  };
   const getFilteredClasses = (date: any) => {
     const diaSelecionado = getDayOfWeek(date);
     setHasClicked(true);
@@ -134,8 +154,12 @@ export default function ScheduleScreen({
           dateNameStyle={{ color: "white" }}
         />
       </View>
-
-      <View style={stylesHere.dashboard}>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        style={stylesHere.dashboard}
+      >
         {!hasClicked ? (
           <View>
             <Text
@@ -232,7 +256,7 @@ export default function ScheduleScreen({
             );
           })
         )}
-      </View>
+      </ScrollView>
     </View>
   );
 }

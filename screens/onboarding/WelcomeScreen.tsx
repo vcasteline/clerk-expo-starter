@@ -42,7 +42,7 @@ export default function WelcomeScreen({
       paddingTop: 30,
       paddingBottom: 60,
       width: "100%",
-      justifyContent: "space-between",
+      height: "100%",
       backgroundColor: "#fff",
     },
   });

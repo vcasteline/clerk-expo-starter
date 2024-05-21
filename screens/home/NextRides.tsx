@@ -24,7 +24,7 @@ export default function NextRidesScreen({
       marginTop: 30,
       paddingBottom: 40,
       width: "100%",
-      height: 630,
+      height: "100%",
       justifyContent: "flex-start", // Cambia "center" a "flex-start"
       backgroundColor: "#fff",
     },

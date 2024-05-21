@@ -13,9 +13,12 @@ import { UserContext } from "../utils/UserContext";
 import EnterNameScreen from "../screens/onboarding/EnterNameScreen";
 import EnterDOBScreen from "../screens/onboarding/EnterDOB";
 import EnterNumberScreen from "../screens/onboarding/EnterNumber";
+import { AuthContext } from "../utils/AuthContext";
 
 export default function Navigation() {
   const [isSignedIn, setIsSignedIn] = React.useState(false);
+  const [auth, setAuth] = React.useState({ isSignedIn: false });
+
   const [user, setUser] = React.useState({
     firstName: "",
     lastName: "",
@@ -29,20 +32,23 @@ export default function Navigation() {
     const checkUserSignedIn = async () => {
       try {
         const token = await AsyncStorage.getItem("userToken");
-        setIsSignedIn(!!token);
+        setAuth({ isSignedIn: !!token });
         SplashScreen.hideAsync();
       } catch (e) {
         console.log("Failed to load the token");
       }
     };
+  
     checkUserSignedIn();
   }, []);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
-      <NavigationContainer linking={LinkingConfiguration}>
-        <RootNavigator isSignedIn={isSignedIn} />
-      </NavigationContainer>
+      <AuthContext.Provider value={{ auth, setAuth }}>
+        <NavigationContainer linking={LinkingConfiguration}>
+          <RootNavigator isSignedIn={isSignedIn} />
+        </NavigationContainer>
+      </AuthContext.Provider>
     </UserContext.Provider>
   );
 }
@@ -53,22 +59,57 @@ interface RootNavigatorProps {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const RootNavigator: React.FC<RootNavigatorProps> = ({ isSignedIn }) => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    {isSignedIn ? (
-      <>
-        <Stack.Screen name="Main" component={MainScreen} options={{ title: "Main" }} />
-      </>
-    ) : (
-      <>
-        <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ title: "Welcome" }} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} options={{ title: "Sign Up" }} />
-        <Stack.Screen name="EnterName" component={EnterNameScreen} options={{ title: "Enter Name" }} />
-        <Stack.Screen name="EnterDOB" component={EnterDOBScreen} options={{ title: "Enter DOB" }} />
-        <Stack.Screen name="EnterNumber" component={EnterNumberScreen} options={{ title: "Enter Number" }} />
-        <Stack.Screen name="SignIn" component={SignInScreen} options={{ title: "Sign In" }} />
-        <Stack.Screen name="Main" component={MainScreen} options={{ title: "Main" }} />
-      </>
-    )}
-  </Stack.Navigator>
-);
+const RootNavigator: React.FC<RootNavigatorProps> = () => {
+  const { auth } = React.useContext(AuthContext);
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {auth.isSignedIn ? (
+        <>
+          <Stack.Screen
+            name="Main"
+            component={MainScreen}
+            options={{ title: "Main" }}
+          />
+        </>
+      ) : (
+        <>
+          <Stack.Screen
+            name="Welcome"
+            component={WelcomeScreen}
+            options={{ title: "Welcome" }}
+          />
+          <Stack.Screen
+            name="SignUp"
+            component={SignUpScreen}
+            options={{ title: "Sign Up" }}
+          />
+          <Stack.Screen
+            name="EnterName"
+            component={EnterNameScreen}
+            options={{ title: "Enter Name" }}
+          />
+          <Stack.Screen
+            name="EnterDOB"
+            component={EnterDOBScreen}
+            options={{ title: "Enter DOB" }}
+          />
+          <Stack.Screen
+            name="EnterNumber"
+            component={EnterNumberScreen}
+            options={{ title: "Enter Number" }}
+          />
+          <Stack.Screen
+            name="SignIn"
+            component={SignInScreen}
+            options={{ title: "Sign In" }}
+          />
+          <Stack.Screen
+            name="Main"
+            component={MainScreen}
+            options={{ title: "Main" }}
+          />
+        </>
+      )}
+    </Stack.Navigator>
+  );
+};

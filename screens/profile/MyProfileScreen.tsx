@@ -13,11 +13,13 @@ import { styles } from "../../components/Styles";
 import { Ionicons } from "@expo/vector-icons";
 import { logoutUser, getMe } from "../../services/AuthService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthContext } from "../../utils/AuthContext";
+import { UserContext } from "../../utils/UserContext";
 
 export default function MyProfileScreen({
   navigation,
 }: RootStackScreenProps<"MyProfile">) {
-  const [user, setUser] = useState(Object);
+  const [userHere, setUserHere] = useState(Object);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,7 +28,7 @@ export default function MyProfileScreen({
         const token = await AsyncStorage.getItem("userToken");
         if (token) {
           const userData = await getMe(token);
-          setUser(userData);
+          setUserHere(userData);
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -37,11 +39,25 @@ export default function MyProfileScreen({
 
     fetchUserData();
   }, []);
+  const { setAuth } = React.useContext(AuthContext);
+  const { setUser } = React.useContext(UserContext);
   const onSignOutPress = async () => {
     try {
       const success = await logoutUser();
       if (success) {
-        navigation.replace("SignIn");
+        setAuth({ isSignedIn: false });
+        setUser({
+          firstName: "",
+          lastName: "",
+          dateOfBirth: "",
+          number: "",
+          email: "",
+          password: "",
+        });
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "SignIn" }],
+        });
       } else {
         console.error("No se pudo cerrar sesión correctamente.");
       }
@@ -52,33 +68,33 @@ export default function MyProfileScreen({
   const onSettingsPress = () => navigation.navigate("SettingsProfile");
   const onRideHistoryPress = () => navigation.navigate("RideHistory");
   const onBuyRidesPress = () => navigation.navigate("BuyRides");
-  const onChangePasswordPress = () => navigation.navigate("ChangePassword")
+  const onChangePasswordPress = () => navigation.navigate("ChangePassword");
 
   return (
     <View style={styles.containerInside}>
-      {!loading && user ? (
+      {!loading && userHere ? (
         <>
-          <View style={{...styles.heading, justifyContent: 'space-between'}}>
+          <View style={{ ...styles.heading, justifyContent: "space-between" }}>
             <Text style={{ ...styles.titleText, color: "white" }}>Perfil</Text>
             <View style={stylesHere.smallBox}>
               <Image
                 style={stylesHere.iconImage}
                 source={require("../../assets/images/wheel-icon.png")}
               />
-              <Text style={{color: 'white'}}>{user ? user.clasesDisponibles: '...'}</Text>
+              <Text style={{ color: "white" }}>
+                {userHere ? userHere.clasesDisponibles : "..."}
+              </Text>
             </View>
           </View>
           <View style={stylesHere.containerHeading}>
             <View style={stylesHere.profileIcon}>
-              <Ionicons name='happy-outline' size={30} />
+              <Ionicons name="happy-outline" size={30} />
             </View>
             <View style={stylesHere.userInfo}>
-              <Text style={stylesHere.userName}>{user.username}</Text>
-              <Text style={stylesHere.userEmail}>{user.email}</Text>
+              <Text style={stylesHere.userName}>{userHere.username}</Text>
+              <Text style={stylesHere.userEmail}>{userHere.email}</Text>
             </View>
-            <TouchableWithoutFeedback
-              onPress={onSettingsPress}
-            >
+            <TouchableWithoutFeedback onPress={onSettingsPress}>
               <Ionicons
                 name="settings-outline"
                 size={24}
@@ -141,7 +157,7 @@ export default function MyProfileScreen({
               >
                 <View style={stylesHere.textAndIcon}>
                   <Ionicons name="log-out" size={24} color="#3D4AF5" />
-                  <Text style={stylesHere.buttonText}>Log Out</Text>
+                  <Text style={stylesHere.buttonText}>Cerrar Sesión</Text>
                 </View>
                 <Ionicons
                   name="chevron-forward-outline"
@@ -171,26 +187,26 @@ const stylesHere = StyleSheet.create({
   profileIcon: {
     width: 50,
     height: 50,
-    backgroundColor: '#F6FD91',
-    borderRadius:60,
+    backgroundColor: "#F6FD91",
+    borderRadius: 60,
     marginLeft: 10,
-    justifyContent:'center',
-    alignItems:'center'
+    justifyContent: "center",
+    alignItems: "center",
   },
   smallBox: {
     backgroundColor: "#141414",
     paddingHorizontal: 15,
     paddingVertical: 0,
     borderRadius: 10,
-    flexDirection:'row',
-    justifyContent: 'center',
-    alignItems:'center',
-    marginRight:60
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 60,
   },
   iconImage: {
     marginRight: 10,
     width: 15,
-    height: 15
+    height: 15,
   },
   textAndIcon: {
     display: "flex",
@@ -230,7 +246,7 @@ const stylesHere = StyleSheet.create({
     marginTop: 30,
     paddingBottom: 40,
     width: "100%",
-    height: 630,
+    height: "100%",
     justifyContent: "flex-start",
     backgroundColor: "#fff",
   },

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,66 +10,31 @@ import {
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import { Ionicons } from "@expo/vector-icons";
+import { getPurchaseRides } from "../../services/GlobalApi";
+import { PurchaseRides } from "../../interfaces";
 
 export default function BuyRidesScreen({
   navigation,
   route,
 }: RootStackScreenProps<"BuyRides">) {
   const [showPackages, setShowPackages] = useState(true);
-  const [selectedPackage, setSelectedPackage] = useState(Object);
-  const onBackPress = () => navigation.pop();
+  const [selectedPackage, setSelectedPackage] = useState<PurchaseRides>();
+  const [ridePackages, setRidePackages] = useState<PurchaseRides[]>([]);
 
-  const singleRidePackages = [
-    {
-      id: 1,
-      name: "1 Ride",
-      price: "$29.99",
-      duration: "30 Dias",
-    },
-    {
-      id: 2,
-      name: "5 Rides",
-      price: "$149.99",
-      duration: "45 Dias",
-    },
-    {
-      id: 3,
-      name: "10 Rides",
-      price: "$289.99",
-      duration: "90 Dias",
-      bestValue: true,
-    },
-    {
-      id: 4,
-      name: "20 Rides",
-      price: "$554.99",
-      duration: "270 Dias",
-    },
-  ];
-  const ridePackages = [
-    {
-      id: 1,
-      name: "25 Rides",
-      description: "Eleva Tu Físico",
-      price: "$449.99",
-      duration: "180 Dias",
-    },
-    {
-      id: 2,
-      name: "10 Rides",
-      description: "Eleva Con Volta",
-      price: "$249.99",
-      duration: "60 Dias",
-    },
-    {
-      id: 3,
-      name: "5 Rides",
-      description: "Elevate Your Fitness",
-      price: "$149.99",
-      duration: "60 Dias",
-    },
-    // Add more ride packages here
-  ];
+  const onBackPress = () => navigation.pop();
+  useEffect(() => {
+    getPurchaseRides()
+      .then((response) => {
+        const purchaseRideData = response.data.data;
+        setRidePackages(purchaseRideData);
+      })
+      .finally(() => {
+        //setLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
 
   return (
     <View style={stylesHere.container}>
@@ -127,87 +92,106 @@ export default function BuyRidesScreen({
             showsHorizontalScrollIndicator={false}
             style={stylesHere.carousel}
           >
-            {ridePackages.map((ridePackage) => (
-              <TouchableOpacity
-                key={ridePackage.id}
-                style={[
-                  stylesHere.packageButton,
-                  selectedPackage?.id === ridePackage.id &&
-                    stylesHere.selectedPackageButton,
-                ]}
-                onPress={() => setSelectedPackage(ridePackage)}
-              >
-                <View style={stylesHere.packageTextBox}>
-                  <Text style={stylesHere.packageName}>{ridePackage.name}</Text>
-                  <Text style={stylesHere.packageDescription}>
-                    {ridePackage.description}
-                  </Text>
-                  <Text style={stylesHere.packagePrice}>
-                    {ridePackage.price}
-                  </Text>
-                </View>
-
-                <Text style={stylesHere.packageExpiration}>
-                  Expira en {ridePackage.duration}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        ) : (
-          <ScrollView showsVerticalScrollIndicator={false}> 
-            <View style={stylesHere.containerSingle}>
-              {singleRidePackages.map((ridePackage) => (
+            {ridePackages
+              ?.filter(
+                (ridePackage: PurchaseRides) => ridePackage.attributes.esUnPack
+              )
+              .map((ridePackage: PurchaseRides) => (
                 <TouchableOpacity
                   key={ridePackage.id}
                   style={[
-                    stylesHere.item,
-                    ridePackage.bestValue && stylesHere.bestValue,
+                    stylesHere.packageButton,
                     selectedPackage?.id === ridePackage.id &&
                       stylesHere.selectedPackageButton,
                   ]}
                   onPress={() => setSelectedPackage(ridePackage)}
                 >
-                  <Text
-                    style={[
-                      stylesHere.rides,
-                      selectedPackage?.id === ridePackage.id &&
-                        stylesHere.whiteText,
-                    ]}
-                  >
-                    {ridePackage.name}
-                  </Text>
-                  <View style={{ flexDirection:'row', justifyContent: "flex-end", width:'100%' }}>
-                  <Text
-                    style={[
-                      stylesHere.price,
-                      selectedPackage?.id === ridePackage.id &&
-                        stylesHere.whiteText,
-                    ]}
-                  >
-                    {ridePackage.price}
-                  </Text>
+                  <View style={stylesHere.packageTextBox}>
+                    <Text style={stylesHere.packageName}>
+                      {ridePackage.attributes.numeroDeRides} Rides
+                    </Text>
+                    <Text style={stylesHere.packageDescription}>
+                      Eleva tu Físico
+                    </Text>
+                    <Text style={stylesHere.packagePrice}>
+                      ${ridePackage.attributes.precio}
+                    </Text>
                   </View>
-                  
-                  <Text
-                    style={[
-                      stylesHere.expiration,
-                      selectedPackage?.id === ridePackage.id &&
-                        stylesHere.whiteText,
-                    ]}
-                  >
-                    Expira en {ridePackage.duration}
+                  <Text style={stylesHere.packageExpiration}>
+                    Expira en 30 días
                   </Text>
-                  {ridePackage.bestValue && (
-                    <Text style={stylesHere.bestValueText}>Best Value</Text>
-                  )}
                 </TouchableOpacity>
               ))}
+          </ScrollView>
+        ) : (
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={stylesHere.containerSingle}>
+              {ridePackages
+                ?.filter(
+                  (ridePackage: PurchaseRides) =>
+                    !ridePackage.attributes.esUnPack
+                )
+                .map((ridePackage: any) => (
+                  <TouchableOpacity
+                    key={ridePackage.id}
+                    style={[
+                      stylesHere.item,
+                      ridePackage.bestValue && stylesHere.bestValue,
+                      selectedPackage?.id === ridePackage.id &&
+                        stylesHere.selectedPackageButton,
+                    ]}
+                    onPress={() => setSelectedPackage(ridePackage)}
+                  >
+                    <Text
+                      style={[
+                        stylesHere.rides,
+                        selectedPackage?.id === ridePackage.id &&
+                          stylesHere.whiteText,
+                      ]}
+                    >
+                      {ridePackage.attributes.numeroDeRides} Rides
+                    </Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "flex-end",
+                        width: "100%",
+                      }}
+                    >
+                      <Text
+                        style={[
+                          stylesHere.price,
+                          selectedPackage?.id === ridePackage.id &&
+                            stylesHere.whiteText,
+                        ]}
+                      >
+                        ${ridePackage.attributes.precio}
+                      </Text>
+                    </View>
+
+                    <Text
+                      style={[
+                        stylesHere.expiration,
+                        selectedPackage?.id === ridePackage.id &&
+                          stylesHere.whiteText,
+                      ]}
+                    >
+                      Expira en 60 días
+                    </Text>
+                    {ridePackage.bestValue && (
+                      <Text style={stylesHere.bestValueText}>Best Value</Text>
+                    )}
+                  </TouchableOpacity>
+                ))}
             </View>
           </ScrollView>
         )}
         <TouchableOpacity style={styles.primaryButton}>
           <Text style={stylesHere.buyButtonText}>
-            Comprar {selectedPackage ? selectedPackage.name : "Paquetes"}
+            Comprar{" "}
+            {selectedPackage
+              ? selectedPackage.attributes.numeroDeRides
+              : "Paquetes"}
           </Text>
         </TouchableOpacity>
       </View>
@@ -288,12 +272,13 @@ const stylesHere = StyleSheet.create({
     paddingHorizontal: 24,
   },
   dashboard: {
+    // flex:1,
     borderRadius: 30,
     padding: 18,
     marginTop: 10,
-    paddingBottom: 40,
+    paddingBottom: 90,
     width: "100%",
-    height: 515,
+    height: "74%",
     justifyContent: "flex-start",
     backgroundColor: "#fff",
   },
@@ -309,7 +294,7 @@ const stylesHere = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    marginBottom: 20,
+    marginBottom: 15,
   },
   button: {
     flex: 1,
@@ -331,7 +316,7 @@ const stylesHere = StyleSheet.create({
     color: "black",
   },
   carousel: {
-    marginBottom: 20,
+    marginBottom: 0,
   },
   packageButton: {
     width: 200,
@@ -339,7 +324,8 @@ const stylesHere = StyleSheet.create({
     backgroundColor: "#698ED5",
     borderRadius: 20,
     marginRight: 10,
-    flex: 1,
+    // flex: 1,
+    height: "100%",
     alignItems: "center",
     justifyContent: "center",
   },

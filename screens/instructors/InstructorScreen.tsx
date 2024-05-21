@@ -237,7 +237,7 @@ const stylesHere = StyleSheet.create({
     marginTop: 20,
     paddingBottom: 40,
     width: "100%",
-    height: 665,
+    height: "100%",
     justifyContent: "flex-start",
     backgroundColor: "#fff",
   },

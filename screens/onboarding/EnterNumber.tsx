@@ -19,21 +19,20 @@ export default function EnterNumberScreen({
 }: RootStackScreenProps<"EnterNumber">) {
   const { user, setUser } = React.useContext(UserContext);
   const phoneInput = React.useRef<PhoneInput>(null);
-  const [countryCode, setCountryCode] = React.useState(["+593"])
-  const [phoneNumber, setPhoneNumber] = React.useState("")
+  const [countryCode, setCountryCode] = React.useState(["+593"]);
+  const [phoneNumber, setPhoneNumber] = React.useState("");
 
   const onNextPress = () => {
-    setUser({...user, number: '+' + countryCode + phoneNumber})
-    navigation.navigate("SignUp")
-  }
+    setUser({ ...user, number: "+" + countryCode + phoneNumber });
+    navigation.navigate("SignUp");
+  };
   const onBackPress = () => navigation.pop();
-
 
   const stylesHere = StyleSheet.create({
     rightImage: {
       position: "absolute",
       top: -60,
-      left: 180,
+      left: "50%",
       width: 210,
       resizeMode: "contain",
     },
@@ -78,6 +77,25 @@ export default function EnterNumberScreen({
         <Text style={styles.label}>NUMERO DE TELF</Text>
         {/* @ts-ignore */}
         <PhoneInput
+          ref={phoneInput}
+          defaultValue={user.number}
+          defaultCode="EC"
+          onChangeCountry={(c) => setCountryCode(c.callingCode)}
+          layout="first"
+          onChangeText={(p) => setPhoneNumber(p)}
+          containerStyle={{ width: "100%" }}
+          textInputStyle={{ fontSize: 14 }}
+          textContainerStyle={{
+            borderRadius: 20,
+            borderWidth: 1,
+            borderColor: "#CDCDCD",
+            backgroundColor: "#FFF",
+            height: 50,
+          }}
+          codeTextStyle={{ fontWeight: "400", fontSize: 14 }}
+          placeholder="Número"
+        />
+        {/* <PhoneInput
             ref={phoneInput}
             defaultValue={user.number}
             defaultCode="EC"
@@ -88,8 +106,8 @@ export default function EnterNumberScreen({
             }
             withShadow
             autoFocus
-          />
-       
+          /> */}
+
         <TextInput></TextInput>
         <View style={{ ...styles.footer, marginTop: 0 }}>
           <TouchableOpacity style={styles.primaryButton} onPress={onNextPress}>

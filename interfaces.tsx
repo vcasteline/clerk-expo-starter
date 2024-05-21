@@ -19,11 +19,19 @@ export interface User {
 export interface Booking {
   id: number;
   attributes: {
-  class: ClassThroughBookings;
-  bicycle: BicycleThroughBookings;
-  bookingStatus: "refunded" | "completed";
-  user: User;
-  fechaHora: string;
+    class: ClassThroughBookings;
+    bicycle: BicycleThroughBookings;
+    bookingStatus: "refunded" | "completed";
+    user: User;
+    fechaHora: string;
+  };
+}
+export interface PurchaseRides {
+  id: number;
+  attributes: {
+    numeroDeRides: number;
+    precio: number;
+    esUnPack: boolean;
   };
 }
 
@@ -52,27 +60,27 @@ export interface Class {
 
 export interface ClassThroughBookings {
   data: {
-  id: number;
-  attributes: {
-    nombreClase: string;
-    horaInicio: string;
-    horaFin: string;
-    diaDeLaSemana:
-      | "Lunes"
-      | "Martes"
-      | "Miércoles"
-      | "Jueves"
-      | "Viernes"
-      | "Sábado"
-      | "Domingo";
-    instructor: {
-      data: Instructor;
-    };
-    room: {
-      data: Room;
+    id: number;
+    attributes: {
+      nombreClase: string;
+      horaInicio: string;
+      horaFin: string;
+      diaDeLaSemana:
+        | "Lunes"
+        | "Martes"
+        | "Miércoles"
+        | "Jueves"
+        | "Viernes"
+        | "Sábado"
+        | "Domingo";
+      instructor: {
+        data: Instructor;
+      };
+      room: {
+        data: Room;
+      };
     };
   };
-};
 }
 
 export interface Instructor {
@@ -101,20 +109,20 @@ export interface Bicycle {
 
 export interface BicycleThroughBookings {
   data: {
-  id: number;
-  attributes: {
-    bicycleNumber: number;
-    room: Room;
+    id: number;
+    attributes: {
+      bicycleNumber: number;
+      room: Room;
     };
-  };  
+  };
 }
 
 export interface Room {
-    id: number;
-    attributes: {
+  id: number;
+  attributes: {
     roomNumber: number;
     bicycles: {
-      data: Bicycle[]
+      data: Bicycle[];
     };
   };
 }
