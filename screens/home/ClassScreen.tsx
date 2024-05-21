@@ -6,11 +6,15 @@ import {
   TouchableOpacity,
   Image,
   TouchableWithoutFeedback,
+  Alert,
 } from "react-native";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import { Ionicons } from "@expo/vector-icons";
-import { updateBookingStatus, updateUserClases } from "../../services/GlobalApi";
+import {
+  updateBookingStatus,
+  updateUserClases,
+} from "../../services/GlobalApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ClassScreen({
@@ -41,8 +45,11 @@ export default function ClassScreen({
   const classData = bookingData?.attributes?.class?.data?.attributes;
   const instructor = classData?.instructor?.data?.attributes;
   const instructorImage = instructor?.fotoPerfil?.data?.attributes?.url;
-  const room = bookingData?.attributes?.class?.data?.attributes?.room?.data?.attributes?.roomNumber;
-  const bicycle = bookingData?.attributes?.bicycle?.data?.attributes?.bicycleNumber;
+  const room =
+    bookingData?.attributes?.class?.data?.attributes?.room?.data?.attributes
+      ?.roomNumber;
+  const bicycle =
+    bookingData?.attributes?.bicycle?.data?.attributes?.bicycleNumber;
   const convertedFecha = convertDate(bookingData?.attributes?.fechaHora);
   const horaRedondeadaInicio = redondearHora(classData?.horaInicio);
   const horaRedondeadaFin = redondearHora(classData?.horaFin);
@@ -51,20 +58,24 @@ export default function ClassScreen({
     try {
       const userId = usuarioId;
       const token = await AsyncStorage.getItem("userToken");
-  
+
       if (clasesDisponibles !== undefined && token) {
         // Incrementar el valor de clasesDisponibles
         const nuevasClasesDisponibles = clasesDisponibles + 1;
-  
+
         // Hacer la solicitud PUT para actualizar clasesDisponibles
-        const response = await updateUserClases(userId, nuevasClasesDisponibles, token);
-  
-        console.log("Clases disponibles actualizadas:", response.clasesDisponibles);
+        const response = await updateUserClases(
+          userId,
+          nuevasClasesDisponibles,
+          token
+        );
+
+        // console.log("Clases disponibles actualizadas:", response.clasesDisponibles);
         // Puedes realizar acciones adicionales después de la actualización exitosa
-  
+
         // Actualizar el estado del booking a "Refunded"
         await updateBookingStatus(bookingData.id, "refunded", token);
-  
+
         // Navegar al HomeScreen después de cancelar el ride
         navigation.navigate("Home");
       }
@@ -78,15 +89,15 @@ export default function ClassScreen({
     tag: {
       backgroundColor: "#F6FD91",
       borderRadius: 30,
-      borderColor:'black',
-      borderWidth:1,
+      borderColor: "black",
+      borderWidth: 1,
       height: 30,
       width: 100,
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
       marginTop: 0,
-      marginRight:3,
+      marginRight: 3,
     },
     dashboard: {
       borderRadius: 30,
@@ -100,8 +111,8 @@ export default function ClassScreen({
     },
     containerInside: {
       flex: 1,
-    //   backgroundColor: "#3D4AF5",
-    backgroundColor:"#141414",
+      //   backgroundColor: "#3D4AF5",
+      backgroundColor: "#141414",
       alignItems: "flex-start",
       justifyContent: "flex-start",
       paddingTop: 75,
@@ -142,8 +153,8 @@ export default function ClassScreen({
       width: 300,
       height: 154,
       borderRadius: 10,
-      borderColor:'black',
-      borderWidth:2,
+      borderColor: "black",
+      borderWidth: 2,
       marginBottom: 16,
       marginTop: 16,
     },
@@ -161,27 +172,41 @@ export default function ClassScreen({
         </TouchableWithoutFeedback>
       </View>
       <View style={stylesHere.classHeading}>
-        <Text style={{...styles.subtitle, color:"white", marginBottom:4, fontWeight:"500"}}>{instructor.nombreCompleto}</Text>
-        <Text style={{ ...styles.titleText, marginBottom: 6, color:"white" }}>
+        <Text
+          style={{
+            ...styles.subtitle,
+            color: "white",
+            marginBottom: 4,
+            fontWeight: "500",
+          }}
+        >
+          {instructor.nombreCompleto}
+        </Text>
+        <Text style={{ ...styles.titleText, marginBottom: 6, color: "white" }}>
           {classData.nombreClase}
         </Text>
         <View style={styles.flex}>
           <View style={stylesHere.tag}>
             <Text style={styles.paragraph}>{instructor.estilo}</Text>
           </View>
- 
         </View>
-       
       </View>
-      <View style={{...styles.center, alignItems: 'center', width:'100%', gap:0}}>
-          <Image
+      <View
+        style={{
+          ...styles.center,
+          alignItems: "center",
+          width: "100%",
+          gap: 0,
+        }}
+      >
+        <Image
           source={{
             uri: `${process.env.EXPO_PUBLIC_IMG_URL}${instructorImage}`,
           }}
-            style={{...stylesHere.instructorImage, marginLeft:0}}
-          />
-          {/* <Text style={{fontSize:17, ...styles.half, marginLeft:10}}>All Set! Listo para ride con Sofia.</Text> */}
-        </View>
+          style={{ ...stylesHere.instructorImage, marginLeft: 0 }}
+        />
+        {/* <Text style={{fontSize:17, ...styles.half, marginLeft:10}}>All Set! Listo para ride con Sofia.</Text> */}
+      </View>
       <View style={stylesHere.dashboard}>
         <View>
           <View style={styles.center}>
@@ -190,14 +215,18 @@ export default function ClassScreen({
                 <Ionicons name="calendar" color={"#F6FD91"} size={28} />
               </View>
               <Text style={stylesHere.boxContentBottom}>Fecha</Text>
-              <Text style={stylesHere.boxContentBottomTwo}>{classData.diaDeLaSemana} - {convertedFecha}</Text>
+              <Text style={stylesHere.boxContentBottomTwo}>
+                {classData.diaDeLaSemana} - {convertedFecha}
+              </Text>
             </View>
             <View style={stylesHere.box}>
               <View style={styles.spaceBet}>
                 <Ionicons name="time" color={"#F6FD91"} size={28} />
               </View>
               <Text style={stylesHere.boxContentBottom}>Hora</Text>
-              <Text style={stylesHere.boxContentBottomTwo}>{horaRedondeadaInicio} - {horaRedondeadaFin}</Text>
+              <Text style={stylesHere.boxContentBottomTwo}>
+                {horaRedondeadaInicio} - {horaRedondeadaFin}
+              </Text>
             </View>
           </View>
           <View style={{ ...styles.center, marginTop: 10 }}>
@@ -213,14 +242,33 @@ export default function ClassScreen({
                 <Ionicons name="person" color={"#F6FD91"} size={28} />
               </View>
               <Text style={stylesHere.boxContentBottom}>Instructor</Text>
-              <Text style={stylesHere.boxContentBottomTwo}>{instructor.nombreCompleto}</Text>
+              <Text style={stylesHere.boxContentBottomTwo}>
+                {instructor.nombreCompleto}
+              </Text>
             </View>
           </View>
           <TouchableOpacity
             style={{ ...styles.primaryButton, backgroundColor: "#282828" }}
-            onPress={handleCancelRide}
+            onPress={() =>
+              Alert.alert("¿Estás seguro?", "Ya no tendrás un puesto en esta clase, y se te devolverá el credito a tu cuenta.", [
+                
+                {
+                  text: "Sí, cancelar",
+                  style: "default",
+                  onPress: handleCancelRide
+                },
+                {
+                  text: "No",
+                  style: "cancel",
+                  
+                },
+              ])
+            }
           >
-            <Text style={{...styles.paragraph, color:'white'}}> Cancelar Ride</Text>
+            <Text style={{ ...styles.paragraph, color: "white" }}>
+              {" "}
+              Cancelar Ride
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

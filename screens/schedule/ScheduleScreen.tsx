@@ -23,7 +23,7 @@ export default function ScheduleScreen({
     dashboard: {
       borderRadius: 30,
       padding: 18,
-      marginTop: 30,
+      marginTop: 0,
       paddingBottom: 40,
       width: "100%",
       height: 630,
@@ -127,6 +127,8 @@ export default function ScheduleScreen({
       </View>
       <View style={{ width: "100%" }}>
         <CalendarStrip
+          leftSelector={[]}
+          rightSelector={[]}
           numDaysInWeek={7}
           style={{ height: 100, paddingTop: 6, paddingBottom: 0 }}
           daySelectionAnimation={{
@@ -144,8 +146,11 @@ export default function ScheduleScreen({
             fontSize: 14,
             fontWeight: "400",
           }}
+          innerStyle={{
+            paddingHorizontal: 20,
+          }}
           calendarHeaderContainerStyle={{
-            marginLeft: 31,
+            marginLeft: 11,
             marginBottom: 15,
             flexDirection: "row",
             justifyContent: "flex-start",

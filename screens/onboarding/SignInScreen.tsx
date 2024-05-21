@@ -6,6 +6,7 @@ import {
   View,
   StyleSheet,
   Image,
+  Alert,
 } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -22,17 +23,26 @@ export default function SignInScreen({
 }: RootStackScreenProps<"SignIn">) {
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
+  const [hideGoogle, setHideGoogle] = useState(false);
 
   const onSignInPress = async () => {
     try {
       const success = await loginUser(emailAddress, password);
       if (success) {
-        navigation.replace('Main'); 
+        navigation.replace("Main");
       } else {
         console.error("No se pudo cerrar sesión correctamente.");
       }
     } catch (err) {
-      console.error("Error:> " + JSON.stringify(err));
+      Alert.alert("Hubo un error", "Tu email o tu clave estan incorrectos.", [
+                
+        {
+          text: "Listo",
+          style: "default",
+        },
+
+      ])
+      //console.error("Error:> " + JSON.stringify(err));
     }
   };
 

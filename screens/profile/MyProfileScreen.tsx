@@ -15,6 +15,7 @@ import { logoutUser, getMe } from "../../services/AuthService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "../../utils/AuthContext";
 import { UserContext } from "../../utils/UserContext";
+import SpinningLogo from "../../components/SpinningLogo";
 
 export default function MyProfileScreen({
   navigation,
@@ -70,7 +71,11 @@ export default function MyProfileScreen({
   const onBuyRidesPress = () => navigation.navigate("BuyRides");
   const onChangePasswordPress = () => navigation.navigate("ChangePassword");
 
-  return (
+  return loading ? (
+    <View style={styles.loadingScreen}>
+      <SpinningLogo />
+    </View>
+  ) : (
     <View style={styles.containerInside}>
       {!loading && userHere ? (
         <>

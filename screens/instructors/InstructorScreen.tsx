@@ -132,6 +132,8 @@ export default function InstructorScreen({
           <Text style={stylesHere.sectionTitle}>Próximas Classes</Text>
           <View style={{ width: "100%", marginTop: 8 }}>
             <CalendarStrip
+              leftSelector={[]}
+              rightSelector={[]}
               numDaysInWeek={7}
               style={{ height: 100, paddingTop: 6, paddingBottom: 0 }}
               daySelectionAnimation={{
