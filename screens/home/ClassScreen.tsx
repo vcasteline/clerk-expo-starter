@@ -55,33 +55,64 @@ export default function ClassScreen({
   const horaRedondeadaFin = redondearHora(classData?.horaFin);
 
   const handleCancelRide = async () => {
-    try {
-      const userId = usuarioId;
-      const token = await AsyncStorage.getItem("userToken");
+    const currentDate = new Date();
+    const classDate = new Date(bookingData?.attributes?.fechaHora);
 
-      if (clasesDisponibles !== undefined && token) {
-        // Incrementar el valor de clasesDisponibles
-        const nuevasClasesDisponibles = clasesDisponibles + 1;
+    // Calcula la diferencia en milisegundos entre la fecha actual y la fecha de la clase
+    const timeDifference = classDate.getTime() - currentDate.getTime();
 
-        // Hacer la solicitud PUT para actualizar clasesDisponibles
-        const response = await updateUserClases(
-          userId,
-          nuevasClasesDisponibles,
-          token
-        );
+    // Convierte la diferencia a horas
+    const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
 
-        // console.log("Clases disponibles actualizadas:", response.clasesDisponibles);
-        // Puedes realizar acciones adicionales después de la actualización exitosa
+    if (hoursDifference <= 12) {
+      // Si la diferencia es menor o igual a 12 horas, muestra el mensaje de alerta
+      Alert.alert(
+        "Oops!",
+        "Ya estamos dentro del periodo de no-cancelación. Cancela tus clases con más de 12 horas de anticipación la próxima vez."
+      );
+    } else {
+      // Si la diferencia es mayor a 12 horas, muestra el alert de confirmación de cancelación
+      Alert.alert(
+        "¿Estás seguro?",
+        "Ya no tendrás un puesto en esta clase, y se te devolverá el credito a tu cuenta.",
+        [
+          {
+            text: "Sí, cancelar",
+            style: "default",
+            onPress: async () => {
+              try {
+                const userId = usuarioId;
+                const token = await AsyncStorage.getItem("userToken");
 
-        // Actualizar el estado del booking a "Refunded"
-        await updateBookingStatus(bookingData.id, "refunded", token);
+                if (clasesDisponibles !== undefined && token) {
+                  // Incrementar el valor de clasesDisponibles
+                  const nuevasClasesDisponibles = clasesDisponibles + 1;
 
-        // Navegar al HomeScreen después de cancelar el ride
-        navigation.navigate("Home");
-      }
-    } catch (error) {
-      console.error("Error al actualizar clases disponibles:", error);
-      // Manejar el error de forma adecuada
+                  // Hacer la solicitud PUT para actualizar clasesDisponibles
+                  const response = await updateUserClases(
+                    userId,
+                    nuevasClasesDisponibles,
+                    token
+                  );
+
+                  // Actualizar el estado del booking a "Refunded"
+                  await updateBookingStatus(bookingData.id, "refunded", token);
+
+                  // Navegar al HomeScreen después de cancelar el ride
+                  navigation.navigate("Home");
+                }
+              } catch (error) {
+                console.error("Error al actualizar clases disponibles:", error);
+                // Manejar el error de forma adecuada
+              }
+            },
+          },
+          {
+            text: "No",
+            style: "cancel",
+          },
+        ]
+      );
     }
   };
 
@@ -249,21 +280,7 @@ export default function ClassScreen({
           </View>
           <TouchableOpacity
             style={{ ...styles.primaryButton, backgroundColor: "#282828" }}
-            onPress={() =>
-              Alert.alert("¿Estás seguro?", "Ya no tendrás un puesto en esta clase, y se te devolverá el credito a tu cuenta.", [
-                
-                {
-                  text: "Sí, cancelar",
-                  style: "default",
-                  onPress: handleCancelRide
-                },
-                {
-                  text: "No",
-                  style: "cancel",
-                  
-                },
-              ])
-            }
+            onPress={handleCancelRide}
           >
             <Text style={{ ...styles.paragraph, color: "white" }}>
               {" "}
