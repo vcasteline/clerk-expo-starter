@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -10,11 +10,16 @@ import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import ClassCard from "../../components/ClassCard";
 import { Ionicons } from "@expo/vector-icons";
+import { User } from "../../interfaces";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getMe } from "../../services/AuthService";
 
 export default function RideHistoryScreen({
   navigation,
   route,
 }: RootStackScreenProps<"RideHistory">) {
+  const [user, setUser] = useState<User>();
+
   const stylesHere = StyleSheet.create({
     dashboard: {
       borderRadius: 30,
@@ -27,8 +32,51 @@ export default function RideHistoryScreen({
       backgroundColor: "#fff",
     },
   });
-  const instructorImage = require("../../assets/images/instructor-1.jpg");
   const onBackPress = () => navigation.popToTop();
+
+  const convertDate = (date: string) => {
+    const options: Intl.DateTimeFormatOptions = {
+      month: "short",
+      day: "numeric",
+    };
+
+    // Verifica si la fecha es válida
+    const parsedDate = Date.parse(date);
+    if (!isNaN(parsedDate)) {
+      // Si la fecha es válida, formatéala
+      const formattedDate = new Date(date).toLocaleDateString("en-US", options);
+      return formattedDate;
+    } else {
+      // Si la fecha es inválida, devuelve un mensaje de error o un valor por defecto
+      return "Fecha inválida";
+    }
+  };
+
+  function redondearHora(hora: string) {
+    const [horas, minutos] = hora.split(":");
+    const minutosRedondeados = Math.round(Number(minutos) / 5) * 5;
+    const nuevaHora = `${horas}:${minutosRedondeados
+      .toString()
+      .padStart(2, "0")}`;
+    return nuevaHora;
+  }
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = await AsyncStorage.getItem("userToken");
+        if (token) {
+          const userData = await getMe(token);
+          setUser(userData);
+          // console.log(userData.past_bookings[1].fechaHora);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   return (
     <View style={styles.containerInside}>
@@ -59,16 +107,49 @@ export default function RideHistoryScreen({
       </View>
       <View style={stylesHere.dashboard}>
         <ScrollView>
-          <ClassCard
-            onPress={null}
-            image={null}
-            date="Feb 20"
-            className="Rider Rythm"
-            time="20:30"
-            instructor="Valentina Casteline"
-            spots={20}
-            isPastClass={null}
-          />
+          {user?.past_bookings?.map((past_booking) => {
+            if (past_booking.class) {
+              const horaInicio = past_booking.class?.horaInicio;
+              const horaInicioRedondeada = horaInicio
+                ? redondearHora(horaInicio)
+                : "";
+              const fechaFormateada = convertDate(
+                past_booking?.fechaHora
+              );
+
+              return (
+                <ClassCard
+                  key={past_booking.id}
+                  onPress={null}
+                  image={null}
+                  date={fechaFormateada}
+                  className={past_booking.class?.nombreClase}
+                  time={horaInicioRedondeada}
+                  instructor={past_booking.class?.instructor?.nombreCompleto}
+                  spots={null}
+                  isPastClass={true}
+                />
+              );
+            } else {
+              // Manejar el caso cuando past_bbooking.class no existe
+              const fechaFormateada = convertDate(
+                past_booking.attributes.fechaHora
+              );
+              return (
+                <ClassCard
+                  key={past_booking.id}
+                  onPress={null}
+                  image={null}
+                  date={fechaFormateada}
+                  className="Clase no disponible"
+                  time=""
+                  instructor=""
+                  spots={null}
+                  isPastClass={true}
+                />
+              );
+            }
+          })}
         </ScrollView>
       </View>
 

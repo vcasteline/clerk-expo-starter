@@ -6,14 +6,13 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
-import { useSignIn } from "@clerk/clerk-expo";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import ClassCard from "../../components/ClassCard";
 import CalendarStrip from "react-native-calendar-strip";
-import { getClassesScheduleScreen } from "../../services/GlobalApi";
+import { getClassesScheduleScreen, getBookings } from "../../services/GlobalApi";
 import { Ionicons } from "@expo/vector-icons";
-import { Class } from "../../interfaces";
+import { Class, Booking } from "../../interfaces";
 
 export default function ScheduleScreen({
   navigation,
@@ -62,6 +61,18 @@ export default function ScheduleScreen({
   const [classes, setClasses] = useState<Class[]>([]);
   const [filteredClasses, setFilteredClasses] = useState<Class[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+
+  useEffect(() => {
+    getBookings()
+      .then((response) => {
+        const allBookings = response.data.data;
+        setBookings(allBookings);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -77,6 +88,7 @@ export default function ScheduleScreen({
         setRefreshing(false);
       });
   };
+  
   const getFilteredClasses = (date: any) => {
     const diaSelecionado = getDayOfWeek(date);
     setHasClicked(true);
@@ -111,6 +123,7 @@ export default function ScheduleScreen({
     )}`;
     return horaRedondeada;
   }
+  
   function redondearHoraHelp(hora: string) {
     const [horas, minutos, segundos, milisegundos] = hora.split(":");
     const minutosRedondeados = Math.round(Number(minutos) / 5) * 5;
@@ -209,7 +222,11 @@ export default function ScheduleScreen({
           filteredClasses.map((classItem) => {
             const totalBicycles =
               classItem.attributes.room.data.attributes.bicycles.data.length;
-            const reservedBicycles = 0; // Aquí debes obtener el número de bicicletas reservadas para esa clase
+            const reservedBicycles = bookings.filter(
+              (booking) =>
+                booking.attributes.class.data.id === classItem.id &&
+                booking.attributes.bookingStatus === "completed"
+            ).length;
             const availableSpots = totalBicycles - reservedBicycles;
             const classDate = new Date(rawDate);
             const { horas, minutos } = redondearHoraHelp(
@@ -255,7 +272,7 @@ export default function ScheduleScreen({
                 instructor={
                   classItem.attributes.instructor.data.attributes.nombreCompleto
                 }
-                spots={availableSpots}
+                spots={availableSpots.toString()} 
                 isPastClass={isPastClass}
               />
             );

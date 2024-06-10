@@ -11,12 +11,15 @@ export interface User {
   role: "Authenticated" | "Public";
   clasesDisponibles: number;
   bookings: Booking[];
+  past_bookings: Booking[];
   nombre: string;
   apellido: string;
   birthday: Date;
 }
 
 export interface Booking {
+  fechaHora: any;
+  class: any;
   id: number;
   attributes: {
     class: ClassThroughBookings;
@@ -26,6 +29,7 @@ export interface Booking {
     fechaHora: string;
   };
 }
+
 export interface PurchaseRides {
   id: number;
   attributes: {

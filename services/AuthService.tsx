@@ -122,7 +122,7 @@ export const resetPassword = async (
 
 export const getMe = async (token: string) => {
   try {
-    const response = await axios.get(`${API_URL}/users/me?populate=bookings`, {
+    const response = await axios.get(`${API_URL}/users/me?populate[0]=bookings&populate[1]=past_bookings&populate[2]=past_bookings.class&populate[3]=past_bookings.class.instructor`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
