@@ -110,7 +110,7 @@ export const styles = StyleSheet.create({
   },
   titleText: {
     color: "#000",
-    fontSize: 26,
+    fontSize: 25,
     fontWeight: "bold",
     marginBottom: 10,
   },

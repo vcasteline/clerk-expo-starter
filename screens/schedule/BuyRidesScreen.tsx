@@ -45,85 +45,17 @@ export default function BuyRidesScreen({
           </TouchableWithoutFeedback>
         </View>
         <Text style={{ ...styles.titleText, color: "white" }}>
-          Compra Rides
+          Compra Paquetes Volta
         </Text>
 
         <Text style={{ ...stylesHere.subtitle, marginLeft: 0 }}>
           Compra más rides para reservar tu bici
         </Text>
 
-        <View style={stylesHere.buttonContainer}>
-          <TouchableOpacity
-            style={[stylesHere.button, showPackages && stylesHere.activeButton]}
-            onPress={() => setShowPackages(true)}
-          >
-            <Text
-              style={[
-                stylesHere.buttonText,
-                showPackages && stylesHere.activeButtonText,
-              ]}
-            >
-              Paquetes de Rides
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              stylesHere.button,
-              !showPackages && stylesHere.activeButton,
-            ]}
-            onPress={() => setShowPackages(false)}
-          >
-            <Text
-              style={[
-                stylesHere.buttonText,
-                !showPackages && stylesHere.activeButtonText,
-              ]}
-            >
-              Rides Singulares
-            </Text>
-          </TouchableOpacity>
-        </View>
       </View>
 
       <View style={stylesHere.dashboard}>
-        {showPackages ? (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={stylesHere.carousel}
-          >
-            {ridePackages
-              ?.filter(
-                (ridePackage: PurchaseRides) => ridePackage.attributes.esUnPack
-              )
-              .map((ridePackage: PurchaseRides) => (
-                <TouchableOpacity
-                  key={ridePackage.id}
-                  style={[
-                    stylesHere.packageButton,
-                    selectedPackage?.id === ridePackage.id &&
-                      stylesHere.selectedPackageButton,
-                  ]}
-                  onPress={() => setSelectedPackage(ridePackage)}
-                >
-                  <View style={stylesHere.packageTextBox}>
-                    <Text style={stylesHere.packageName}>
-                      {ridePackage.attributes.numeroDeRides} Rides
-                    </Text>
-                    <Text style={stylesHere.packageDescription}>
-                      Eleva tu Físico
-                    </Text>
-                    <Text style={stylesHere.packagePrice}>
-                      ${ridePackage.attributes.precio}
-                    </Text>
-                  </View>
-                  <Text style={stylesHere.packageExpiration}>
-                    Expira en 30 días
-                  </Text>
-                </TouchableOpacity>
-              ))}
-          </ScrollView>
-        ) : (
+       
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={stylesHere.containerSingle}>
               {ridePackages
@@ -185,7 +117,6 @@ export default function BuyRidesScreen({
                 ))}
             </View>
           </ScrollView>
-        )}
         <TouchableOpacity style={styles.primaryButton}>
           <Text style={stylesHere.buyButtonText}>
             Comprar{" "}
@@ -266,7 +197,7 @@ const stylesHere = StyleSheet.create({
     flex: 1,
     paddingHo: 0,
     paddingTop: 75,
-    backgroundColor: "#000",
+    backgroundColor: "black"
   },
   headingAndButtons: {
     paddingHorizontal: 24,
@@ -275,10 +206,10 @@ const stylesHere = StyleSheet.create({
     // flex:1,
     borderRadius: 30,
     padding: 18,
-    marginTop: 10,
+    marginTop: 0,
     paddingBottom: 90,
     width: "100%",
-    height: "74%",
+    height: "82%",
     justifyContent: "flex-start",
     backgroundColor: "#fff",
   },
@@ -289,8 +220,8 @@ const stylesHere = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: "gray",
-    marginBottom: 20,
+    color: "white",
+    marginBottom: 16,
   },
   buttonContainer: {
     flexDirection: "row",

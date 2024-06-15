@@ -49,7 +49,7 @@ export default function HomeScreen({
         setInstructors(instructorsData);
       })
       .catch((error) => {
-        console.error(error);
+        console.error("Error getting instructors: ", error);
       });
 
     const fetchUserData = async () => {
@@ -117,20 +117,17 @@ export default function HomeScreen({
     ridesSection: {
       marginBottom: 0,
     },
-    instructors: {
-      // flex: 3,
-    },
     logoImage: {
       width: 90,
       resizeMode: "contain",
       justifyContent: "flex-start",
     },
     iconImage: {
-      width: 28,
-      height: 28,
+      width: 20,
+      height: 20,
       resizeMode: "contain",
       marginTop: -5,
-      marginLeft: 3,
+      marginRight: 10,
     },
     heading: {
       display: "flex",
@@ -170,7 +167,7 @@ export default function HomeScreen({
     },
     containerInside: {
       flex: 1,
-      backgroundColor: "#000000",
+      backgroundColor: "#000000",      
       alignItems: "center",
       justifyContent: "flex-start",
       paddingTop: 50,
@@ -180,6 +177,13 @@ export default function HomeScreen({
       borderRadius: 50,
       padding: 10,
     },
+    box: {
+      backgroundColor: "#141414",
+      borderRadius: 24,
+      padding: 25,
+      height: 135,
+      width: 170,
+    }
   });
 
   return loading ? (
@@ -198,25 +202,14 @@ export default function HomeScreen({
             style={stylesHere.logoImage}
             source={require("../../assets/images/volta-logo-white.png")}
           />
-        </View>
-        <View style={styles.center}>
-          <View style={styles.box}>
-            <View style={styles.spaceBet}>
-              <Text style={stylesHere.boxTitle}>Bookings</Text>
-              <Image
-                style={stylesHere.iconImage}
-                source={require("../../assets/images/fire-icon.png")}
-              />
-            </View>
-
+        </View>      
+          <View style={styles.center}>
+          <View style={stylesHere.box}>
+            <Text style={{...stylesHere.boxContentBottom, fontWeight: '700', marginBottom: 10, fontSize: 11, color:"white"}}>RIDES</Text>
             <Text style={stylesHere.boxContent}>
-              {" "}
               {!loading && userBookings
-                ? userBookings.filter(
-                    (booking: Booking) =>
-                      booking.attributes.bookingStatus === "completed"
-                  ).length
-                : "Loading"}
+                ? user?.past_bookings.length
+                : "-"}
             </Text>
             <Text style={stylesHere.boxContentBottom}>
               {userBookings.filter(
@@ -225,22 +218,15 @@ export default function HomeScreen({
                   ).length === 1 ? "Realizado" : "Realizados"}
             </Text>
           </View>
-          <View style={styles.box}>
-            <View style={styles.spaceBet}>
-              <Text style={stylesHere.boxTitle}>Tus Clases</Text>
-              <Image
-                style={stylesHere.iconImage}
-                source={require("../../assets/images/wheel-icon.png")}
-              />
-            </View>
+          <View style={stylesHere.box}>
+          <Text style={{...stylesHere.boxContentBottom, fontWeight: '700', marginBottom: 10, fontSize: 11, color:"white"}}>CREDITOS</Text>
 
             <Text style={stylesHere.boxContent}>
-              {!loading && user ? user.clasesDisponibles : "Loading"}
+              {!loading && user ? user.clasesDisponibles : "-"}
             </Text>
             <Text style={stylesHere.boxContentBottom}>Disponibles</Text>
           </View>
         </View>
-
         <View style={stylesHere.dashboard}>
           <View style={stylesHere.rides}>
             <View style={styles.spaceBet}>
@@ -272,7 +258,7 @@ export default function HomeScreen({
                     style={{ textAlign: "center", marginBottom: 40 }}
                     name="sad-outline"
                     color={"#3D4AF5"}
-                    size={25}
+                    size={20}
                   />
                 </View>
               ) : (
@@ -330,7 +316,7 @@ export default function HomeScreen({
               )}
             </View>
           </View>
-          <View style={stylesHere.instructors}>
+          <View>
             <View style={styles.spaceBet}>
               <Text style={styles.titleText}>Instructores</Text>
             </View>

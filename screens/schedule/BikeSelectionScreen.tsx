@@ -200,7 +200,7 @@ export default function BikeSelectionScreen({
         </TouchableWithoutFeedback>
       </View>
       <View style={{...styles.flex, flexDirection: "row",
-    justifyContent: "flex-start", width:'100%', marginLeft:60, marginVertical:10}}>
+    justifyContent: "flex-start", width:'100%', marginLeft:60, marginVertical:5}}>
       <Text style={{ ...styles.titleText, color: "white" }}>Selecciona tu Bici</Text>
 
       </View>
@@ -208,14 +208,14 @@ export default function BikeSelectionScreen({
       <View style={styles.center}>
         <View style={stylesHere.box}>
           <View style={styles.spaceBet}>
-            <Ionicons name="calendar" color={"#F6FD91"} size={28} />
+            <Ionicons name="calendar" color={"#F6FD91"} size={20} />
           </View>
           <Text style={stylesHere.boxContentBottom}>Día y Hora</Text>
           <Text style={stylesHere.boxContentBottomTwo}>{convertedDate} - {time}</Text>
         </View>
         <View style={stylesHere.box}>
           <View style={styles.spaceBet}>
-            <Ionicons name="person" color={"#F6FD91"} size={28} />
+            <Ionicons name="person" color={"#F6FD91"} size={20} />
           </View>
           <Text style={stylesHere.boxContentBottom}>Instructor</Text>
           <Text style={stylesHere.boxContentBottomTwo}>{instructor.name}</Text>
@@ -237,14 +237,15 @@ export default function BikeSelectionScreen({
             <Text style={stylesHere.legendText}>Ocupada</Text>
           </View>
         </View>
-        <View style={stylesHere.bikeGrid}>
-          {bicycles.map(renderBikeButton)}
-        </View>
         <Image
           source={{ uri: instructor.image }}
           style={stylesHere.instructorImage}
         />
         <Text style={stylesHere.instructorName}>{instructor.name}</Text>
+        <View style={stylesHere.bikeGrid}>
+          {bicycles.map(renderBikeButton)}
+        </View>
+ 
         <View style={stylesHere.bottomContainer}>
           <Ionicons name="bicycle" color={"black"} size={28} />
           <Text style={stylesHere.bikeNumber}>
@@ -269,8 +270,8 @@ const stylesHere = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-between",
     borderRadius: 24,
-    padding: 30,
-    height: 135,
+    padding: 20,
+    height: 115,
     width: 175,
   },
   boxTitle: {
@@ -306,7 +307,7 @@ const stylesHere = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 0,
   },
   bikeNumber: {
     fontSize: 16,
@@ -344,7 +345,7 @@ const stylesHere = StyleSheet.create({
   },
   bikeButton: {
     width: 35,
-    height: 45,
+    height: 35,
     borderRadius: 8,
     backgroundColor: "#CDDDFC",
     justifyContent: "center",
@@ -367,9 +368,10 @@ const stylesHere = StyleSheet.create({
     borderRadius: 50,
     alignSelf: "center",
     marginBottom: 10,
+    marginTop:20
   },
   instructorName: {
-    fontSize: 18,
+    fontSize: 14,
     alignSelf: "center",
     marginBottom: 10,
   },
@@ -396,7 +398,8 @@ const stylesHere = StyleSheet.create({
     //fontWeight: "bold",
   },
   legendContainer: {
-    marginVertical: 10,
+    marginTop: 5,
+    marginBottom: 0,
     flexDirection: "row",
     justifyContent: "space-between",
   },

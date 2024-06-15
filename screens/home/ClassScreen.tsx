@@ -127,13 +127,19 @@ export default function ClassScreen({
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      marginTop: 0,
+      marginTop: 5,
       marginRight: 3,
+    },
+    boxBig: {
+      backgroundColor: "#282828",
+      padding: 12,
+      borderRadius: 30,
+      marginTop: 20,
     },
     dashboard: {
       borderRadius: 30,
       padding: 24,
-      marginTop: 0,
+      marginTop: 10,
       paddingBottom: 40,
       width: "100%",
       height: "100%",
@@ -197,12 +203,12 @@ export default function ClassScreen({
   const onBackPress = () => navigation.pop();
   return (
     <View style={stylesHere.containerInside}>
-      <View style={{ ...styles.heading, marginLeft: 20, marginBottom: 10 }}>
+      <View style={{ ...styles.heading, marginLeft: 20, marginBottom: 0 }}>
         <TouchableWithoutFeedback onPress={onBackPress}>
           <Ionicons name="chevron-back-outline" size={30} color={"white"} />
         </TouchableWithoutFeedback>
       </View>
-      <View style={stylesHere.classHeading}>
+      <View style={{alignItems: 'center', width: "100%", paddingRight: 0, marginBottom:10}}>
         <Text
           style={{
             ...styles.subtitle,
@@ -222,7 +228,7 @@ export default function ClassScreen({
           </View>
         </View>
       </View>
-      <View
+      {/* <View
         style={{
           ...styles.center,
           alignItems: "center",
@@ -236,11 +242,214 @@ export default function ClassScreen({
           }}
           style={{ ...stylesHere.instructorImage, marginLeft: 0 }}
         />
-        {/* <Text style={{fontSize:17, ...styles.half, marginLeft:10}}>All Set! Listo para ride con Sofia.</Text> */}
-      </View>
+      </View> */}
       <View style={stylesHere.dashboard}>
         <View>
-          <View style={styles.center}>
+        <View style={{ alignItems: "center", marginTop: 0, width: "100%" }}>
+        <View
+          style={{
+            ...styles.spaceBet,
+            alignItems: "center",
+            marginTop: 0,
+            width: "100%",
+          }}
+        >
+          <Text
+            style={{ ...styles.paragraph, color: "white", fontWeight: "400" }}
+          >
+            Día
+          </Text>
+          <Text
+            style={{ ...styles.paragraph, color: "white", fontWeight: "400" }}
+          >
+            {classData.diaDeLaSemana} - {convertedFecha}
+          </Text>
+        </View>
+        <View
+          style={{
+            ...styles.spaceBet,
+            alignItems: "center",
+            marginTop: 0,
+            width: "100%",
+          }}
+        >
+          <Text
+            style={{ ...styles.paragraph, color: "white", fontWeight: "400" }}
+          >
+            Hora
+          </Text>
+          <Text
+            style={{ ...styles.paragraph, color: "white", fontWeight: "400" }}
+          >
+            {horaRedondeadaInicio} - {horaRedondeadaFin}
+          </Text>
+        </View>
+        <View
+          style={{
+            ...styles.spaceBet,
+            alignItems: "center",
+            marginTop: 0,
+            width: "100%",
+          }}
+        >
+          <Text
+            style={{ ...styles.paragraph, color: "white", fontWeight: "400" }}
+          >
+            Tu bici
+          </Text>
+          <Text
+            style={{ ...styles.paragraph, color: "white", fontWeight: "400" }}
+          >
+            {bicycle}
+          </Text>
+        </View>
+        
+      </View>
+      <View style={stylesHere.boxBig}>
+        <View
+          style={{
+            alignItems: "center",
+            marginTop: 0,
+            justifyContent: "center",
+          }}
+        >
+          {/* <Text
+            style={{
+              color: "white",
+              textAlign: "center",
+              marginBottom: 10,
+              fontSize: 18,
+            }}
+          >
+            ¡Evita atrasos!
+          </Text> */}
+          <Text
+            style={{
+              color: "white",
+              textAlign: "center",
+              marginBottom: 10,
+              paddingHorizontal: 20,
+            }}
+          >
+            Sabemos que a veces no puedes llegar a clase, recuerda que puedes
+            cancelar tu clase hasta 12 horas antes.
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "flex-start",
+              marginBottom: 10,
+              paddingHorizontal: 20,
+            }}
+          >
+            <View style={{ width: 25, alignItems: "center" }}>
+              <Ionicons name="hand-right" color={"#F6FD91"} size={20} />
+            </View>
+            <Text
+              style={{
+                color: "white",
+                textAlign: "left",
+                marginLeft: 10,
+                flex: 1,
+              }}
+            >
+              Las puertas para entrar se abren únicamente al final de la primera
+              y la segunda canción (lo sentimos, no podemos interrumpirlas).
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "flex-start",
+              marginBottom: 10,
+              paddingHorizontal: 20,
+            }}
+          >
+            <View style={{ width: 25, alignItems: "center" }}>
+              <Ionicons name="musical-notes" color={"#F6FD91"} size={20} />
+            </View>
+            <Text
+              style={{
+                color: "white",
+                textAlign: "left",
+                marginLeft: 10,
+                flex: 1,
+              }}
+            >
+              Tu lugar será liberado entre la primera y la segunda canción, sin
+              embargo podrás entrar a la clase bajo disponibilidad.
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "flex-start",
+              marginBottom: 10,
+              paddingHorizontal: 20,
+            }}
+          >
+            <View style={{ width: 25, alignItems: "center" }}>
+              <Ionicons name="warning" color={"#F6FD91"} size={20} />
+            </View>
+            <Text
+              style={{
+                color: "white",
+                textAlign: "left",
+                marginLeft: 10,
+                flex: 1,
+              }}
+            >
+              Al terminar la tercera canción ya nadie puede entrar a la clase
+              por seguridad.
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "flex-start",
+              paddingHorizontal: 20,
+              marginBottom: 10,
+            }}
+          >
+            <View style={{ width: 25, alignItems: "center" }}>
+              <Ionicons name="phone-portrait" color={"#F6FD91"} size={20} />
+            </View>
+            <Text
+              style={{
+                color: "white",
+                textAlign: "left",
+                marginLeft: 10,
+                flex: 1,
+              }}
+            >
+              Evita usar tu teléfono para que todos disfrutemos la clase.
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "flex-start",
+              marginBottom: 10,
+              paddingHorizontal: 20,
+            }}
+          >
+            <View style={{ width: 25, alignItems: "center" }}>
+              <Ionicons name="shirt" color={"#F6FD91"} size={20} />
+            </View>
+            <Text
+              style={{
+                color: "white",
+                textAlign: "left",
+                marginLeft: 10,
+                flex: 1,
+              }}
+            >
+              Lleva ropa cómoda que transpire.
+            </Text>
+          </View>
+        </View>
+      </View>
+          {/* <View style={styles.center}>
             <View style={stylesHere.box}>
               <View style={styles.spaceBet}>
                 <Ionicons name="calendar" color={"#F6FD91"} size={28} />
@@ -277,9 +486,9 @@ export default function ClassScreen({
                 {instructor.nombreCompleto}
               </Text>
             </View>
-          </View>
+          </View> */}
           <TouchableOpacity
-            style={{ ...styles.primaryButton, backgroundColor: "#282828" }}
+            style={{ ...styles.primaryButton, backgroundColor: "#282828", marginTop: 10 }}
             onPress={handleCancelRide}
           >
             <Text style={{ ...styles.paragraph, color: "white" }}>
