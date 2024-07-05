@@ -12,7 +12,7 @@ import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import { Ionicons } from "@expo/vector-icons";
 import { Bicycle, Booking } from "../../interfaces";
-import { getBookings, getClassBicycles, getUserBookings, reserveBike, updateBookingStatus, updateUserClases } from "../../services/GlobalApi";
+import { getBookings, getClassBicycles, getUserBookings, reservarClaseYActualizarPaquete, reserveBike, updateBookingStatus, updateUserClases } from "../../services/GlobalApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getMe } from "../../services/AuthService";
 
@@ -165,11 +165,10 @@ export default function BikeSelectionScreen({
             fechaHora: fechaHora,
           }, token);
   
-          // Restar una clase disponible al usuario
-          await updateUserClases(userData.id, userData.clasesDisponibles - 1, token);
-  
           // Actualizar el estado del booking a "completed"
           await updateBookingStatus(bookingResponse.data.id, "completed", token);
+          // Restar clasesDisponibles del usuario y actualizar paquete con clases utilizadas
+          await reservarClaseYActualizarPaquete(userData.id, token);
   
           navigation.navigate('Successful', {
             instructor: instructor.name,
@@ -180,7 +179,6 @@ export default function BikeSelectionScreen({
             dayOfWeek: dia
           });
         } else {
-          console.log("No tienes clases disponibles");
           // Manejar el caso cuando el usuario no tiene clases disponibles
           navigation.navigate("BuyRides");
         }

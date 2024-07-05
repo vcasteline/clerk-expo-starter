@@ -12,8 +12,8 @@ import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import { Ionicons } from "@expo/vector-icons";
 import {
+  devolverCreditoClase,
   updateBookingStatus,
-  updateUserClases,
 } from "../../services/GlobalApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -55,63 +55,54 @@ export default function ClassScreen({
   const horaRedondeadaFin = redondearHora(classData?.horaFin);
 
   const handleCancelRide = async () => {
-    const currentDate = new Date();
-    const classDate = new Date(bookingData?.attributes?.fechaHora);
+    try {
+      const userId = usuarioId;
+      const token = await AsyncStorage.getItem("userToken");
+      const bookingId = bookingData.id;
 
-    // Calcula la diferencia en milisegundos entre la fecha actual y la fecha de la clase
-    const timeDifference = classDate.getTime() - currentDate.getTime();
+      if (!userId || !token) {
+        throw new Error("No se pudo obtener la información del usuario");
+      }
 
-    // Convierte la diferencia a horas
-    const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
-
-    if (hoursDifference <= 12) {
-      // Si la diferencia es menor o igual a 12 horas, muestra el mensaje de alerta
-      Alert.alert(
-        "Oops!",
-        "Ya estamos dentro del periodo de no-cancelación. Cancela tus clases con más de 12 horas de anticipación la próxima vez."
+      const result: any = await devolverCreditoClase(
+        userId,
+        token,
+        async () => {
+          // Esta función se ejecutará si el usuario decide cancelar sin reembolso
+          await updateBookingStatus(bookingId, "cancelled", token);
+          // Aquí puedes agregar cualquier otra lógica necesaria para la cancelación sin reembolso
+        }
       );
-    } else {
-      // Si la diferencia es mayor a 12 horas, muestra el alert de confirmación de cancelación
+
+      if (result?.success) {
+        // La cancelación fue exitosa y se devolvió el crédito
+        await updateBookingStatus(bookingId, "cancelled", token);
+        Alert.alert(
+          "Éxito",
+          "La reserva ha sido cancelada y el crédito ha sido devuelto."
+        );
+      } else if (result?.message === "Cancelado sin devolución de crédito") {
+        // El usuario decidió cancelar sin reembolso
+        Alert.alert(
+          "Cancelación completada",
+          "La reserva ha sido cancelada sin devolución de crédito."
+        );
+        // navigation.navigate("HomeStack");
+      } else {
+        // El usuario decidió no cancelar
+        Alert.alert(
+          "Cancelación abortada",
+          "No se ha realizado ningún cambio en tu reserva."
+        );
+      }
+
+      // Actualizar la interfaz de usuario o navegar a otra pantalla si es necesario
+      navigation.navigate("Home");
+    } catch (error) {
+      console.error("Error al cancelar la reserva:", error);
       Alert.alert(
-        "¿Estás seguro?",
-        "Ya no tendrás un puesto en esta clase, y se te devolverá el credito a tu cuenta.",
-        [
-          {
-            text: "Sí, cancelar",
-            style: "default",
-            onPress: async () => {
-              try {
-                const userId = usuarioId;
-                const token = await AsyncStorage.getItem("userToken");
-
-                if (clasesDisponibles !== undefined && token) {
-                  // Incrementar el valor de clasesDisponibles
-                  const nuevasClasesDisponibles = clasesDisponibles + 1;
-
-                  // Hacer la solicitud PUT para actualizar clasesDisponibles
-                  const response = await updateUserClases(
-                    userId,
-                    nuevasClasesDisponibles,
-                    token
-                  );
-
-                  // Actualizar el estado del booking a "Refunded"
-                  await updateBookingStatus(bookingData.id, "refunded", token);
-
-                  // Navegar al HomeScreen después de cancelar el ride
-                  navigation.navigate("Home");
-                }
-              } catch (error) {
-                console.error("Error al actualizar clases disponibles:", error);
-                // Manejar el error de forma adecuada
-              }
-            },
-          },
-          {
-            text: "No",
-            style: "cancel",
-          },
-        ]
+        "Error",
+        "No se pudo cancelar la reserva. Por favor, inténtalo de nuevo."
       );
     }
   };
@@ -132,7 +123,7 @@ export default function ClassScreen({
     },
     boxBig: {
       backgroundColor: "#282828",
-      padding: 12,
+      padding: 20,
       borderRadius: 30,
       marginTop: 20,
     },
@@ -208,7 +199,14 @@ export default function ClassScreen({
           <Ionicons name="chevron-back-outline" size={30} color={"white"} />
         </TouchableWithoutFeedback>
       </View>
-      <View style={{alignItems: 'center', width: "100%", paddingRight: 0, marginBottom:10}}>
+      <View
+        style={{
+          alignItems: "center",
+          width: "100%",
+          paddingRight: 0,
+          marginBottom: 10,
+        }}
+      >
         <Text
           style={{
             ...styles.subtitle,
@@ -228,267 +226,124 @@ export default function ClassScreen({
           </View>
         </View>
       </View>
-      {/* <View
-        style={{
-          ...styles.center,
-          alignItems: "center",
-          width: "100%",
-          gap: 0,
-        }}
-      >
-        <Image
-          source={{
-            uri: `${process.env.EXPO_PUBLIC_IMG_URL}${instructorImage}`,
-          }}
-          style={{ ...stylesHere.instructorImage, marginLeft: 0 }}
-        />
-      </View> */}
       <View style={stylesHere.dashboard}>
         <View>
-        <View style={{ alignItems: "center", marginTop: 0, width: "100%" }}>
-        <View
-          style={{
-            ...styles.spaceBet,
-            alignItems: "center",
-            marginTop: 0,
-            width: "100%",
-          }}
-        >
-          <Text
-            style={{ ...styles.paragraph, color: "white", fontWeight: "400" }}
-          >
-            Día
-          </Text>
-          <Text
-            style={{ ...styles.paragraph, color: "white", fontWeight: "400" }}
-          >
-            {classData.diaDeLaSemana} - {convertedFecha}
-          </Text>
-        </View>
-        <View
-          style={{
-            ...styles.spaceBet,
-            alignItems: "center",
-            marginTop: 0,
-            width: "100%",
-          }}
-        >
-          <Text
-            style={{ ...styles.paragraph, color: "white", fontWeight: "400" }}
-          >
-            Hora
-          </Text>
-          <Text
-            style={{ ...styles.paragraph, color: "white", fontWeight: "400" }}
-          >
-            {horaRedondeadaInicio} - {horaRedondeadaFin}
-          </Text>
-        </View>
-        <View
-          style={{
-            ...styles.spaceBet,
-            alignItems: "center",
-            marginTop: 0,
-            width: "100%",
-          }}
-        >
-          <Text
-            style={{ ...styles.paragraph, color: "white", fontWeight: "400" }}
-          >
-            Tu bici
-          </Text>
-          <Text
-            style={{ ...styles.paragraph, color: "white", fontWeight: "400" }}
-          >
-            {bicycle}
-          </Text>
-        </View>
-        
-      </View>
-      <View style={stylesHere.boxBig}>
-        <View
-          style={{
-            alignItems: "center",
-            marginTop: 0,
-            justifyContent: "center",
-          }}
-        >
-          {/* <Text
-            style={{
-              color: "white",
-              textAlign: "center",
-              marginBottom: 10,
-              fontSize: 18,
-            }}
-          >
-            ¡Evita atrasos!
-          </Text> */}
-          <Text
-            style={{
-              color: "white",
-              textAlign: "center",
-              marginBottom: 10,
-              paddingHorizontal: 20,
-            }}
-          >
-            Sabemos que a veces no puedes llegar a clase, recuerda que puedes
-            cancelar tu clase hasta 12 horas antes.
-          </Text>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "flex-start",
-              marginBottom: 10,
-              paddingHorizontal: 20,
-            }}
-          >
-            <View style={{ width: 25, alignItems: "center" }}>
-              <Ionicons name="hand-right" color={"#F6FD91"} size={20} />
-            </View>
-            <Text
+          <View style={{ alignItems: "center", marginTop: 0, width: "100%" }}>
+            <View
               style={{
-                color: "white",
-                textAlign: "left",
-                marginLeft: 10,
-                flex: 1,
+                ...styles.spaceBet,
+                alignItems: "center",
+                marginTop: 0,
+                width: "100%",
               }}
             >
-              Las puertas para entrar se abren únicamente al final de la primera
-              y la segunda canción (lo sentimos, no podemos interrumpirlas).
-            </Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "flex-start",
-              marginBottom: 10,
-              paddingHorizontal: 20,
-            }}
-          >
-            <View style={{ width: 25, alignItems: "center" }}>
-              <Ionicons name="musical-notes" color={"#F6FD91"} size={20} />
-            </View>
-            <Text
-              style={{
-                color: "white",
-                textAlign: "left",
-                marginLeft: 10,
-                flex: 1,
-              }}
-            >
-              Tu lugar será liberado entre la primera y la segunda canción, sin
-              embargo podrás entrar a la clase bajo disponibilidad.
-            </Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "flex-start",
-              marginBottom: 10,
-              paddingHorizontal: 20,
-            }}
-          >
-            <View style={{ width: 25, alignItems: "center" }}>
-              <Ionicons name="warning" color={"#F6FD91"} size={20} />
-            </View>
-            <Text
-              style={{
-                color: "white",
-                textAlign: "left",
-                marginLeft: 10,
-                flex: 1,
-              }}
-            >
-              Al terminar la tercera canción ya nadie puede entrar a la clase
-              por seguridad.
-            </Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "flex-start",
-              paddingHorizontal: 20,
-              marginBottom: 10,
-            }}
-          >
-            <View style={{ width: 25, alignItems: "center" }}>
-              <Ionicons name="phone-portrait" color={"#F6FD91"} size={20} />
-            </View>
-            <Text
-              style={{
-                color: "white",
-                textAlign: "left",
-                marginLeft: 10,
-                flex: 1,
-              }}
-            >
-              Evita usar tu teléfono para que todos disfrutemos la clase.
-            </Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "flex-start",
-              marginBottom: 10,
-              paddingHorizontal: 20,
-            }}
-          >
-            <View style={{ width: 25, alignItems: "center" }}>
-              <Ionicons name="shirt" color={"#F6FD91"} size={20} />
-            </View>
-            <Text
-              style={{
-                color: "white",
-                textAlign: "left",
-                marginLeft: 10,
-                flex: 1,
-              }}
-            >
-              Lleva ropa cómoda que transpire.
-            </Text>
-          </View>
-        </View>
-      </View>
-          {/* <View style={styles.center}>
-            <View style={stylesHere.box}>
-              <View style={styles.spaceBet}>
-                <Ionicons name="calendar" color={"#F6FD91"} size={28} />
-              </View>
-              <Text style={stylesHere.boxContentBottom}>Fecha</Text>
-              <Text style={stylesHere.boxContentBottomTwo}>
+              <Text
+                style={{
+                  ...styles.paragraph,
+                  color: "white",
+                  fontWeight: "400",
+                }}
+              >
+                Día
+              </Text>
+              <Text
+                style={{
+                  ...styles.paragraph,
+                  color: "white",
+                  fontWeight: "400",
+                }}
+              >
                 {classData.diaDeLaSemana} - {convertedFecha}
               </Text>
             </View>
-            <View style={stylesHere.box}>
-              <View style={styles.spaceBet}>
-                <Ionicons name="time" color={"#F6FD91"} size={28} />
-              </View>
-              <Text style={stylesHere.boxContentBottom}>Hora</Text>
-              <Text style={stylesHere.boxContentBottomTwo}>
+            <View
+              style={{
+                ...styles.spaceBet,
+                alignItems: "center",
+                marginTop: 0,
+                width: "100%",
+              }}
+            >
+              <Text
+                style={{
+                  ...styles.paragraph,
+                  color: "white",
+                  fontWeight: "400",
+                }}
+              >
+                Hora
+              </Text>
+              <Text
+                style={{
+                  ...styles.paragraph,
+                  color: "white",
+                  fontWeight: "400",
+                }}
+              >
                 {horaRedondeadaInicio} - {horaRedondeadaFin}
               </Text>
             </View>
-          </View>
-          <View style={{ ...styles.center, marginTop: 10 }}>
-            <View style={stylesHere.box}>
-              <View style={styles.spaceBet}>
-                <Ionicons name="bicycle" color={"#F6FD91"} size={28} />
-              </View>
-              <Text style={stylesHere.boxContentBottom}>Tu Bici</Text>
-              <Text style={stylesHere.boxContentBottomTwo}># {bicycle}</Text>
-            </View>
-            <View style={stylesHere.box}>
-              <View style={styles.spaceBet}>
-                <Ionicons name="person" color={"#F6FD91"} size={28} />
-              </View>
-              <Text style={stylesHere.boxContentBottom}>Instructor</Text>
-              <Text style={stylesHere.boxContentBottomTwo}>
-                {instructor.nombreCompleto}
+            <View
+              style={{
+                ...styles.spaceBet,
+                alignItems: "center",
+                marginTop: 0,
+                width: "100%",
+              }}
+            >
+              <Text
+                style={{
+                  ...styles.paragraph,
+                  color: "white",
+                  fontWeight: "400",
+                }}
+              >
+                Tu bici
+              </Text>
+              <Text
+                style={{
+                  ...styles.paragraph,
+                  color: "white",
+                  fontWeight: "400",
+                }}
+              >
+                {bicycle}
               </Text>
             </View>
-          </View> */}
+          </View>
+          <View style={stylesHere.boxBig}>
+            <View
+              style={{
+                alignItems: "center",
+                marginTop: 0,
+                justifyContent: "center",
+              }}
+            >
+              <Text
+                style={{
+                  color: "white",
+                  textAlign: "center",
+                  marginBottom: 10,
+                  paddingHorizontal: 20,
+                }}
+              >
+                Recuerda que puedes cancelar tu clase hasta 12 horas antes de la
+                clase reservada. Caso contrario perderás el crédito de ese
+                booking. {"\n"}{"\n"} Por respeto a nuestros coaches y a nuestros riders
+                pedimos puntualidad ya que no podemos interrumpir la sesión en
+                curso. Ten presente que <Text style={{fontWeight: "bold"}}>tu bici será liberada 4 minutos antes de
+                que inicie la clase.</Text> {"\n"}{"\n"}Para que todos disfrutemos de la sesión no
+                se permite el uso de teléfonos celulares dentro del estudio. {"\n"}{"\n"}Por
+                seguridad, los créditos no son transferibles.
+              </Text>
+            </View>
+          </View>
           <TouchableOpacity
-            style={{ ...styles.primaryButton, backgroundColor: "#282828", marginTop: 10 }}
+            style={{
+              ...styles.primaryButton,
+              backgroundColor: "#282828",
+              marginTop: 10,
+            }}
             onPress={handleCancelRide}
           >
             <Text style={{ ...styles.paragraph, color: "white" }}>

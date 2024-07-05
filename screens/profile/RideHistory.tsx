@@ -27,7 +27,7 @@ export default function RideHistoryScreen({
       marginTop: 30,
       paddingBottom: 40,
       width: "100%",
-      height: "100%",
+      height: "75%",
       justifyContent: "flex-start", // Cambia "center" a "flex-start"
       backgroundColor: "#fff",
     },

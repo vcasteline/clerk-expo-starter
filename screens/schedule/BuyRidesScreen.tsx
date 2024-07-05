@@ -6,35 +6,72 @@ import {
   ScrollView,
   StyleSheet,
   TouchableWithoutFeedback,
+  Alert,
 } from "react-native";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import { Ionicons } from "@expo/vector-icons";
-import { getPurchaseRides } from "../../services/GlobalApi";
+import { comprarPaquete, getPurchaseRides } from "../../services/GlobalApi";
 import { PurchaseRides } from "../../interfaces";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getMe } from "../../services/AuthService";
 
 export default function BuyRidesScreen({
   navigation,
   route,
 }: RootStackScreenProps<"BuyRides">) {
-  const [showPackages, setShowPackages] = useState(true);
-  const [selectedPackage, setSelectedPackage] = useState<PurchaseRides>();
+  const [selectedPackage, setSelectedPackage] = useState<PurchaseRides | null>(
+    null
+  );
   const [ridePackages, setRidePackages] = useState<PurchaseRides[]>([]);
 
   const onBackPress = () => navigation.pop();
+
   useEffect(() => {
     getPurchaseRides()
       .then((response) => {
         const purchaseRideData = response.data.data;
         setRidePackages(purchaseRideData);
       })
-      .finally(() => {
-        //setLoading(false);
-      })
       .catch((error) => {
-        console.error(error);
+        console.error("Error fetching ride packages:", error);
+        Alert.alert("Error", "No se pudieron cargar los paquetes de rides.");
       });
   }, []);
+
+  const handleBuyPackage = async () => {
+    if (!selectedPackage) {
+      Alert.alert("Error", "Por favor selecciona un paquete antes de comprar.");
+      return;
+    }
+
+    try {
+      const token = await AsyncStorage.getItem("userToken");
+      if (token) {
+        const userData = await getMe(token);
+
+        const response = await comprarPaquete(
+          parseInt(userData.id),
+          selectedPackage.attributes.numeroDeRides,
+          selectedPackage.attributes.diasDeExpiracion,
+          token
+        );
+
+        // Aquí puedes agregar lógica adicional después de una compra exitosa
+        // Por ejemplo, actualizar el estado global de la app o navegar a otra pantalla
+        Alert.alert(
+          "Éxito",
+          `Has comprado el paquete de ${selectedPackage.attributes.numeroDeRides} rides.`
+        );
+      }
+    } catch (error) {
+      console.error("Error buying package:", error);
+      Alert.alert(
+        "Error",
+        "No se pudo completar la compra. Por favor, intenta de nuevo."
+      );
+    }
+  };
 
   return (
     <View style={stylesHere.container}>
@@ -51,73 +88,82 @@ export default function BuyRidesScreen({
         <Text style={{ ...stylesHere.subtitle, marginLeft: 0 }}>
           Compra más rides para reservar tu bici
         </Text>
-
       </View>
 
       <View style={stylesHere.dashboard}>
-       
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <View style={stylesHere.containerSingle}>
-              {ridePackages
-                ?.filter(
-                  (ridePackage: PurchaseRides) =>
-                    !ridePackage.attributes.esUnPack
-                )
-                .map((ridePackage: any) => (
-                  <TouchableOpacity
-                    key={ridePackage.id}
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View style={stylesHere.containerSingle}>
+            {ridePackages
+              ?.filter(
+                (ridePackage: PurchaseRides) => !ridePackage.attributes.esUnPack
+              )
+              .map((ridePackage: any) => (
+                <TouchableOpacity
+                  key={ridePackage.id}
+                  style={[
+                    stylesHere.item,
+                    ridePackage.bestValue && stylesHere.bestValue,
+                    selectedPackage?.id === ridePackage.id &&
+                      stylesHere.selectedPackageButton,
+                  ]}
+                  onPress={() => setSelectedPackage(ridePackage)}
+                >
+                  <Text
                     style={[
-                      stylesHere.item,
-                      ridePackage.bestValue && stylesHere.bestValue,
+                      stylesHere.name,
                       selectedPackage?.id === ridePackage.id &&
-                        stylesHere.selectedPackageButton,
+                        stylesHere.whiteText,
                     ]}
-                    onPress={() => setSelectedPackage(ridePackage)}
+                  >
+                    {ridePackage.attributes.nombre.toUpperCase()}
+                  </Text>
+                  <Text
+                    style={[
+                      stylesHere.rides,
+                      selectedPackage?.id === ridePackage.id &&
+                        stylesHere.whiteText,
+                    ]}
+                  >
+                    {ridePackage.attributes.numeroDeRides} Rides
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "flex-end",
+                      width: "100%",
+                    }}
                   >
                     <Text
                       style={[
-                        stylesHere.rides,
+                        stylesHere.price,
                         selectedPackage?.id === ridePackage.id &&
                           stylesHere.whiteText,
                       ]}
                     >
-                      {ridePackage.attributes.numeroDeRides} Rides
+                      ${ridePackage.attributes.precio}
                     </Text>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        justifyContent: "flex-end",
-                        width: "100%",
-                      }}
-                    >
-                      <Text
-                        style={[
-                          stylesHere.price,
-                          selectedPackage?.id === ridePackage.id &&
-                            stylesHere.whiteText,
-                        ]}
-                      >
-                        ${ridePackage.attributes.precio}
-                      </Text>
-                    </View>
+                  </View>
 
-                    <Text
-                      style={[
-                        stylesHere.expiration,
-                        selectedPackage?.id === ridePackage.id &&
-                          stylesHere.whiteText,
-                      ]}
-                    >
-                      Expira en 60 días
-                    </Text>
-                    {ridePackage.bestValue && (
-                      <Text style={stylesHere.bestValueText}>Best Value</Text>
-                    )}
-                  </TouchableOpacity>
-                ))}
-            </View>
-          </ScrollView>
-        <TouchableOpacity style={styles.primaryButton}>
+                  <Text
+                    style={[
+                      stylesHere.expiration,
+                      selectedPackage?.id === ridePackage.id &&
+                        stylesHere.whiteText,
+                    ]}
+                  >
+                    Expira en {ridePackage.attributes.diasDeExpiracion} días
+                  </Text>
+                  {ridePackage.bestValue && (
+                    <Text style={stylesHere.bestValueText}>Best Value</Text>
+                  )}
+                </TouchableOpacity>
+              ))}
+          </View>
+        </ScrollView>
+        <TouchableOpacity
+          style={styles.primaryButton}
+          onPress={handleBuyPackage}
+        >
           <Text style={stylesHere.buyButtonText}>
             Comprar{" "}
             {selectedPackage
@@ -147,6 +193,11 @@ const stylesHere = StyleSheet.create({
   },
   whiteText: {
     color: "white",
+  },
+  name: {
+    fontSize: 13,
+    fontWeight: "500",
+    marginBottom: 8,
   },
   rides: {
     fontSize: 18,
@@ -197,7 +248,7 @@ const stylesHere = StyleSheet.create({
     flex: 1,
     paddingHo: 0,
     paddingTop: 75,
-    backgroundColor: "black"
+    backgroundColor: "black",
   },
   headingAndButtons: {
     paddingHorizontal: 24,

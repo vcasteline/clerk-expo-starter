@@ -33,6 +33,7 @@ export interface Booking {
 export interface PurchaseRides {
   id: number;
   attributes: {
+    diasDeExpiracion: any;
     numeroDeRides: number;
     precio: number;
     esUnPack: boolean;

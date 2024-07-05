@@ -42,6 +42,7 @@ export const registerUser = async (userData: {
   email: string;
   birthday: Date;
   telefono: string;
+  clasesDisponibles: number;
 }) => {
   try {
     const response = await axios.post(

@@ -37,11 +37,10 @@ export default function SuccessfulScreen({
     },
     containerInside: {
       flex: 1,
-      //   backgroundColor: "#3D4AF5",
       backgroundColor: "#000",
       alignItems: "center",
-      justifyContent: "center",
-      paddingTop: 0,
+      justifyContent: "flex-start",
+      paddingTop: 80,
       padding: 30,
     },
     box: {
@@ -117,7 +116,7 @@ export default function SuccessfulScreen({
           )}`}{" "}
         </Text>
       </View>
-      <View style={{ alignItems: "center", marginTop: 0, width: "100%" }}>
+      <View style={{ alignItems: "center", marginTop: 10, width: "100%" }}>
         <View
           style={{
             ...styles.spaceBet,
@@ -195,24 +194,15 @@ export default function SuccessfulScreen({
           </Text>
         </View>
       </View>
-      <View style={stylesHere.boxBig}>
+      <View style={{...stylesHere.boxBig, marginTop: 30}}>
         <View
           style={{
             alignItems: "center",
-            marginTop: 0,
+            marginTop: 10,
             justifyContent: "center",
           }}
         >
-          <Text
-            style={{
-              color: "white",
-              textAlign: "center",
-              marginBottom: 10,
-              fontSize: 18,
-            }}
-          >
-            ¡Evita atrasos!
-          </Text>
+         
           <Text
             style={{
               color: "white",
@@ -221,122 +211,15 @@ export default function SuccessfulScreen({
               paddingHorizontal: 20,
             }}
           >
-            Sabemos que a veces no puedes llegar a clase, recuerda que puedes
-            cancelar tu clase hasta 12 horas antes.
+            Recuerda que puedes cancelar tu clase hasta 12 horas antes de la
+                clase reservada. Caso contrario perderás el crédito de ese
+                booking. {"\n"}{"\n"} Por respeto a nuestros coaches y a nuestros riders
+                pedimos puntualidad ya que no podemos interrumpir la sesión en
+                curso. Ten presente que <Text style={{fontWeight: "bold"}}>tu bici será liberada 4 minutos antes de
+                que inicie la clase.</Text> {"\n"}{"\n"}Para que todos disfrutemos de la sesión no
+                se permite el uso de teléfonos celulares dentro del estudio. {"\n"}{"\n"}Por
+                seguridad, los créditos no son transferibles.
           </Text>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "flex-start",
-              marginBottom: 10,
-              paddingHorizontal: 20,
-            }}
-          >
-            <View style={{ width: 25, alignItems: "center" }}>
-              <Ionicons name="hand-right" color={"#F6FD91"} size={20} />
-            </View>
-            <Text
-              style={{
-                color: "white",
-                textAlign: "left",
-                marginLeft: 10,
-                flex: 1,
-              }}
-            >
-              Las puertas para entrar se abren únicamente al final de la primera
-              y la segunda canción (lo sentimos, no podemos interrumpirlas).
-            </Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "flex-start",
-              marginBottom: 10,
-              paddingHorizontal: 20,
-            }}
-          >
-            <View style={{ width: 25, alignItems: "center" }}>
-              <Ionicons name="musical-notes" color={"#F6FD91"} size={20} />
-            </View>
-            <Text
-              style={{
-                color: "white",
-                textAlign: "left",
-                marginLeft: 10,
-                flex: 1,
-              }}
-            >
-              Tu lugar será liberado entre la primera y la segunda canción, sin
-              embargo podrás entrar a la clase bajo disponibilidad.
-            </Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "flex-start",
-              marginBottom: 10,
-              paddingHorizontal: 20,
-            }}
-          >
-            <View style={{ width: 25, alignItems: "center" }}>
-              <Ionicons name="warning" color={"#F6FD91"} size={20} />
-            </View>
-            <Text
-              style={{
-                color: "white",
-                textAlign: "left",
-                marginLeft: 10,
-                flex: 1,
-              }}
-            >
-              Al terminar la tercera canción ya nadie puede entrar a la clase
-              por seguridad.
-            </Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "flex-start",
-              paddingHorizontal: 20,
-              marginBottom: 10,
-            }}
-          >
-            <View style={{ width: 25, alignItems: "center" }}>
-              <Ionicons name="phone-portrait" color={"#F6FD91"} size={20} />
-            </View>
-            <Text
-              style={{
-                color: "white",
-                textAlign: "left",
-                marginLeft: 10,
-                flex: 1,
-              }}
-            >
-              Evita usar tu teléfono para que todos disfrutemos la clase.
-            </Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "flex-start",
-              marginBottom: 10,
-              paddingHorizontal: 20,
-            }}
-          >
-            <View style={{ width: 25, alignItems: "center" }}>
-              <Ionicons name="shirt" color={"#F6FD91"} size={20} />
-            </View>
-            <Text
-              style={{
-                color: "white",
-                textAlign: "left",
-                marginLeft: 10,
-                flex: 1,
-              }}
-            >
-              Lleva ropa cómoda que transpire.
-            </Text>
-          </View>
         </View>
       </View>
       <TouchableOpacity
