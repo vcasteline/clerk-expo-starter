@@ -41,15 +41,15 @@ export default function ClassScreen({
     return nuevaHora;
   }
   const usuarioId = userData?.id;
-  const clasesDisponibles = userData?.clasesDisponibles;
   const classData = bookingData?.attributes?.class?.data?.attributes;
   const instructor = classData?.instructor?.data?.attributes;
-  const instructorImage = instructor?.fotoPerfil?.data?.attributes?.url;
   const room =
     bookingData?.attributes?.class?.data?.attributes?.room?.data?.attributes
       ?.roomNumber;
-  const bicycle =
-    bookingData?.attributes?.bicycle?.data?.attributes?.bicycleNumber;
+  const bicycle1 =
+    bookingData?.attributes?.bicycles?.data[0]?.attributes?.bicycleNumber;
+  const bicycle2 =
+    bookingData?.attributes.bicycles?.data[1]?.attributes?.bicycleNumber;
   const convertedFecha = convertDate(bookingData?.attributes?.fechaHora);
   const horaRedondeadaInicio = redondearHora(classData?.horaInicio);
   const horaRedondeadaFin = redondearHora(classData?.horaFin);
@@ -59,44 +59,52 @@ export default function ClassScreen({
       const userId = usuarioId;
       const token = await AsyncStorage.getItem("userToken");
       const bookingId = bookingData.id;
+      const currentDate = new Date();
+      const classDate = new Date(bookingData?.attributes?.fechaHora);
+      const timeDifference = classDate.getTime() - currentDate.getTime();
 
       if (!userId || !token) {
         throw new Error("No se pudo obtener la información del usuario");
       }
+      // Convierte la diferencia a horas
+      const hoursDifference = Math.floor(timeDifference / (1000 * 60 * 60));
 
-      const result: any = await devolverCreditoClase(
-        userId,
-        token,
-        async () => {
-          // Esta función se ejecutará si el usuario decide cancelar sin reembolso
+      // if (hoursDifference <= 12) {
+      //   // Si la diferencia es menor o igual a 12 horas, muestra el mensaje de alerta
+      //   Alert.alert(
+      //     "Oops!",
+      //     "Ya estamos dentro del periodo de no-cancelación. Cancela tus clases con más de 12 horas de anticipación la próxima vez."
+      //   );
+      // } else {
+        const result: any = await devolverCreditoClase(
+          userId,
+          token,
+          bookingId,
+          async () => {
+            await updateBookingStatus(bookingId, "cancelled", token);
+          }
+        );
+
+        if (result?.success) {
+          // La cancelación fue exitosa y se devolvió el crédito
           await updateBookingStatus(bookingId, "cancelled", token);
-          // Aquí puedes agregar cualquier otra lógica necesaria para la cancelación sin reembolso
+          Alert.alert(
+            "Éxito",
+            "La reserva ha sido cancelada y 1 crédito ha sido devuelto."
+          );
+        } else if (result?.message === "Cancelado sin devolución de crédito") {
+          Alert.alert(
+            "Cancelación completada",
+            "La reserva ha sido cancelada sin devolución de crédito."
+          );
+        } else {
+          Alert.alert(
+            "Cancelación abortada",
+            "No se ha realizado ningún cambio en tu reserva."
+          );
         }
-      );
+      //}
 
-      if (result?.success) {
-        // La cancelación fue exitosa y se devolvió el crédito
-        await updateBookingStatus(bookingId, "cancelled", token);
-        Alert.alert(
-          "Éxito",
-          "La reserva ha sido cancelada y el crédito ha sido devuelto."
-        );
-      } else if (result?.message === "Cancelado sin devolución de crédito") {
-        // El usuario decidió cancelar sin reembolso
-        Alert.alert(
-          "Cancelación completada",
-          "La reserva ha sido cancelada sin devolución de crédito."
-        );
-        // navigation.navigate("HomeStack");
-      } else {
-        // El usuario decidió no cancelar
-        Alert.alert(
-          "Cancelación abortada",
-          "No se ha realizado ningún cambio en tu reserva."
-        );
-      }
-
-      // Actualizar la interfaz de usuario o navegar a otra pantalla si es necesario
       navigation.navigate("Home");
     } catch (error) {
       console.error("Error al cancelar la reserva:", error);
@@ -307,7 +315,7 @@ export default function ClassScreen({
                   fontWeight: "400",
                 }}
               >
-                {bicycle}
+                {bicycle2 ? bicycle1 + "," + bicycle2 : bicycle1}
               </Text>
             </View>
           </View>
@@ -329,12 +337,17 @@ export default function ClassScreen({
               >
                 Recuerda que puedes cancelar tu clase hasta 12 horas antes de la
                 clase reservada. Caso contrario perderás el crédito de ese
-                booking. {"\n"}{"\n"} Por respeto a nuestros coaches y a nuestros riders
+                booking. {"\n"}
+                {"\n"} Por respeto a nuestros coaches y a nuestros riders
                 pedimos puntualidad ya que no podemos interrumpir la sesión en
-                curso. Ten presente que <Text style={{fontWeight: "bold"}}>tu bici será liberada 4 minutos antes de
-                que inicie la clase.</Text> {"\n"}{"\n"}Para que todos disfrutemos de la sesión no
-                se permite el uso de teléfonos celulares dentro del estudio. {"\n"}{"\n"}Por
-                seguridad, los créditos no son transferibles.
+                curso. Ten presente que{" "}
+                <Text style={{ fontWeight: "bold" }}>
+                  tu bici será liberada 4 minutos antes de que inicie la clase.
+                </Text>{" "}
+                {"\n"}
+                {"\n"}Para que todos disfrutemos de la sesión no se permite el
+                uso de teléfonos celulares dentro del estudio. {"\n"}
+                {"\n"}Por seguridad, los créditos no son transferibles.
               </Text>
             </View>
           </View>

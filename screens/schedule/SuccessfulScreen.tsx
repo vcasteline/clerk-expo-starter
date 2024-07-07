@@ -8,8 +8,15 @@ export default function SuccessfulScreen({
   navigation,
   route,
 }: RootStackScreenProps<"Successful">) {
-  const { instructor, date, startTime, endTime, bicycleNumber, dayOfWeek } =
-    route.params;
+  const {
+    instructor,
+    date,
+    startTime,
+    endTime,
+    bicycleNumber,
+    dayOfWeek,
+    guestBicycleNumber,
+  } = route.params;
 
   const stylesHere = StyleSheet.create({
     tag: {
@@ -171,7 +178,9 @@ export default function SuccessfulScreen({
           <Text
             style={{ ...styles.paragraph, color: "white", fontWeight: "400" }}
           >
-            {bicycleNumber}
+            {guestBicycleNumber
+              ? bicycleNumber + "," + guestBicycleNumber
+              : bicycleNumber}
           </Text>
         </View>
         <View
@@ -194,7 +203,7 @@ export default function SuccessfulScreen({
           </Text>
         </View>
       </View>
-      <View style={{...stylesHere.boxBig, marginTop: 30}}>
+      <View style={{ ...stylesHere.boxBig, marginTop: 30 }}>
         <View
           style={{
             alignItems: "center",
@@ -202,7 +211,6 @@ export default function SuccessfulScreen({
             justifyContent: "center",
           }}
         >
-         
           <Text
             style={{
               color: "white",
@@ -212,13 +220,18 @@ export default function SuccessfulScreen({
             }}
           >
             Recuerda que puedes cancelar tu clase hasta 12 horas antes de la
-                clase reservada. Caso contrario perderás el crédito de ese
-                booking. {"\n"}{"\n"} Por respeto a nuestros coaches y a nuestros riders
-                pedimos puntualidad ya que no podemos interrumpir la sesión en
-                curso. Ten presente que <Text style={{fontWeight: "bold"}}>tu bici será liberada 4 minutos antes de
-                que inicie la clase.</Text> {"\n"}{"\n"}Para que todos disfrutemos de la sesión no
-                se permite el uso de teléfonos celulares dentro del estudio. {"\n"}{"\n"}Por
-                seguridad, los créditos no son transferibles.
+            clase reservada. Caso contrario perderás el crédito de ese booking.{" "}
+            {"\n"}
+            {"\n"} Por respeto a nuestros coaches y a nuestros riders pedimos
+            puntualidad ya que no podemos interrumpir la sesión en curso. Ten
+            presente que{" "}
+            <Text style={{ fontWeight: "bold" }}>
+              tu bici será liberada 4 minutos antes de que inicie la clase.
+            </Text>{" "}
+            {"\n"}
+            {"\n"}Para que todos disfrutemos de la sesión no se permite el uso
+            de teléfonos celulares dentro del estudio. {"\n"}
+            {"\n"}Por seguridad, los créditos no son transferibles.
           </Text>
         </View>
       </View>

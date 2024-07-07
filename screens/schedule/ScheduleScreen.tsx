@@ -10,7 +10,10 @@ import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import ClassCard from "../../components/ClassCard";
 import CalendarStrip from "react-native-calendar-strip";
-import { getClassesScheduleScreen, getBookings } from "../../services/GlobalApi";
+import {
+  getClassesScheduleScreen,
+  getBookings,
+} from "../../services/GlobalApi";
 import { Ionicons } from "@expo/vector-icons";
 import { Class, Booking } from "../../interfaces";
 
@@ -88,7 +91,7 @@ export default function ScheduleScreen({
         setRefreshing(false);
       });
   };
-  
+
   const getFilteredClasses = (date: any) => {
     const diaSelecionado = getDayOfWeek(date);
     setHasClicked(true);
@@ -123,7 +126,7 @@ export default function ScheduleScreen({
     )}`;
     return horaRedondeada;
   }
-  
+
   function redondearHoraHelp(hora: string) {
     const [horas, minutos, segundos, milisegundos] = hora.split(":");
     const minutosRedondeados = Math.round(Number(minutos) / 5) * 5;
@@ -222,11 +225,19 @@ export default function ScheduleScreen({
           filteredClasses.map((classItem) => {
             const totalBicycles =
               classItem.attributes.room.data.attributes.bicycles.data.length;
-            const reservedBicycles = bookings.filter(
-              (booking) =>
+
+            // Calcular el total de bicicletas reservadas
+            const reservedBicycles = bookings.reduce((total, booking) => {
+              if (
                 booking.attributes.class.data.id === classItem.id &&
                 booking.attributes.bookingStatus === "completed"
-            ).length;
+              ) {
+                // Sumar el número de bicicletas en este booking
+                return total + booking.attributes.bicycles.data.length;
+              }
+              return total;
+            }, 0);
+
             const availableSpots = totalBicycles - reservedBicycles;
             const classDate = new Date(rawDate);
             const { horas, minutos } = redondearHoraHelp(
@@ -272,7 +283,7 @@ export default function ScheduleScreen({
                 instructor={
                   classItem.attributes.instructor.data.attributes.nombreCompleto
                 }
-                spots={availableSpots.toString()} 
+                spots={availableSpots.toString()}
                 isPastClass={isPastClass}
               />
             );

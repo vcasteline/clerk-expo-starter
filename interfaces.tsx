@@ -22,11 +22,14 @@ export interface Booking {
   class: any;
   id: number;
   attributes: {
+    bicycles: any;
     class: ClassThroughBookings;
     bicycle: BicycleThroughBookings;
-    bookingStatus: "refunded" | "completed";
+    bookingStatus: "refunded" | "completed" | "cancelled";
     user: User;
     fechaHora: string;
+    guest?: Guest;
+    guestBicycle?: BicycleThroughBookings;
   };
 }
 
@@ -130,4 +133,28 @@ export interface Room {
       data: Bicycle[];
     };
   };
+}
+
+export interface Guest {
+  nombreCompleto: string;
+  email: string;
+}
+
+export interface BookingData {
+  class: number;
+  bicycle: (number | null) [];
+  bookingStatus: "refunded" | "completed" | "cancelled";
+  user: number;
+  fechaHora: string;
+  guest?: Guest;
+}
+
+export interface SuccessfulScreenParams {
+  instructor: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  bicycleNumber: number | null;
+  dayOfWeek: string;
+  guestBicycleNumber: number | null;
 }

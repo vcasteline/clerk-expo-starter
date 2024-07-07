@@ -208,11 +208,11 @@ export default function HomeScreen({
             <Text style={{...stylesHere.boxContentBottom, fontWeight: '700', marginBottom: 10, fontSize: 11, color:"white"}}>RIDES</Text>
             <Text style={stylesHere.boxContent}>
               {!loading && userBookings
-                ? user?.past_bookings.length
+                ? user?.past_bookings?.length
                 : "-"}
             </Text>
             <Text style={stylesHere.boxContentBottom}>
-              {userBookings.filter(
+              {userBookings?.filter(
                     (booking: Booking) =>
                       booking.attributes.bookingStatus === "completed"
                   ).length === 1 ? "Realizado" : "Realizados"}

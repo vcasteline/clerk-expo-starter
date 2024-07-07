@@ -36,7 +36,7 @@ export const getClassBicycles = async (classId: number) => {
 export const reserveBike = async (bookingData: any, token: any) => {
   const formattedBookingData = {
     class: bookingData.class,
-    bicycle: bookingData.bicycle,
+    bicycles: bookingData.bicycles,
     user: bookingData.user,
     bookingStatus: bookingData.bookingStatus,
     fechaHora: bookingData.fechaHora,
@@ -84,7 +84,7 @@ export const updateUserClases = async (
 export const getUserBookings = async (token: string, userId: number) => {
   try {
     const response = await axios.get(
-      `${API_URL}/bookings?populate[class][populate][instructor][populate]=*&populate[bicycle][populate]=*&filters[user][id][$eq]=${userId}`,
+      `${API_URL}/bookings?populate[class][populate][instructor][populate]=*&populate[bicycles][populate]=*&filters[user][id][$eq]=${userId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -196,6 +196,7 @@ export const reservarClaseYActualizarPaquete = async (
 export const devolverCreditoClase = async (
   userId: number | undefined,
   token: string,
+  bookingId: number,
   onCancelWithoutRefund: () => void
 ) => {
   try {
@@ -210,7 +211,7 @@ export const devolverCreditoClase = async (
       }
     );
     const paquetes = paquetesResponse.data.data;
-    console.log("Paquetes encontrados:", paquetes.length);
+    const fechaActual = new Date();
 
     const paqueteAActualizar = paquetes.find(
       (p: {
@@ -225,7 +226,7 @@ export const devolverCreditoClase = async (
     console.log("Paquete a actualizar:", paqueteAActualizar);
 
     if (paqueteAActualizar) {
-      console.log("Actualizando paquete:", paqueteAActualizar.id);
+      // Devolver un crédito
       await axios.put(
         `${API_URL}/purchased-ride-packs/${paqueteAActualizar.id}`,
         {
@@ -238,6 +239,7 @@ export const devolverCreditoClase = async (
         }
       );
 
+      // Actualizar clasesDisponibles del usuario
       const userResponse = await axios.get(
         `${API_URL}/users/${userId}?fields[0]=clasesDisponibles`,
         {
@@ -256,7 +258,7 @@ export const devolverCreditoClase = async (
       return new Promise((resolve) => {
         Alert.alert(
           "¿Estás seguro?",
-          "Tu crédito para este booking ya expiró. Si cancelas ahora, tu crédito no será devuelto. ¿Deseas continuar?",
+          "No tienes créditos válidos para devolver. Si cancelas ahora, no recibirás ningún reembolso. ¿Deseas continuar?",
           [
             {
               text: "Sí, cancelar",
@@ -274,7 +276,6 @@ export const devolverCreditoClase = async (
           ]
         );
       });
-  
     }
   } catch (error) {
     console.error("Error al cancelar la clase y devolver el crédito:", error);

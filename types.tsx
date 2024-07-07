@@ -32,6 +32,7 @@ export type RootStackParamList = {
     endTime: string;
     bicycleNumber: any;
     dayOfWeek: string;
+    guestBicycleNumber: any;
   };
   BuyRides: undefined;
   Welcome: undefined;

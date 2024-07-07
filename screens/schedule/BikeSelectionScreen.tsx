@@ -7,39 +7,60 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   Alert,
+  Modal,
+  TextInput,
 } from "react-native";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import { Ionicons } from "@expo/vector-icons";
-import { Bicycle, Booking } from "../../interfaces";
-import { getBookings, getClassBicycles, getUserBookings, reservarClaseYActualizarPaquete, reserveBike, updateBookingStatus, updateUserClases } from "../../services/GlobalApi";
+import {
+  Bicycle,
+  Booking,
+  BookingData,
+  Guest,
+  SuccessfulScreenParams,
+} from "../../interfaces";
+import {
+  getBookings,
+  getClassBicycles,
+  getUserBookings,
+  reservarClaseYActualizarPaquete,
+  reserveBike,
+  updateBookingStatus,
+} from "../../services/GlobalApi";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getMe } from "../../services/AuthService";
-
 
 export default function BikeSelectionScreen({
   navigation,
   route,
 }: RootStackScreenProps<"BikeSelection">) {
-  const { instructor, convertedDate, rawDate, time, timeFin, classId, dia } = route.params;
-  const [selectedBike, setSelectedBike] = useState(null);
-  const [bikeId, setBikeId] = useState(null);
+  const { instructor, convertedDate, rawDate, time, timeFin, classId, dia } =
+    route.params;
+  const [selectedBike, setSelectedBike] = useState<number | null>(null);
+  const [selectedGuestBike, setSelectedGuestBike] = useState<number | null>(
+    null
+  );
+  const [guestAdded, setGuestAdded] = useState(false);
   const [bicycles, setBicycles] = useState<Bicycle[]>([]);
   const [classBookings, setClassBookings] = useState<Booking[]>([]);
-
+  const [isGuestModalVisible, setIsGuestModalVisible] = useState(false);
+  const [guestInfo, setGuestInfo] = useState<Guest>({
+    nombreCompleto: "",
+    email: "",
+  });
 
   useEffect(() => {
     getClassBicycles(classId)
       .then((response) => {
-        const classBicycles = response.data.attributes.room.data.attributes.bicycles.data;
+        const classBicycles =
+          response.data.attributes.room.data.attributes.bicycles.data;
         setBicycles(classBicycles);
       })
       .catch((error) => {
         console.error(error);
       });
-  }, [classId]);
 
-  useEffect(() => {
     getBookings()
       .then((response) => {
         const bookings = response.data.data;
@@ -50,97 +71,100 @@ export default function BikeSelectionScreen({
       });
   }, [classId]);
 
-  const handleBikeSelect = (bikeNum: any, bikeIdentification: any) => {
-    setSelectedBike(bikeNum);
-    setBikeId(bikeIdentification);
+  const handleBikeSelect = (bikeNum: number, bikeId: number) => {
+    if (selectedBike === bikeNum) {
+      setSelectedBike(null);
+    } else if (selectedGuestBike === bikeNum) {
+      setSelectedGuestBike(null);
+    } else if (!selectedBike) {
+      setSelectedBike(bikeNum);
+    } else if (guestAdded && !selectedGuestBike) {
+      setSelectedGuestBike(bikeNum);
+    }
   };
 
   const renderBikeButton = (bike: Bicycle) => {
     const isSelected = selectedBike === bike.attributes.bicycleNumber;
-    if (classBookings) {
-      const isBikeBooked = classBookings.length > 0 && classBookings.some(
-        (booking) =>
-          booking.attributes.bicycle.data.attributes.bicycleNumber === bike.attributes.bicycleNumber &&
-          booking.attributes.class.data.id === classId &&
+    const isGuestSelected = selectedGuestBike === bike.attributes.bicycleNumber;
+    const isBikeBooked = classBookings.some((booking) =>
+      booking.attributes.bicycles.data.some(
+        (bookedBike: { attributes: { bicycleNumber: number } }) =>
+          bookedBike.attributes.bicycleNumber ===
+            bike.attributes.bicycleNumber &&
+          booking.attributes.class?.data.id === classId &&
           booking.attributes.bookingStatus === "completed"
-      );
-    
+      )
+    );
     const buttonStyle = [
       stylesHere.bikeButton,
       isSelected && stylesHere.selectedBikeButton,
+      isGuestSelected && stylesHere.selectedGuestBikeButton,
       isBikeBooked && stylesHere.unavailableBikeButton,
     ];
-  
+
     return (
       <TouchableOpacity
         key={bike.id}
         style={buttonStyle}
-        onPress={() => !isBikeBooked && handleBikeSelect(bike.attributes.bicycleNumber, bike.id)}
-        disabled={false}
+        onPress={() => handleBikeSelect(bike.attributes.bicycleNumber, bike.id)}
+        disabled={isBikeBooked}
       >
-        <Text style={isSelected && stylesHere.selectedBikeButtonText}>
+        <Text
+          style={[
+            stylesHere.bikeButtonText,
+            (isSelected || isGuestSelected) &&
+              stylesHere.selectedBikeButtonText,
+          ]}
+        >
           {bike.attributes.bicycleNumber}
         </Text>
       </TouchableOpacity>
     );
   };
 
-    // Si classBookings no está definido, renderizar el botón sin la verificación de isBikeBooked
-  const buttonStyle = [
-    stylesHere.bikeButton,
-    isSelected && stylesHere.selectedBikeButton,
-  ];
-  
-  return (
-    <TouchableOpacity
-      key={bike.id}
-      style={buttonStyle}
-      onPress={() => handleBikeSelect(bike.attributes.bicycleNumber, bike.id)}
-    >
-      <Text style={isSelected && stylesHere.selectedBikeButtonText}>
-        {bike.attributes.bicycleNumber}
-      </Text>
-    </TouchableOpacity>
-  );
-}
+  const handleAddGuestConfirm = () => {
+    if (!guestInfo.nombreCompleto || !guestInfo.email) {
+      Alert.alert(
+        "Error",
+        "Por favor, completa todos los campos para el invitado."
+      );
+      return;
+    }
+    setIsGuestModalVisible(false);
+    setGuestAdded(true);
+    // Habilitar la selección de la bicicleta del invitado
+    setSelectedGuestBike(null);
+  };
 
-
-
-  const onBackPress = () => navigation.popToTop();
-  
-  const onBikeReservePress = async (classBookings: any) => {
+  const onBikeReservePress = async () => {
     try {
       const token = await AsyncStorage.getItem("userToken");
       if (token) {
         const userData = await getMe(token);
         const fechaHora = `${rawDate}${time}:00.000Z`;
-  
-        // Verificar si el usuario tiene clases disponibles
-        if (userData.clasesDisponibles > 0) {
-          // Verificar si la bicicleta seleccionada ya está reservada para la clase
-          const isBikeBooked = classBookings.length > 0 && classBookings.some(
-            (booking: any) =>
-            booking.attributes.bicycle.data.attributes.bicycleNumber === selectedBike &&
-            booking.attributes.class.data.id === classId &&
-            booking.attributes.bookingStatus === "completed"
-          );
-  
-          if (isBikeBooked) {
-            console.log("La bicicleta seleccionada ya está reservada para esta clase");
-            // Manejar el caso cuando la bicicleta ya está reservada
-            return;
-          }
-  
-          // Obtener todas las reservas del usuario
+
+        const requiredClasses = selectedGuestBike ? 2 : 1;
+        if (userData.clasesDisponibles >= requiredClasses) {
+          const bookingData: any = {
+            class: classId,
+            bicycles: selectedGuestBike
+              ? [selectedBike, selectedGuestBike]
+              : [selectedBike],
+            bookingStatus: "completed",
+            user: userData.id,
+            fechaHora: fechaHora,
+            guest: selectedGuestBike ? guestInfo : undefined,
+          };
           const userBookings = await getUserBookings(token, userData.id);
-  
           // Verificar si el usuario ya ha reservado la misma clase anteriormente
-          const hasUserBookedClass = userBookings.length > 0 && userBookings.some(
-            (booking) => 
-            booking.attributes.class.data.id === classId &&
-            booking.attributes.bookingStatus === 'completed'
-          );
-  
+          const hasUserBookedClass =
+            userBookings.length > 0 &&
+            userBookings.some(
+              (booking) =>
+                booking.attributes.class.data.id === classId &&
+                booking.attributes.bookingStatus === "completed"
+            );
+
           if (hasUserBookedClass) {
             Alert.alert(
               "Ya tienes bici",
@@ -155,40 +179,43 @@ export default function BikeSelectionScreen({
             // Manejar el caso cuando el usuario ya ha reservado la misma clase
             return;
           }
-  
-          // Realizar el POST request para reservar la bicicleta
-          const bookingResponse = await reserveBike({
-            class: classId,
-            bicycle: bikeId,
-            bookingStatus: "completed",
-            user: userData.id,
-            fechaHora: fechaHora,
-          }, token);
-  
-          // Actualizar el estado del booking a "completed"
-          await updateBookingStatus(bookingResponse.data.id, "completed", token);
-          // Restar clasesDisponibles del usuario y actualizar paquete con clases utilizadas
+
+          const bookingResponse = await reserveBike(bookingData, token);
+          await updateBookingStatus(
+            bookingResponse.data.id,
+            "completed",
+            token
+          );
+          if (requiredClasses == 2) {
+            const res = await reservarClaseYActualizarPaquete(userData.id, token);
+            
+          }
           await reservarClaseYActualizarPaquete(userData.id, token);
-  
-          navigation.navigate('Successful', {
+
+          navigation.navigate("Successful", {
             instructor: instructor.name,
             date: convertedDate,
             startTime: time,
             endTime: timeFin,
-            bicycleNumber: bikeId,
-            dayOfWeek: dia
-          });
+            bicycleNumber: selectedBike,
+            dayOfWeek: dia,
+            guestBicycleNumber: selectedGuestBike,
+          } as SuccessfulScreenParams);
         } else {
-          // Manejar el caso cuando el usuario no tiene clases disponibles
           navigation.navigate("BuyRides");
         }
       }
     } catch (error) {
       console.error("Error al reservar la bicicleta:", error);
-      // Manejar el error de reserva
+      Alert.alert(
+        "Error",
+        "No se pudo completar la reserva. Por favor, inténtalo de nuevo."
+      );
+      //buy rides navigation
     }
   };
-  // const onBikeReservePress = () => navigation.navigate("BuyRides");
+
+  const onBackPress = () => navigation.popToTop();
 
   return (
     <View style={styles.containerInside}>
@@ -197,10 +224,19 @@ export default function BikeSelectionScreen({
           <Ionicons name="chevron-back-outline" size={30} color={"white"} />
         </TouchableWithoutFeedback>
       </View>
-      <View style={{...styles.flex, flexDirection: "row",
-    justifyContent: "flex-start", width:'100%', marginLeft:60, marginVertical:5}}>
-      <Text style={{ ...styles.titleText, color: "white" }}>Selecciona tu Bici</Text>
-
+      <View
+        style={{
+          ...styles.flex,
+          flexDirection: "row",
+          justifyContent: "flex-start",
+          width: "100%",
+          marginLeft: 60,
+          marginVertical: 5,
+        }}
+      >
+        <Text style={{ ...styles.titleText, color: "white" }}>
+          Selecciona tu Bici
+        </Text>
       </View>
 
       <View style={styles.center}>
@@ -209,7 +245,9 @@ export default function BikeSelectionScreen({
             <Ionicons name="calendar" color={"#F6FD91"} size={20} />
           </View>
           <Text style={stylesHere.boxContentBottom}>Día y Hora</Text>
-          <Text style={stylesHere.boxContentBottomTwo}>{convertedDate} - {time}</Text>
+          <Text style={stylesHere.boxContentBottomTwo}>
+            {convertedDate} - {time}
+          </Text>
         </View>
         <View style={stylesHere.box}>
           <View style={styles.spaceBet}>
@@ -241,23 +279,108 @@ export default function BikeSelectionScreen({
         />
         <Text style={stylesHere.instructorName}>{instructor.name}</Text>
         <View style={stylesHere.bikeGrid}>
-          {bicycles.map(renderBikeButton)}
+          {bicycles.map((bike) => renderBikeButton(bike))}
         </View>
- 
+
         <View style={stylesHere.bottomContainer}>
-          <Ionicons name="bicycle" color={"black"} size={28} />
-          <Text style={stylesHere.bikeNumber}>
-            {selectedBike || "# Bici"}
-          </Text>
-          <TouchableOpacity
-            style={selectedBike ? stylesHere.reserveButton : stylesHere.reserveButtonDisabled}
-            onPress={onBikeReservePress}
-            disabled={!selectedBike}
-          >
-            <Text style={stylesHere.reserveButtonText}>Reservar Bici</Text>
-          </TouchableOpacity>
+          <View style={stylesHere.guestContainer}>
+            <TouchableOpacity
+              style={[
+                stylesHere.addGuestButton,
+                guestAdded && stylesHere.addGuestButtonDisabled,
+              ]}
+              onPress={() => setIsGuestModalVisible(true)}
+              disabled={guestAdded}
+            >
+              <Ionicons
+                name="person-add"
+                size={15}
+                color={guestAdded ? "gray" : "black"}
+              />
+              <Text
+                style={[
+                  stylesHere.addGuestButtonText,
+                  guestAdded && stylesHere.addGuestButtonTextDisabled,
+                ]}
+              >
+                {guestAdded ? "Añadido" : "Invitado"}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={
+                selectedBike &&
+                (!guestAdded || (guestAdded && selectedGuestBike))
+                  ? stylesHere.reserveButton
+                  : stylesHere.reserveButtonDisabled
+              }
+              onPress={onBikeReservePress}
+              disabled={!selectedBike || (guestAdded && !selectedGuestBike)}
+            >
+              <Text style={stylesHere.reserveButtonText}>Reservar Bici</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
+
+      <Modal
+        visible={isGuestModalVisible}
+        transparent={true}
+        animationType="slide"
+      >
+        <View style={stylesHere.modalContainer}>
+          <View style={stylesHere.modalContent}>
+            <Text
+              style={{
+                ...styles.subtitle,
+                textAlign: "center",
+                marginBottom: 25,
+              }}
+            >
+              Añadir invitado
+            </Text>
+            <Text style={styles.label}>NOMBRE COMPLETO</Text>
+            <View style={styles.inputView}>
+              <TextInput
+                autoCapitalize="none"
+                value={guestInfo.nombreCompleto}
+                style={styles.textInput}
+                placeholder="Nombre completo..."
+                placeholderTextColor="gray"
+                onChangeText={(text) =>
+                  setGuestInfo({ ...guestInfo, nombreCompleto: text })
+                }
+              />
+            </View>
+            <Text style={styles.label}>EMAIL</Text>
+            <View style={styles.inputView}>
+              <TextInput
+                autoCapitalize="none"
+                value={guestInfo.email}
+                style={styles.textInput}
+                placeholder="Email..."
+                placeholderTextColor="gray"
+                onChangeText={(text) =>
+                  setGuestInfo({ ...guestInfo, email: text })
+                }
+                keyboardType="email-address"
+              />
+            </View>
+
+            <TouchableOpacity
+              style={styles.primaryButton}
+              onPress={handleAddGuestConfirm}
+            >
+              <Text style={styles.primaryButtonText}>Confirmar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.secondaryButton}
+              onPress={() => setIsGuestModalVisible(false)}
+            >
+              <Text style={styles.secondaryButtonText}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -276,6 +399,10 @@ const stylesHere = StyleSheet.create({
     color: "rgba(255, 255, 255, 0.8)",
     fontSize: 16,
     marginBottom: 24,
+  },
+  selectedGuestBikeButton: {
+    backgroundColor: "#3D4AF5",
+    color: "white",
   },
   boxContent: {
     textAlign: "center",
@@ -301,11 +428,24 @@ const stylesHere = StyleSheet.create({
     marginTop: -5,
     marginLeft: 3,
   },
-  bottomContainer: {
+  guestContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 0,
+    justifyContent: "center",
+    marginBottom: 10,
+    width: "100%",
+  },
+  addGuestButtonDisabled: {
+    backgroundColor: "#E0E0E0",
+  },
+  addGuestButtonTextDisabled: {
+    color: "gray",
+  },
+  guestName: {
+    marginLeft: 10,
+    marginBottom: 3,
+    fontSize: 14,
+    color: "black",
   },
   bikeNumber: {
     fontSize: 16,
@@ -335,15 +475,15 @@ const stylesHere = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "center",
-    marginBottom: 20,
+    marginBottom: 0,
   },
   selectedBikeButton: {
     backgroundColor: "#3D4AF5",
     color: "white",
   },
   bikeButton: {
-    width: 35,
-    height: 35,
+    width: 34,
+    height: 32,
     borderRadius: 8,
     backgroundColor: "#CDDDFC",
     justifyContent: "center",
@@ -358,7 +498,7 @@ const stylesHere = StyleSheet.create({
   },
   selectedBikeButtonText: {
     fontSize: 18,
-    color: "white"
+    color: "white",
   },
   instructorImage: {
     width: 40,
@@ -366,29 +506,29 @@ const stylesHere = StyleSheet.create({
     borderRadius: 50,
     alignSelf: "center",
     marginBottom: 10,
-    marginTop:20
+    marginTop: 20,
   },
   instructorName: {
     fontSize: 14,
     alignSelf: "center",
     marginBottom: 10,
   },
-  reserveButton: {
-    backgroundColor: "black",
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 15,
-    width: "70%",
-    alignSelf: "center",
-  },
-  reserveButtonDisabled: {
-    backgroundColor: "#CDCDCD",
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 15,
-    width: "60%",
-    alignSelf: "center",
-  },
+  // reserveButton: {
+  //   backgroundColor: "black",
+  //   paddingVertical: 15,
+  //   paddingHorizontal: 30,
+  //   borderRadius: 15,
+  //   width: "70%",
+  //   alignSelf: "center",
+  // },
+  // reserveButtonDisabled: {
+  //   backgroundColor: "#CDCDCD",
+  //   paddingVertical: 15,
+  //   paddingHorizontal: 30,
+  //   borderRadius: 15,
+  //   width: "60%",
+  //   alignSelf: "center",
+  // },
   reserveButtonText: {
     color: "#fff",
     fontSize: 18,
@@ -422,5 +562,114 @@ const stylesHere = StyleSheet.create({
   },
   legendText: {
     fontSize: 14,
+  },
+
+  // Estilos para el modal
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 30,
+    width: "80%",
+    maxHeight: "80%",
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  modalSubtitle: {
+    fontSize: 18,
+    marginTop: 15,
+    marginBottom: 10,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 15,
+    fontSize: 16,
+  },
+  modalButton: {
+    backgroundColor: "black",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  modalButtonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  modalCancelButton: {
+    backgroundColor: "#ccc",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  modalCancelButtonText: {
+    color: "black",
+    fontSize: 18,
+  },
+
+  // Ajuste para el grid de bicicletas en el modal
+  bikeGridModal: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    marginBottom: 15,
+  },
+
+  // Ajuste para el bottomContainer
+  bottomContainer: {
+    flexDirection: "column",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 10,
+    width: "100%",
+  },
+
+  // Estilos para el botón de añadir invitado
+  addGuestButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F0F0F0",
+    padding: 15,
+    borderRadius: 20,
+  },
+  addGuestButtonText: {
+    marginLeft: 10,
+    fontSize: 16,
+    color: "black",
+  },
+
+  // Ajuste para el botón de reserva
+  reserveButton: {
+    backgroundColor: "black",
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 15,
+    width: "70%",
+    alignSelf: "center",
+    marginLeft: 10,
+  },
+  reserveButtonDisabled: {
+    backgroundColor: "#CDCDCD",
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 15,
+    width: "70%",
+    alignSelf: "center",
+    marginLeft: 10,
   },
 });
