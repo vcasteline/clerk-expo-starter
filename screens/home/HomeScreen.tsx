@@ -274,19 +274,12 @@ export default function HomeScreen({
                   )
                   .slice(0, 2)
                   .map((booking: Booking) => {
-                    const usuarioId = user?.id;
-                    const clasesDisponibles = user?.clasesDisponibles;
                     const classData =
                       booking?.attributes?.class?.data?.attributes;
                     const instructor = classData?.instructor?.data?.attributes;
-                    const instructorImage =
-                      instructor?.fotoPerfil?.data?.attributes?.url;
                     const room =
                       booking?.attributes?.class?.data?.attributes?.room?.data
                         ?.attributes?.roomNumber;
-                    const bicycle =
-                      booking?.attributes?.bicycle?.data?.attributes
-                        ?.bicycleNumber;
                     const convertedFecha = convertDate(
                       booking?.attributes?.fechaHora
                     );

@@ -16,6 +16,7 @@ export default function SuccessfulScreen({
     bicycleNumber,
     dayOfWeek,
     guestBicycleNumber,
+    guestName,
   } = route.params;
 
   const stylesHere = StyleSheet.create({
@@ -202,6 +203,27 @@ export default function SuccessfulScreen({
             {instructor}
           </Text>
         </View>
+        {guestName ? (
+          <View
+            style={{
+              ...styles.spaceBet,
+              alignItems: "center",
+              marginTop: 0,
+              width: "100%",
+            }}
+          >
+            <Text
+              style={{ ...styles.paragraph, color: "white", fontWeight: "400" }}
+            >
+              Invitado{" "}
+            </Text>
+            <Text
+              style={{ ...styles.paragraph, color: "white", fontWeight: "400" }}
+            >
+              {guestName}
+            </Text>
+          </View>
+        ) : null}
       </View>
       <View style={{ ...stylesHere.boxBig, marginTop: 30 }}>
         <View

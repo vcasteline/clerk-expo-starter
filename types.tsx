@@ -33,6 +33,7 @@ export type RootStackParamList = {
     bicycleNumber: any;
     dayOfWeek: string;
     guestBicycleNumber: any;
+    guestName: any;
   };
   BuyRides: undefined;
   Welcome: undefined;

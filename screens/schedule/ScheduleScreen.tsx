@@ -28,7 +28,7 @@ export default function ScheduleScreen({
       marginTop: 0,
       paddingBottom: 40,
       width: "100%",
-      height: 630,
+      height: "75%",
       backgroundColor: "#fff",
     },
   });
@@ -91,13 +91,14 @@ export default function ScheduleScreen({
         setRefreshing(false);
       });
   };
-
   const getFilteredClasses = (date: any) => {
     const diaSelecionado = getDayOfWeek(date);
     setHasClicked(true);
     const filtered = classes.filter(
       (clase: { attributes: { diaDeLaSemana: string } }) =>
         clase.attributes.diaDeLaSemana === diaSelecionado
+    ).sort((a, b) => 
+      horaANumero(a.attributes.horaInicio) - horaANumero(b.attributes.horaInicio)
     );
     setFilteredClasses(filtered);
   };
@@ -116,7 +117,10 @@ export default function ScheduleScreen({
     convertDate(date);
     setRawDate(date);
   };
-
+  const horaANumero = (hora: any) => {
+    const [horas, minutos] = hora.split(':').map(Number);
+    return horas * 60 + minutos;
+  };
   function redondearHora(hora: string) {
     const [horas, minutos, segundos, milisegundos] = hora.split(":");
     const minutosRedondeados = Math.round(Number(minutos) / 5) * 5;
@@ -175,11 +179,12 @@ export default function ScheduleScreen({
           dateNameStyle={{ color: "white" }}
         />
       </View>
+      <View style={stylesHere.dashboard}>
       <ScrollView
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        style={stylesHere.dashboard}
+        
       >
         {!hasClicked ? (
           <View>
@@ -290,6 +295,8 @@ export default function ScheduleScreen({
           })
         )}
       </ScrollView>
+      </View>
+      
     </View>
   );
 }

@@ -23,7 +23,7 @@ export default function InstructorsScreen({
       marginTop: 30,
       paddingBottom: 40,
       width: "100%",
-      height: "100%",
+      height: "80%",
       justifyContent: "flex-start",
       backgroundColor: "#fff",
     },

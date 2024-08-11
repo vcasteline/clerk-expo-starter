@@ -21,6 +21,7 @@ import {
   SuccessfulScreenParams,
 } from "../../interfaces";
 import {
+  createGuest,
   getBookings,
   getClassBicycles,
   getUserBookings,
@@ -139,79 +140,74 @@ export default function BikeSelectionScreen({
   const onBikeReservePress = async () => {
     try {
       const token = await AsyncStorage.getItem("userToken");
-      if (token) {
-        const userData = await getMe(token);
-        const fechaHora = `${rawDate}${time}:00.000Z`;
-
-        const requiredClasses = selectedGuestBike ? 2 : 1;
-        if (userData.clasesDisponibles >= requiredClasses) {
-          const bookingData: any = {
-            class: classId,
-            bicycles: selectedGuestBike
-              ? [selectedBike, selectedGuestBike]
-              : [selectedBike],
-            bookingStatus: "completed",
-            user: userData.id,
-            fechaHora: fechaHora,
-            guest: selectedGuestBike ? guestInfo : undefined,
-          };
-          const userBookings = await getUserBookings(token, userData.id);
-          // Verificar si el usuario ya ha reservado la misma clase anteriormente
-          const hasUserBookedClass =
-            userBookings.length > 0 &&
-            userBookings.some(
-              (booking) =>
-                booking.attributes.class.data.id === classId &&
-                booking.attributes.bookingStatus === "completed"
-            );
-
-          if (hasUserBookedClass) {
-            Alert.alert(
-              "Ya tienes bici",
-              "Ya has reservado esta clase anteriormente",
-              [
-                {
-                  text: "Listo",
-                  style: "default",
-                },
-              ]
-            );
-            // Manejar el caso cuando el usuario ya ha reservado la misma clase
-            return;
-          }
-
-          const bookingResponse = await reserveBike(bookingData, token);
-          await updateBookingStatus(
-            bookingResponse.data.id,
-            "completed",
-            token
-          );
-          if (requiredClasses == 2) {
-            const res = await reservarClaseYActualizarPaquete(userData.id, token);
-            
-          }
-          await reservarClaseYActualizarPaquete(userData.id, token);
-
-          navigation.navigate("Successful", {
-            instructor: instructor.name,
-            date: convertedDate,
-            startTime: time,
-            endTime: timeFin,
-            bicycleNumber: selectedBike,
-            dayOfWeek: dia,
-            guestBicycleNumber: selectedGuestBike,
-          } as SuccessfulScreenParams);
-        } else {
-          navigation.navigate("BuyRides");
-        }
+      if (!token) {
+        throw new Error("No se encontró el token de usuario");
       }
+  
+      const userData = await getMe(token);
+      const fechaHora = `${rawDate}${time}:00.000Z`;
+  
+      const requiredClasses = selectedGuestBike ? 2 : 1;
+      if (userData.clasesDisponibles < requiredClasses) {
+        navigation.navigate("BuyRides");
+        return;
+      }
+  
+      const userBookings = await getUserBookings(token, userData.id);
+      const hasUserBookedClass = userBookings.some(
+        (booking) =>
+          booking.attributes.class.data.id === classId &&
+          booking.attributes.bookingStatus === "completed"
+      );
+  
+      if (hasUserBookedClass) {
+        Alert.alert("Ya tienes bici", "Ya has reservado esta clase anteriormente");
+        return;
+      }
+  
+      let guestId = null;
+      if (selectedGuestBike && guestInfo) {
+        const guestData = {
+          nombreCompleto: guestInfo.nombreCompleto,
+          email: guestInfo.email,
+        };
+        const createdGuest = await createGuest(guestData, token);
+        guestId = createdGuest.id;
+      }
+  
+      const bookingData = {
+        class: classId,
+        bicycles: selectedGuestBike ? [selectedBike, selectedGuestBike] : [selectedBike],
+        bookingStatus: "completed",
+        user: userData.id,
+        fechaHora: fechaHora,
+        guest: guestId,
+      };
+  
+      const bookingResponse = await reserveBike(bookingData, token);
+      await updateBookingStatus(bookingResponse.data.id, "completed", token);
+  
+      // Actualizar los créditos del usuario
+      for (let i = 0; i < requiredClasses; i++) {
+        await reservarClaseYActualizarPaquete(userData.id, token);
+      }
+  
+      navigation.navigate("Successful", {
+        instructor: instructor.name,
+        date: convertedDate,
+        startTime: time,
+        endTime: timeFin,
+        bicycleNumber: selectedBike,
+        dayOfWeek: dia,
+        guestBicycleNumber: selectedGuestBike,
+        guestName: guestInfo.nombreCompleto
+      } as SuccessfulScreenParams);
     } catch (error) {
       console.error("Error al reservar la bicicleta:", error);
       Alert.alert(
         "Error",
         "No se pudo completar la reserva. Por favor, inténtalo de nuevo."
       );
-      //buy rides navigation
     }
   };
 

@@ -73,6 +73,20 @@ export default function InstructorScreen({
         clase.attributes.instructor.data.attributes.nombreCompleto ===
           instructorName
     );
+     // Ordenar las clases por orden cronológico
+  filtered.sort((a, b) => {
+    const horaInicioA = a.attributes.horaInicio;
+    const horaInicioB = b.attributes.horaInicio;
+
+    const [horasA, minutosA] = horaInicioA.split(':');
+    const [horasB, minutosB] = horaInicioB.split(':');
+
+    const tiempoA = new Date().setHours(parseInt(horasA), parseInt(minutosA));
+    const tiempoB = new Date().setHours(parseInt(horasB), parseInt(minutosB));
+
+    return tiempoA - tiempoB;
+  });
+
     setFilteredClasses(filtered);
   };
 
@@ -152,7 +166,7 @@ export default function InstructorScreen({
               dateNumberStyle={{ color: "black" }}
               dateNameStyle={{ color: "black" }}
             />
-            <ScrollView>
+            <ScrollView style={{ paddingBottom: 40, height: '45%'}}>
               {filteredClasses.length == 0 ? (
                 <View>
                   <Text
@@ -239,7 +253,7 @@ const stylesHere = StyleSheet.create({
     marginTop: 20,
     paddingBottom: 40,
     width: "100%",
-    height: "100%",
+    height: "85%",
     justifyContent: "flex-start",
     backgroundColor: "#fff",
   },

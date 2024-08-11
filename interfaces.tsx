@@ -28,7 +28,7 @@ export interface Booking {
     bookingStatus: "refunded" | "completed" | "cancelled";
     user: User;
     fechaHora: string;
-    guest?: Guest;
+    guest?: GuestThroughBookings;
     guestBicycle?: BicycleThroughBookings;
   };
 }
@@ -140,6 +140,15 @@ export interface Guest {
   email: string;
 }
 
+export interface GuestThroughBookings {
+  data: {
+    attributes: {
+      nombreCompleto: string;
+      email: string;
+    }
+  }
+}
+
 export interface BookingData {
   class: number;
   bicycle: (number | null) [];
@@ -157,4 +166,5 @@ export interface SuccessfulScreenParams {
   bicycleNumber: number | null;
   dayOfWeek: string;
   guestBicycleNumber: number | null;
+  guestName: string;
 }

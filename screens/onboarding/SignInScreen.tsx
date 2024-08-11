@@ -99,9 +99,9 @@ export default function SignInScreen({
       </View>
 
       <View style={stylesHere.inputs}>
-        <View style={styles.oauthView}>
+        {/* <View style={styles.oauthView}>
           <OAuthButtons />
-        </View>
+        </View> */}
         <Text style={styles.label}>ESCRIBE TU EMAIL</Text>
         <View style={styles.inputView}>
           <TextInput

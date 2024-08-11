@@ -50,6 +50,8 @@ export default function ClassScreen({
     bookingData?.attributes?.bicycles?.data[0]?.attributes?.bicycleNumber;
   const bicycle2 =
     bookingData?.attributes.bicycles?.data[1]?.attributes?.bicycleNumber;
+  const guestName =
+    bookingData?.attributes?.guest?.data?.attributes?.nombreCompleto;
   const convertedFecha = convertDate(bookingData?.attributes?.fechaHora);
   const horaRedondeadaInicio = redondearHora(classData?.horaInicio);
   const horaRedondeadaFin = redondearHora(classData?.horaFin);
@@ -76,33 +78,33 @@ export default function ClassScreen({
       //     "Ya estamos dentro del periodo de no-cancelación. Cancela tus clases con más de 12 horas de anticipación la próxima vez."
       //   );
       // } else {
-        const result: any = await devolverCreditoClase(
-          userId,
-          token,
-          bookingId,
-          async () => {
-            await updateBookingStatus(bookingId, "cancelled", token);
-          }
-        );
-
-        if (result?.success) {
-          // La cancelación fue exitosa y se devolvió el crédito
+      const result: any = await devolverCreditoClase(
+        userId,
+        token,
+        bookingId,
+        async () => {
           await updateBookingStatus(bookingId, "cancelled", token);
-          Alert.alert(
-            "Éxito",
-            "La reserva ha sido cancelada y 1 crédito ha sido devuelto."
-          );
-        } else if (result?.message === "Cancelado sin devolución de crédito") {
-          Alert.alert(
-            "Cancelación completada",
-            "La reserva ha sido cancelada sin devolución de crédito."
-          );
-        } else {
-          Alert.alert(
-            "Cancelación abortada",
-            "No se ha realizado ningún cambio en tu reserva."
-          );
         }
+      );
+
+      if (result?.success) {
+        // La cancelación fue exitosa y se devolvió el crédito
+        await updateBookingStatus(bookingId, "cancelled", token);
+        Alert.alert(
+          "Éxito",
+          "La reserva ha sido cancelada y 1 crédito ha sido devuelto."
+        );
+      } else if (result?.message === "Cancelado sin devolución de crédito") {
+        Alert.alert(
+          "Cancelación completada",
+          "La reserva ha sido cancelada sin devolución de crédito."
+        );
+      } else {
+        Alert.alert(
+          "Cancelación abortada",
+          "No se ha realizado ningún cambio en tu reserva."
+        );
+      }
       //}
 
       navigation.navigate("Home");
@@ -306,7 +308,7 @@ export default function ClassScreen({
                   fontWeight: "400",
                 }}
               >
-                Tu bici
+                Tu(s) bici(s)
               </Text>
               <Text
                 style={{
@@ -318,6 +320,35 @@ export default function ClassScreen({
                 {bicycle2 ? bicycle1 + "," + bicycle2 : bicycle1}
               </Text>
             </View>
+            {guestName ? (
+              <View
+                style={{
+                  ...styles.spaceBet,
+                  alignItems: "center",
+                  marginTop: 0,
+                  width: "100%",
+                }}
+              >
+                <Text
+                  style={{
+                    ...styles.paragraph,
+                    color: "white",
+                    fontWeight: "400",
+                  }}
+                >
+                  Invitado
+                </Text>
+                <Text
+                  style={{
+                    ...styles.paragraph,
+                    color: "white",
+                    fontWeight: "400",
+                  }}
+                >
+                  {guestName}
+                </Text>
+              </View>
+            ) : null}
           </View>
           <View style={stylesHere.boxBig}>
             <View

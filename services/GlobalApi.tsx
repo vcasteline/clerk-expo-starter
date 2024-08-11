@@ -40,6 +40,7 @@ export const reserveBike = async (bookingData: any, token: any) => {
     user: bookingData.user,
     bookingStatus: bookingData.bookingStatus,
     fechaHora: bookingData.fechaHora,
+    guest: bookingData.guest
   };
 
   try {
@@ -81,10 +82,27 @@ export const updateUserClases = async (
   }
 };
 
+export const createGuest = async (guestData: { nombreCompleto: string; email: string }, token: string) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/guests`,
+      { data: guestData },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getUserBookings = async (token: string, userId: number) => {
   try {
     const response = await axios.get(
-      `${API_URL}/bookings?populate[class][populate][instructor][populate]=*&populate[bicycles][populate]=*&filters[user][id][$eq]=${userId}`,
+      `${API_URL}/bookings?populate[class][populate][instructor][populate]=*&populate[bicycles][populate]=*&populate[guest][populate]=*&filters[user][id][$eq]=${userId}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -284,9 +302,19 @@ export const devolverCreditoClase = async (
 };
 
 const calcularFechaExpiracion = (fechaCompra: string | number | Date, diasDuracion: number) => {
-  const fechaExpiracion = new Date(fechaCompra);
-  fechaExpiracion.setDate(fechaExpiracion.getDate() + diasDuracion);
-  fechaExpiracion.setHours(23, 59, 59, 999);  // Establecer a 23:59:59.999
+  const fechaInicio = new Date(fechaCompra);
+  let fechaExpiracion: Date;
+
+  if (diasDuracion === 0) {
+    // Calcular el último día del mes actual
+    fechaExpiracion = new Date(fechaInicio.getFullYear(), fechaInicio.getMonth() + 1, 0);
+  } else {
+    fechaExpiracion = new Date(fechaInicio);
+    fechaExpiracion.setDate(fechaExpiracion.getDate() + diasDuracion);
+  }
+
+  // Establecer la hora a 23:59:59.999
+  fechaExpiracion.setHours(23, 59, 59, 999);
   return fechaExpiracion;
 };
 
