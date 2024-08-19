@@ -70,7 +70,10 @@ export default function MyProfileScreen({
   const onRideHistoryPress = () => navigation.navigate("RideHistory");
   const onBuyRidesPress = () => navigation.navigate("BuyRides");
   const onChangePasswordPress = () => navigation.navigate("ChangePassword");
-
+  const onPaymentMethodPress = () => navigation.navigate("PaymentMethod", {
+    username: userHere.username,
+    email: userHere.email
+  });
   return loading ? (
     <View style={styles.loadingScreen}>
       <SpinningLogo />
@@ -118,6 +121,21 @@ export default function MyProfileScreen({
                   <Ionicons name="time" size={24} color="#3D4AF5" />
 
                   <Text style={stylesHere.buttonText}>Historial de Rides</Text>
+                </View>
+                <Ionicons
+                  name="chevron-forward-outline"
+                  size={24}
+                  color="black"
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={stylesHere.button}
+                onPress={onPaymentMethodPress}
+              >
+                <View style={stylesHere.textAndIcon}>
+                  <Ionicons name="wallet" size={24} color="#3D4AF5" />
+                  <Text style={stylesHere.buttonText}>Método de pago</Text>
                 </View>
                 <Ionicons
                   name="chevron-forward-outline"

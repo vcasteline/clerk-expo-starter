@@ -52,6 +52,10 @@ export type RootStackParamList = {
   EnterNumber: undefined;
   SettingsProfile: undefined;
   RideHistory: undefined;
+  PaymentMethod: {
+    username: string;
+    email: string;
+  };
   ProfileStack: undefined;
   VerifyCode: undefined;
   Class: {
