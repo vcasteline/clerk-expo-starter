@@ -70,7 +70,7 @@ export default function MyProfileScreen({
   const onRideHistoryPress = () => navigation.navigate("RideHistory");
   const onBuyRidesPress = () => navigation.navigate("BuyRides");
   const onChangePasswordPress = () => navigation.navigate("ChangePassword");
-  const onPaymentMethodPress = () => navigation.navigate("PaymentMethod", {
+  const onPaymentMethodPress = () => navigation.navigate("MyCards", {
     username: userHere.username,
     userId: userHere.id,
     email: userHere.email

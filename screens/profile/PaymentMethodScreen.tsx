@@ -83,17 +83,22 @@ export default function PaymentMethodScreen({
         }
       );
       return response.data.card;
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("Error Response:", error.response?.data);
-        console.error("Error Status:", error.response?.status);
-        console.error("Error Headers:", error.response?.headers);
+    } catch (error: any) {
+      console.error("Error completo:", JSON.stringify(error, null, 2));
+      if (error.response) {
+        console.error("Datos de respuesta:", error.response.data);
+        console.error("Estado:", error.response.status);
+        console.error("Cabeceras:", error.response.headers);
+      } else if (error.request) {
+        console.error("Error de solicitud:", error.request);
+      } else {
+        console.error("Error:", error.message);
       }
       throw error;
-    //   Alert.alert(
-    //     "Error tokenizing card",
-    //     error instanceof Error ? error.message : "An unknown error occurred"
-    //   );
+      //   Alert.alert(
+      //     "Error tokenizing card",
+      //     error instanceof Error ? error.message : "An unknown error occurred"
+      //   );
     }
   };
 
@@ -101,14 +106,14 @@ export default function PaymentMethodScreen({
     try {
       const authToken = await getNuveiAuthToken();
       console.log("Auth Token:", authToken);
-  
+
       const [expiryMonth, expiryYear] = expiryDate.split("/");
-  
+
       const userData = {
         id: username,
         email: email,
       };
-  
+
       const cardData = {
         number: cardNumber.replace(/\s/g, ""),
         holder_name: cardHolder,
@@ -117,43 +122,54 @@ export default function PaymentMethodScreen({
         cvc: cvv,
         type: "vi", // Asume Visa, ajusta según sea necesario
       };
-  
+
       console.log("User Data:", userData);
       console.log("Card Data:", cardData);
-  
+
       let tokenizedCard;
       try {
         tokenizedCard = await tokenizeCard(authToken, userData, cardData);
       } catch (error: any) {
-        if (error.response?.data?.error?.type?.startsWith("Card already added")) {
+        if (
+          error.response?.data?.error?.type?.startsWith("Card already added")
+        ) {
           const tokenMatch = error.response.data.error.type.match(/\d+/);
           if (tokenMatch) {
             tokenizedCard = { token: tokenMatch[0] };
           } else {
-            throw new Error("No se pudo extraer el token de la tarjeta ya existente");
+            throw new Error(
+              "No se pudo extraer el token de la tarjeta ya existente"
+            );
           }
         } else {
           console.error("Error en tokenización:", error);
-          throw new Error(error.response?.data?.error?.description || "Error desconocido al tokenizar la tarjeta");
+          throw new Error(
+            error.response?.data?.error?.description ||
+              "Error desconocido al tokenizar la tarjeta"
+          );
         }
       }
-  
-      console.log(tokenizedCard)
-      console.log(userId)
+
+      console.log(tokenizedCard);
+      console.log(userId);
       // Ahora guardamos solo el token en nuestro backend
       if (tokenizedCard && tokenizedCard.token) {
         try {
-          await axios.post(`${process.env.EXPO_PUBLIC_BASE_URL}/tokenized-cards`, {
-            data: {
-              users_permissions_user: userId,
-              token: tokenizedCard.token,
+          await axios.post(
+            `${process.env.EXPO_PUBLIC_BASE_URL}/tokenized-cards`,
+            {
+              data: {
+                users_permissions_user: userId,
+                token: tokenizedCard.token,
+              },
             },
-          }, {
-            headers: {
-              Authorization: `Bearer ${process.env.EXPO_PUBLIC_API_KEY}`, 
-            },
-          });
-  
+            {
+              headers: {
+                Authorization: `Bearer ${process.env.EXPO_PUBLIC_API_KEY}`,
+              },
+            }
+          );
+
           Alert.alert(
             "Card tokenized successfully!",
             `Token: ${tokenizedCard.token}`
@@ -208,14 +224,14 @@ export default function PaymentMethodScreen({
     <View style={stylesHere.container}>
       <View style={stylesHere.headingAndButtons}>
         <View style={{ ...styles.heading, marginLeft: 0, marginBottom: 20 }}>
-          <TouchableWithoutFeedback>
+          <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
             <Ionicons name="chevron-back-outline" size={30} color={"white"} />
           </TouchableWithoutFeedback>
         </View>
         <Text style={{ ...styles.titleText, color: "white" }}>
           Agregar método de pago
         </Text>
-        <Text style={{ ...stylesHere.subtitle, marginLeft: 0 }}>
+        <Text style={{ ...styles.description, marginBottom: 20 }}>
           Añade tu tarjeta aquí
         </Text>
       </View>

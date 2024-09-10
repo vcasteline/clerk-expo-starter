@@ -58,6 +58,11 @@ export type RootStackParamList = {
     userId: string;
     email: string;
   };
+  MyCards: {
+    username: string;
+    userId: string;
+    email: string;
+  }
   ProfileStack: undefined;
   VerifyCode: undefined;
   Class: {
