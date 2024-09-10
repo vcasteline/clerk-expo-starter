@@ -162,7 +162,7 @@ export default function BuyRidesScreen({
         </ScrollView>
         <TouchableOpacity
           style={styles.primaryButton}
-          onPress={handleBuyPackage}
+          onPress={() => navigation.navigate("PurchaseSummary")}
         >
           <Text style={stylesHere.buyButtonText}>
             Comprar{" "}

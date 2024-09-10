@@ -8,6 +8,7 @@ import BuyRidesScreen from "./schedule/BuyRidesScreen";
 import ChangePasswordScreen from "./profile/ChangePasswordScreen";
 import SignInScreen from "./onboarding/SignInScreen";
 import PaymentMethodScreen from "./profile/PaymentMethodScreen";
+import PurchaseSummaryScreen from "./schedule/PurchaseSummaryScreen";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -24,6 +25,7 @@ export default function ProfileStack(
       <Stack.Screen name="SettingsProfile" component={SettingsProfileScreen} />
       <Stack.Screen name="RideHistory" component={RideHistoryScreen} />
       <Stack.Screen name="BuyRides" component={BuyRidesScreen} />
+      <Stack.Screen name="PurchaseSummary" component={PurchaseSummaryScreen} />  
       <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
       <Stack.Screen name="PaymentMethod" component={PaymentMethodScreen} />
 
