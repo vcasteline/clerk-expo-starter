@@ -54,6 +54,7 @@ export type RootStackParamList = {
   RideHistory: undefined;
   PaymentMethod: {
     username: string;
+    userId: string;
     email: string;
   };
   ProfileStack: undefined;

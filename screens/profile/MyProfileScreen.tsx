@@ -72,6 +72,7 @@ export default function MyProfileScreen({
   const onChangePasswordPress = () => navigation.navigate("ChangePassword");
   const onPaymentMethodPress = () => navigation.navigate("PaymentMethod", {
     username: userHere.username,
+    userId: userHere.id,
     email: userHere.email
   });
   return loading ? (
