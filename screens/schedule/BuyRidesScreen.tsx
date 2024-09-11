@@ -39,39 +39,14 @@ export default function BuyRidesScreen({
       });
   }, []);
 
-  const handleBuyPackage = async () => {
+  const handleContinue = () => {
     if (!selectedPackage) {
       Alert.alert("Error", "Por favor selecciona un paquete antes de comprar.");
       return;
     }
-
-    try {
-      const token = await AsyncStorage.getItem("userToken");
-      if (token) {
-        const userData = await getMe(token);
-
-        const response = await comprarPaquete(
-          parseInt(userData.id),
-          selectedPackage.attributes.numeroDeRides,
-          selectedPackage.attributes.diasDeExpiracion,
-          token
-        );
-
-        // Aquí puedes agregar lógica adicional después de una compra exitosa
-        // Por ejemplo, actualizar el estado global de la app o navegar a otra pantalla
-        Alert.alert(
-          "Éxito",
-          `Has comprado el paquete de ${selectedPackage.attributes.numeroDeRides} rides.`
-        );
-      }
-    } catch (error) {
-      console.error("Error buying package:", error);
-      Alert.alert(
-        "Error",
-        "No se pudo completar la compra. Por favor, intenta de nuevo."
-      );
-    }
+    navigation.navigate("PurchaseSummary", { selectedPackage });
   };
+
 
   return (
     <View style={stylesHere.container}>
@@ -162,13 +137,10 @@ export default function BuyRidesScreen({
         </ScrollView>
         <TouchableOpacity
           style={styles.primaryButton}
-          onPress={() => navigation.navigate("PurchaseSummary")}
+          onPress={handleContinue}
         >
           <Text style={stylesHere.buyButtonText}>
-            Comprar{" "}
-            {selectedPackage
-              ? selectedPackage.attributes.numeroDeRides
-              : "Paquetes"}
+            Continuar
           </Text>
         </TouchableOpacity>
       </View>

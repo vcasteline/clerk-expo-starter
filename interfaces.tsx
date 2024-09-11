@@ -36,6 +36,7 @@ export interface Booking {
 export interface PurchaseRides {
   id: number;
   attributes: {
+    nombre: string;
     diasDeExpiracion: any;
     numeroDeRides: number;
     precio: number;

@@ -1,5 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet, Image, ScrollView, TouchableWithoutFeedback } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  ScrollView,
+  TouchableWithoutFeedback,
+} from "react-native";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import ClassCard from "../../components/ClassCard";
@@ -11,6 +18,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getMe } from "../../services/AuthService";
 import SpinningLogo from "../../components/SpinningLogo";
 import { RefreshControl } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function HomeScreen({
   navigation,
@@ -27,47 +35,43 @@ export default function HomeScreen({
   const [refreshing, setRefreshing] = useState(false);
   const [userBookings, setUserBookings] = useState<Booking[]>([]);
 
-  const onRefresh = async () => {
-    setRefreshing(true);
+  const fetchInstructors = useCallback(async () => {
+    try {
+      const response = await getInstructors();
+      setInstructors(response.data.data);
+    } catch (error) {
+      console.error("Error getting instructors:", error);
+    }
+  }, []);
+
+  const fetchUserData = useCallback(async () => {
     try {
       const token = await AsyncStorage.getItem("userToken");
       if (token) {
         const userData = await getMe(token);
         setUser(userData);
+        const bookingsData = await getUserBookings(token, userData.id);
+        setUserBookings(bookingsData);
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
     } finally {
-      setRefreshing(false);
+      setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    getInstructors()
-      .then((response) => {
-        const instructorsData = response.data.data;
-        setInstructors(instructorsData);
-      })
-      .catch((error) => {
-        console.error("Error getting instructors: ", error);
-      });
-
-    const fetchUserData = async () => {
-      try {
-        const token = await AsyncStorage.getItem("userToken");
-        if (token) {
-          const userData = await getMe(token);
-          setUser(userData);
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserData();
+      fetchInstructors();
+    }, [fetchUserData, fetchInstructors])
+  );
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchUserData();
+    setRefreshing(false);
+  }, [fetchUserData]);
 
   useEffect(() => {
     const fetchUserBookings = async () => {
@@ -143,7 +147,7 @@ export default function HomeScreen({
       marginTop: 20,
       paddingBottom: 40,
       width: "100%",
-      height: '90%',
+      height: "90%",
       justifyContent: "flex-start",
       backgroundColor: "#fff",
     },
@@ -167,7 +171,7 @@ export default function HomeScreen({
     },
     containerInside: {
       flex: 1,
-      backgroundColor: "#000000",      
+      backgroundColor: "#000000",
       alignItems: "center",
       justifyContent: "flex-start",
       paddingTop: 50,
@@ -183,7 +187,7 @@ export default function HomeScreen({
       padding: 25,
       height: 135,
       width: 170,
-    }
+    },
   });
 
   return loading ? (
@@ -202,24 +206,44 @@ export default function HomeScreen({
             style={stylesHere.logoImage}
             source={require("../../assets/images/volta-logo-white.png")}
           />
-        </View>      
-          <View style={styles.center}>
+        </View>
+        <View style={styles.center}>
           <View style={stylesHere.box}>
-            <Text style={{...stylesHere.boxContentBottom, fontWeight: '700', marginBottom: 10, fontSize: 11, color:"white"}}>RIDES</Text>
+            <Text
+              style={{
+                ...stylesHere.boxContentBottom,
+                fontWeight: "700",
+                marginBottom: 10,
+                fontSize: 11,
+                color: "white",
+              }}
+            >
+              RIDES
+            </Text>
             <Text style={stylesHere.boxContent}>
-              {!loading && userBookings
-                ? user?.past_bookings?.length
-                : "-"}
+              {!loading && userBookings ? user?.past_bookings?.length : "-"}
             </Text>
             <Text style={stylesHere.boxContentBottom}>
               {userBookings?.filter(
-                    (booking: Booking) =>
-                      booking.attributes.bookingStatus === "completed"
-                  ).length === 1 ? "Realizado" : "Realizados"}
+                (booking: Booking) =>
+                  booking.attributes.bookingStatus === "completed"
+              ).length === 1
+                ? "Realizado"
+                : "Realizados"}
             </Text>
           </View>
           <View style={stylesHere.box}>
-          <Text style={{...stylesHere.boxContentBottom, fontWeight: '700', marginBottom: 10, fontSize: 11, color:"white"}}>CREDITOS</Text>
+            <Text
+              style={{
+                ...stylesHere.boxContentBottom,
+                fontWeight: "700",
+                marginBottom: 10,
+                fontSize: 11,
+                color: "white",
+              }}
+            >
+              CREDITOS
+            </Text>
 
             <Text style={stylesHere.boxContent}>
               {!loading && user ? user.clasesDisponibles : "-"}
@@ -231,15 +255,22 @@ export default function HomeScreen({
           <View style={stylesHere.rides}>
             <View style={styles.spaceBet}>
               <Text style={styles.titleText}>Próximos Rides</Text>
-              <TouchableWithoutFeedback onPress={()=> navigation.navigate('NextRides', {user: user, bookings: userBookings})}>
-                 <Ionicons name="chevron-forward-outline" size={30} />
+              <TouchableWithoutFeedback
+                onPress={() =>
+                  navigation.navigate("NextRides", {
+                    user: user,
+                    bookings: userBookings,
+                  })
+                }
+              >
+                <Ionicons name="chevron-forward-outline" size={30} />
               </TouchableWithoutFeedback>
             </View>
             <View style={stylesHere.ridesSection}>
               {userBookings.filter(
-                    (booking: Booking) =>
-                      booking.attributes.bookingStatus === "completed"
-                  ).length === 0 ? (
+                (booking: Booking) =>
+                  booking.attributes.bookingStatus === "completed"
+              ).length === 0 ? (
                 <View>
                   <Text
                     style={{
@@ -313,7 +344,10 @@ export default function HomeScreen({
             <View style={styles.spaceBet}>
               <Text style={styles.titleText}>Instructores</Text>
             </View>
-            <ScrollView showsHorizontalScrollIndicator={false} horizontal={true}>
+            <ScrollView
+              showsHorizontalScrollIndicator={false}
+              horizontal={true}
+            >
               {instructors.map((instructor) => {
                 return (
                   <InstructorCard

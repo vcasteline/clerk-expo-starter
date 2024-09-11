@@ -41,10 +41,21 @@ const FormInput: React.FC<FormField> = ({
   </>
 );
 
+type PaymentMethodScreenProps = RootStackScreenProps<"PaymentMethod"> & {
+  route: {
+    params: {
+      username: string;
+      userId: string;
+      email: string;
+      onCardAdded?: () => void;
+    };
+  };
+};
+
 export default function PaymentMethodScreen({
   route,
   navigation,
-}: RootStackScreenProps<"PaymentMethod">) {
+}: PaymentMethodScreenProps) {
   const { username, email, userId } = route.params;
   const [cardNumber, setCardNumber] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
@@ -95,17 +106,13 @@ export default function PaymentMethodScreen({
         console.error("Error:", error.message);
       }
       throw error;
-      //   Alert.alert(
-      //     "Error tokenizing card",
-      //     error instanceof Error ? error.message : "An unknown error occurred"
-      //   );
     }
   };
 
   const handleTokenizeCard = async () => {
     try {
       const authToken = await getNuveiAuthToken();
-      console.log("Auth Token:", authToken);
+      // console.log("Auth Token:", authToken);
 
       const [expiryMonth, expiryYear] = expiryDate.split("/");
 
@@ -123,8 +130,8 @@ export default function PaymentMethodScreen({
         type: "vi", // Asume Visa, ajusta según sea necesario
       };
 
-      console.log("User Data:", userData);
-      console.log("Card Data:", cardData);
+      // console.log("User Data:", userData);
+      // console.log("Card Data:", cardData);
 
       let tokenizedCard;
       try {
@@ -150,8 +157,8 @@ export default function PaymentMethodScreen({
         }
       }
 
-      console.log(tokenizedCard);
-      console.log(userId);
+      // console.log(tokenizedCard);
+      // console.log(userId);
       // Ahora guardamos solo el token en nuestro backend
       if (tokenizedCard && tokenizedCard.token) {
         try {
@@ -171,14 +178,21 @@ export default function PaymentMethodScreen({
           );
 
           Alert.alert(
-            "Card tokenized successfully!",
-            `Token: ${tokenizedCard.token}`
+            "Tarjeta añadida exitosamente",
+            "Tu tarjeta ha sido guardada y está lista para ser usada."
           );
+
+          if (route.params?.onCardAdded) {
+            route.params.onCardAdded();
+          }
+
+          navigation.goBack();
+
         } catch (error) {
           console.error("Error saving token to backend:", error);
           Alert.alert(
-            "Error saving card token",
-            "The card was tokenized but couldn't be saved in our system."
+            "Error al guardar la tarjeta",
+            "La tarjeta fue tokenizada pero no pudo ser guardada en nuestro sistema."
           );
         }
       } else {
@@ -187,7 +201,7 @@ export default function PaymentMethodScreen({
     } catch (error) {
       console.error("Error completo:", error);
       Alert.alert(
-        "Error tokenizing card",
+        "Error al tokenizar la tarjeta",
         error instanceof Error ? error.message : "An unknown error occurred"
       );
     }

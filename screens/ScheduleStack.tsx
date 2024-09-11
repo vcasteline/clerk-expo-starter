@@ -6,6 +6,7 @@ import { RootStackParamList, RootStackScreenProps } from '../types';
 import BuyRidesScreen from './schedule/BuyRidesScreen';
 import SuccessfulScreen from './schedule/SuccessfulScreen';
 import PurchaseSummaryScreen from './schedule/PurchaseSummaryScreen';
+import PaymentMethodScreen from './profile/PaymentMethodScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -21,6 +22,7 @@ export default function ScheduleStack({
       <Stack.Screen name="BuyRides" component={BuyRidesScreen} />
       <Stack.Screen name="PurchaseSummary" component={PurchaseSummaryScreen} />  
       <Stack.Screen name="Successful" component={SuccessfulScreen} />
+      <Stack.Screen name="PaymentMethod" component={PaymentMethodScreen} />
     </Stack.Navigator>
   );
 };

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Image,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -16,30 +17,43 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "../../utils/AuthContext";
 import { UserContext } from "../../utils/UserContext";
 import SpinningLogo from "../../components/SpinningLogo";
+import { RefreshControl } from "react-native";
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function MyProfileScreen({
   navigation,
 }: RootStackScreenProps<"MyProfile">) {
   const [userHere, setUserHere] = useState(Object);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const token = await AsyncStorage.getItem("userToken");
-        if (token) {
-          const userData = await getMe(token);
-          setUserHere(userData);
-        }
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        setLoading(false);
+
+  const fetchUserData = useCallback(async () => {
+    try {
+      const token = await AsyncStorage.getItem("userToken");
+      if (token) {
+        const userData = await getMe(token);
+        setUserHere(userData);
       }
-    };
-
-    fetchUserData();
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserData();
+    }, [fetchUserData])
+  );
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchUserData();
+    setRefreshing(false);
+  }, [fetchUserData]);
+
   const { setAuth } = React.useContext(AuthContext);
   const { setUser } = React.useContext(UserContext);
   const onSignOutPress = async () => {
@@ -80,6 +94,11 @@ export default function MyProfileScreen({
       <SpinningLogo />
     </View>
   ) : (
+    <ScrollView
+  refreshControl={
+    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+  }
+>
     <View style={styles.containerInside}>
       {!loading && userHere ? (
         <>
@@ -197,6 +216,7 @@ export default function MyProfileScreen({
         <Text>Cargando...</Text>
       )}
     </View>
+    </ScrollView>
   );
 }
 

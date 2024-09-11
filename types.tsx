@@ -1,5 +1,5 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Instructor, Booking, User } from "./interfaces";
+import { Instructor, Booking, User, PurchaseRides } from "./interfaces";
 
 // ...
 
@@ -35,7 +35,7 @@ export type RootStackParamList = {
     guestBicycleNumber: any;
     guestName: any;
   };
-  PurchaseSummary: undefined;
+  PurchaseSummary: { selectedPackage: PurchaseRides };
   BuyRides: undefined;
   Welcome: undefined;
   SignUp: undefined;
