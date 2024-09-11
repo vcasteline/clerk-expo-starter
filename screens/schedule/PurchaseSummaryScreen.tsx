@@ -15,11 +15,8 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { RootStackScreenProps } from "../../types";
 import {
-  getTokenizedCards,
-  isDinersCard,
   processNuveiPayment,
-  updateUserCredits,
-  verifyDinersCard,
+  verifyCard,
 } from "../../services/PaymentService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
@@ -194,24 +191,12 @@ export default function PurchaseSummaryScreen({
       Alert.alert("Error", "Por favor selecciona o añade una tarjeta para continuar.");
       return;
     }
- 
-  
-   
   
     try {
       if (!username || !userId) {
         Alert.alert("Error", "No se pudo obtener la información del usuario.");
         return;
       }
-      const authToken = await getNuveiAuthToken();
-      
-      if (isDinersCard(selectedCard.number)) {
-        const otp = getOTPFromUser();
-        await verifyDinersCard(authToken, selectedCard.token, username, otp);
-      }
-
-      console.log("Selected package:", selectedPackage);
-      console.log("Selected card:", selectedCard);
   
       const price = selectedPackage.attributes.precio;
       const vat = price * 0.15;
@@ -227,43 +212,56 @@ export default function PurchaseSummaryScreen({
         email,
       );
   
-      console.log("Payment result:", paymentResult);
+      // console.log("Payment result:", paymentResult);
   
-      if (paymentResult.transaction && paymentResult.transaction.status === "success") {
-        try {
-          const token = await AsyncStorage.getItem("userToken");
-          if (!token) {
-            throw new Error("No se encontró el token de usuario");
-          }
-  
-          // Usar la función comprarPaquete existente
-          await comprarPaquete(
-            userId,
-            selectedPackage.attributes.numeroDeRides,
-            selectedPackage.attributes.diasDeExpiracion,
-            token
-          );
-  
-          Alert.alert("Éxito", `Has comprado ${selectedPackage.attributes.nombre}.`);
-          navigation.navigate("Home" as never);
-        } catch (error) {
-          console.error("Error al comprar el paquete:", error);
-          Alert.alert(
-            "Advertencia",
-            "El pago se procesó correctamente, pero hubo un problema al registrar tu compra. Por favor, contacta a soporte."
-          );
+      if (paymentResult?.transaction?.status === "success") {
+        // Procesar pago exitoso
+        await handleSuccessfulPayment();
+      } else if (paymentResult.transaction.current_status === "PENDING" && paymentResult.transaction.carrier_code === "WAITING_OTP") {
+        // Manejar caso de OTP requerido
+        const otp = await getOTPFromUser();
+        const verificationResult = await verifyCard(await getNuveiAuthToken(), paymentResult.transaction.id, username, otp);
+        // console.log(verificationResult)
+        if (verificationResult.status === 1 && verificationResult.status_detail === 3) {
+          await handleSuccessfulPayment();
+        } else {
+          Alert.alert("Error", "La verificación de la tarjeta falló. Por favor, intenta de nuevo.");
         }
       } else {
         Alert.alert("Error", "No se pudo procesar el pago. Por favor, intenta de nuevo.");
       }
     } catch (error) {
       console.error("Error processing payment:", error);
-      if (axios.isAxiosError(error)) {
-        console.error("Payment error response:", error.response?.data);
-        console.error("Payment error status:", error.response?.status);
-        console.error("Payment error headers:", error.response?.headers);
-      }
       Alert.alert("Error", "Ocurrió un error al procesar el pago. Por favor, intenta más tarde.");
+    }
+  };
+  
+  const handleSuccessfulPayment = async () => {
+    try {
+      const token = await AsyncStorage.getItem("userToken");
+      if (!token) {
+        throw new Error("No se encontró el token de usuario");
+      }
+  
+      await comprarPaquete(
+        userId,
+        selectedPackage.attributes.numeroDeRides,
+        selectedPackage.attributes.diasDeExpiracion,
+        token
+      );
+  
+      Alert.alert("Éxito", `Has comprado ${selectedPackage.attributes.nombre}.`);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "MyProfile" }],
+      });
+      navigation.navigate("Home" as never);
+    } catch (error) {
+      console.error("Error al comprar el paquete:", error);
+      Alert.alert(
+        "Advertencia",
+        "El pago se procesó correctamente, pero hubo un problema al registrar tu compra. Por favor, contacta a soporte."
+      );
     }
   };
 

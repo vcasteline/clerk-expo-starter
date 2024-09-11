@@ -13,7 +13,7 @@ import axios from "axios";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import { Ionicons } from "@expo/vector-icons";
-import { isDinersCard, verifyDinersCard } from "../../services/PaymentService";
+import { getTokenizedCards, verifyCard } from "../../services/PaymentService";
 
 interface FormField {
   label: string;
@@ -167,79 +167,40 @@ export default function PaymentMethodScreen({
         cvc: cvv,
       };
         
-      let tokenizedCard;
+      let tokenizedCard: { status: string; transaction_reference: string; token: any; };
       try {
         tokenizedCard = await tokenizeCard(authToken, userData, cardData);
-        if (isDinersCard(cardNumber)) {
+        // console.log("Tokenized card response:", tokenizedCard);
+  
+        if (tokenizedCard.status === "valid") {
+          Alert.alert("Éxito", "Tarjeta añadida exitosamente");
+          navigation.goBack();
+        } else if (tokenizedCard.status === "review" || tokenizedCard.status === "pending") {
           const otp = await getOTPFromUser();
-          // Realizar verificación adicional para Diners
-          await verifyDinersCard(authToken, tokenizedCard.transaction_reference, username, otp);
+          await verifyCard(authToken, tokenizedCard.transaction_reference, username, otp);
+          
+          // Obtener el estado actualizado de las tarjetas después de la verificación
+          const updatedCards = await getTokenizedCards(username);
+          console.log(updatedCards)
+          const updatedCard = updatedCards?.find((card: { token: any; }) => card.token === tokenizedCard.token);
+          
+          if (updatedCard && updatedCard.status === "valid") {
+            Alert.alert("Éxito", "Tarjeta verificada y añadida exitosamente");
+            navigation.goBack();
+          } else {
+            throw new Error("La tarjeta no pudo ser verificada");
+          }
+        } else if (tokenizedCard.status === "rejected") {
+          Alert.alert("Error", "Tu tarjeta fue rechazada. Verifica que todos los datos estén correctos o prueba con otra tarjeta.");
+        } else {
+          throw new Error("Estado de tarjeta desconocido");
         }
       } catch (error: any) {
         if (error.message === "OTP cancelado") {
           Alert.alert("Verificación cancelada", "La tarjeta no ha sido añadida.");
           return;
         }
-        if (  
-          error.response?.data?.error?.type?.startsWith("Card already added")
-        ) {
-          const tokenMatch = error.response.data.error.type.match(/\d+/);
-          if (tokenMatch) {
-            tokenizedCard = { token: tokenMatch[0] };
-          } else {
-            throw new Error(
-              "No se pudo extraer el token de la tarjeta ya existente"
-            );
-          }
-        } else {
-          console.error("Error en tokenización:", error);
-          throw new Error(
-            error.response?.data?.error?.description ||
-              "Error desconocido al tokenizar la tarjeta"
-          );
-        }
-      }
-
-      // console.log(tokenizedCard);
-      // console.log(userId);
-      // Ahora guardamos solo el token en nuestro backend
-      if (tokenizedCard && tokenizedCard.token) {
-        try {
-          await axios.post(
-            `${process.env.EXPO_PUBLIC_BASE_URL}/tokenized-cards`,
-            {
-              data: {
-                users_permissions_user: userId,
-                token: tokenizedCard.token,
-              },
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${process.env.EXPO_PUBLIC_API_KEY}`,
-              },
-            }
-          );
-
-          Alert.alert(
-            "Tarjeta añadida exitosamente",
-            "Tu tarjeta ha sido guardada y está lista para ser usada."
-          );
-
-          if (route.params?.onCardAdded) {
-            route.params.onCardAdded();
-          }
-
-          navigation.goBack();
-
-        } catch (error) {
-          console.error("Error saving token to backend:", error);
-          Alert.alert(
-            "Error al guardar la tarjeta",
-            "La tarjeta fue tokenizada pero no pudo ser guardada en nuestro sistema."
-          );
-        }
-      } else {
-        throw new Error("No se pudo obtener un token válido para la tarjeta");
+        throw error;
       }
     } catch (error) {
       console.error("Error completo:", error);

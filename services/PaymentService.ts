@@ -11,12 +11,8 @@ export const getNuveiAuthToken = async () => {
     throw error;
   }
 };
-export const isDinersCard = (cardNumber: string) => {
-  // Los números de Diners Club generalmente comienzan con 30, 36, 38 o 39
-  return /^(30|36|38|39)/.test(cardNumber);
-};
 
-export const verifyDinersCard = async (authToken: string, transaction_reference: string, username: any, otp: any) => {
+export const verifyCard = async (authToken: string, transaction_reference: string, username: string, otp: string) => {
   try {
     const response = await axios.post(
       'https://ccapi-stg.paymentez.com/v2/transaction/verify/',
@@ -24,7 +20,7 @@ export const verifyDinersCard = async (authToken: string, transaction_reference:
         user: {id: username},
         transaction: { id: transaction_reference },
         type: "BY_OTP",
-        value: otp,  // O el monto que corresponda para la verificación
+        value: otp,
         more_info: false
       },
       {
@@ -36,8 +32,32 @@ export const verifyDinersCard = async (authToken: string, transaction_reference:
     );
     return response.data;
   } catch (error) {
-    console.error("Error verifying Diners card:", error);
+    console.error("Error verifying card:", error);
     throw error;
+    // let errorMessage = "Error desconocido al verificar la tarjeta";
+    // let errorCode = "UNKNOWN_ERROR";
+
+    // if (axios.isAxiosError(error)) {
+    //   if (error.response) {
+    //     // El servidor respondió con un estado fuera del rango de 2xx
+    //     errorMessage = error.response.data?.error?.description || "Error en la respuesta del servidor";
+    //     errorCode = error.response.data?.error?.type || "SERVER_ERROR";
+    //   } else if (error.request) {
+    //     // La solicitud fue hecha pero no se recibió respuesta
+    //     errorMessage = "No se recibió respuesta del servidor";
+    //     errorCode = "NO_RESPONSE";
+    //   } else {
+    //     // Algo sucedió en la configuración de la solicitud que provocó un error
+    //     errorMessage = error.message || "Error al configurar la solicitud";
+    //     errorCode = "REQUEST_SETUP_ERROR";
+    //   }
+    // }
+
+    // throw new Error(JSON.stringify({
+    //   message: errorMessage,
+    //   code: errorCode,
+    //   originalError: error
+    // }));
   }
 };
 

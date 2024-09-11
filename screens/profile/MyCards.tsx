@@ -14,7 +14,7 @@ import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
-import { isDinersCard, verifyDinersCard } from "../../services/PaymentService";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function MyCardsScreen({
   route,
@@ -37,7 +37,7 @@ export default function MyCardsScreen({
     }
   };
 
-  const fetchCards = async () => {
+  const fetchCards = useCallback(async () => {
     try {
       setLoading(true);
       const authToken = await getNuveiAuthToken();
@@ -58,16 +58,18 @@ export default function MyCardsScreen({
     } finally {
       setLoading(false);
     }
-  };
+  }, [username]);
 
-  useEffect(() => {
-    fetchCards();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchCards();
+    }, [fetchCards])
+  );
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     fetchCards().then(() => setRefreshing(false));
-  }, []);
+  }, [fetchCards]);
 
   const getCardTypeImage = (cardType: string) => {
     switch (cardType.toLowerCase()) {
@@ -208,7 +210,7 @@ export default function MyCardsScreen({
             navigation.navigate("PaymentMethod", { username, userId, email })
           }
         >
-          <Text style={styles.primaryButtonText}>+ Agregar nueva tarjeta</Text>
+          <Text style={styles.primaryButtonText}>+ Agregar tarjeta</Text>
         </TouchableOpacity>
       </View>
     </View>
