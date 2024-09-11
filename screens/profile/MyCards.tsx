@@ -14,6 +14,7 @@ import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
+import { isDinersCard, verifyDinersCard } from "../../services/PaymentService";
 
 export default function MyCardsScreen({
   route,
@@ -83,9 +84,42 @@ export default function MyCardsScreen({
     }
   };
 
-  const deleteCard = async (cardToken: any) => {
+  const getOTPFromUser = (): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      Alert.prompt(
+        "Verificación OTP",
+        "Por favor, ingrese el código OTP que recibió:",
+        [
+          {
+            text: "Cancelar",
+            onPress: () => reject(new Error("OTP cancelado")),
+            style: "cancel"
+          },
+          {
+            text: "Verificar",
+            onPress: (otp: string | undefined) => {
+              if (otp) {
+                resolve(otp);
+              } else {
+                reject(new Error("OTP inválido"));
+              }
+            }
+          }
+        ],
+        "plain-text"
+      );
+    });
+  };
+
+  const deleteCard = async (cardToken: string, cardType: string) => {
     try {
       const authToken = await getNuveiAuthToken();
+  
+      // if (cardType == "di") {
+      //   const otp = getOTPFromUser();
+      //   await verifyDinersCard(authToken, cardToken, username, otp );
+      // }
+  
       await axios.post(
         "https://ccapi-stg.paymentez.com/v2/card/delete/",
         {
@@ -96,8 +130,8 @@ export default function MyCardsScreen({
           headers: { "Auth-Token": authToken },
         }
       );
-
-      setCards(cards.filter((card:any) => card.token !== cardToken));
+  
+      setCards(cards.filter((card: any) => card.token !== cardToken));
       Alert.alert("Éxito", "Tarjeta eliminada correctamente");
     } catch (error) {
       console.error("Error deleting card:", error);
@@ -125,7 +159,7 @@ export default function MyCardsScreen({
         </Text>
       </View>
       <View style={stylesHere.cardActions}>
-        <TouchableOpacity onPress={() => deleteCard(item.token)}>
+        <TouchableOpacity onPress={() => deleteCard(item.token, item.type )}>
           <Ionicons name="trash-outline" size={24} color="red" />
         </TouchableOpacity>
       </View>

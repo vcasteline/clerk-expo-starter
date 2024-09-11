@@ -11,6 +11,35 @@ export const getNuveiAuthToken = async () => {
     throw error;
   }
 };
+export const isDinersCard = (cardNumber: string) => {
+  // Los números de Diners Club generalmente comienzan con 30, 36, 38 o 39
+  return /^(30|36|38|39)/.test(cardNumber);
+};
+
+export const verifyDinersCard = async (authToken: string, transaction_reference: string, username: any, otp: any) => {
+  try {
+    const response = await axios.post(
+      'https://ccapi-stg.paymentez.com/v2/transaction/verify/',
+      {
+        user: {id: username},
+        transaction: { id: transaction_reference },
+        type: "BY_OTP",
+        value: otp,  // O el monto que corresponda para la verificación
+        more_info: false
+      },
+      {
+        headers: {
+          'Auth-Token': authToken,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error verifying Diners card:", error);
+    throw error;
+  }
+};
 
 export const getTokenizedCards = async (userId: string) => {
     try {

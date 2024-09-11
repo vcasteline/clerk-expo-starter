@@ -10,19 +10,24 @@ import {
   Animated,
   Dimensions,
   Image,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { RootStackScreenProps } from "../../types";
 import {
   getTokenizedCards,
+  isDinersCard,
   processNuveiPayment,
   updateUserCredits,
+  verifyDinersCard,
 } from "../../services/PaymentService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
 import { PurchaseRides } from "../../interfaces";
 import axios from "axios";
 import { getMe } from "../../services/AuthService";
+import { styles } from "../../components/Styles";
+import { comprarPaquete } from "../../services/GlobalApi";
 
 const { height } = Dimensions.get("window");
 
@@ -151,7 +156,32 @@ export default function PurchaseSummaryScreen({
     navigation.navigate("PaymentMethod", { username, userId, email });
     toggleModal();
   };
-
+  const getOTPFromUser = (): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      Alert.prompt(
+        "Verificación OTP",
+        "Por favor, ingrese el código OTP que recibió:",
+        [
+          {
+            text: "Cancelar",
+            onPress: () => reject(new Error("OTP cancelado")),
+            style: "cancel"
+          },
+          {
+            text: "Verificar",
+            onPress: (otp: string | undefined) => {
+              if (otp) {
+                resolve(otp);
+              } else {
+                reject(new Error("OTP inválido"));
+              }
+            }
+          }
+        ],
+        "plain-text"
+      );
+    });
+  };
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
       fetchCards();
@@ -161,26 +191,32 @@ export default function PurchaseSummaryScreen({
 
   const handleBuyPackage = async () => {
     if (!selectedCard) {
-      Alert.alert(
-        "Error",
-        "Por favor selecciona o añade una tarjeta para continuar."
-      );
+      Alert.alert("Error", "Por favor selecciona o añade una tarjeta para continuar.");
       return;
     }
-
+ 
+  
+   
+  
     try {
-      if (!username) {
-        Alert.alert("Error", "No se pudo obtener el token de usuario.");
+      if (!username || !userId) {
+        Alert.alert("Error", "No se pudo obtener la información del usuario.");
         return;
       }
+      const authToken = await getNuveiAuthToken();
+      
+      if (isDinersCard(selectedCard.number)) {
+        const otp = getOTPFromUser();
+        await verifyDinersCard(authToken, selectedCard.token, username, otp);
+      }
 
-      // console.log("Selected package:", selectedPackage);
-      // console.log("Selected card:", selectedCard);
-
+      console.log("Selected package:", selectedPackage);
+      console.log("Selected card:", selectedCard);
+  
       const price = selectedPackage.attributes.precio;
       const vat = price * 0.15;
       const precioFinal = price + vat;
-
+  
       const paymentResult = await processNuveiPayment(
         username,
         `paquete # ${selectedPackage.id}`,
@@ -188,48 +224,37 @@ export default function PurchaseSummaryScreen({
         precioFinal,
         selectedPackage.attributes.nombre,
         vat,
-        email
+        email,
       );
-
-      // console.log("Payment result:", paymentResult);
-
-      if (
-        paymentResult.transaction &&
-        paymentResult.transaction.status === "success"
-      ) {
+  
+      console.log("Payment result:", paymentResult);
+  
+      if (paymentResult.transaction && paymentResult.transaction.status === "success") {
         try {
           const token = await AsyncStorage.getItem("userToken");
           if (!token) {
             throw new Error("No se encontró el token de usuario");
           }
-
-          await updateUserCredits(
-            token,
+  
+          // Usar la función comprarPaquete existente
+          await comprarPaquete(
+            userId,
             selectedPackage.attributes.numeroDeRides,
-            user.id
+            selectedPackage.attributes.diasDeExpiracion,
+            token
           );
-          Alert.alert(
-            "Éxito",
-            `Has comprado ${selectedPackage.attributes.nombre}.`
-          );
-
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "MyProfile" }],
-          });
+  
+          Alert.alert("Éxito", `Has comprado ${selectedPackage.attributes.nombre}.`);
           navigation.navigate("Home" as never);
         } catch (error) {
-          console.error("Error al actualizar créditos:", error);
+          console.error("Error al comprar el paquete:", error);
           Alert.alert(
             "Advertencia",
-            "El pago se procesó correctamente, pero hubo un problema al actualizar tus créditos. Por favor, contacta a soporte."
+            "El pago se procesó correctamente, pero hubo un problema al registrar tu compra. Por favor, contacta a soporte."
           );
         }
       } else {
-        Alert.alert(
-          "Error",
-          "No se pudo procesar el pago. Por favor, intenta de nuevo."
-        );
+        Alert.alert("Error", "No se pudo procesar el pago. Por favor, intenta de nuevo.");
       }
     } catch (error) {
       console.error("Error processing payment:", error);
@@ -238,10 +263,7 @@ export default function PurchaseSummaryScreen({
         console.error("Payment error status:", error.response?.status);
         console.error("Payment error headers:", error.response?.headers);
       }
-      Alert.alert(
-        "Error",
-        "Ocurrió un error al procesar el pago. Por favor, intenta más tarde."
-      );
+      Alert.alert("Error", "Ocurrió un error al procesar el pago. Por favor, intenta más tarde.");
     }
   };
 
@@ -265,13 +287,21 @@ export default function PurchaseSummaryScreen({
 
   return (
     <SafeAreaView style={stylesHere.container}>
-      <View style={stylesHere.header}>
-        <TouchableOpacity onPress={onBackPress} style={stylesHere.backButton}>
-          <Ionicons name="chevron-back-outline" size={30} color="white" />
-        </TouchableOpacity>
-        <Text style={stylesHere.headerTitle}>Resumen de Compra</Text>
-      </View>
+      <View style={stylesHere.headingAndButtons}>
+        <View style={{ ...styles.heading, marginLeft: 0, marginBottom: 20 }}>
+          <TouchableWithoutFeedback onPress={onBackPress}>
+            <Ionicons name="chevron-back-outline" size={30} color={"white"} />
+          </TouchableWithoutFeedback>
+        </View>
+        <Text style={{ ...styles.titleText, color: "white" }}>
+          Resumen de Compra
+        </Text>
 
+        <Text style={{ ...stylesHere.subtitle, marginLeft: 0 }}>
+          Revisa los datos de tu compra
+        </Text>
+      </View>
+      
       <View style={stylesHere.content}>
         <ScrollView contentContainerStyle={stylesHere.scrollContent}>
           <View style={stylesHere.infoContainer}>
@@ -293,7 +323,7 @@ export default function PurchaseSummaryScreen({
             <Text style={stylesHere.sectionTitle}>
               Precio Final (includido IVA):
             </Text>
-            <Text style={stylesHere.sectionContent}>${precioFinal}</Text>
+            <Text style={stylesHere.sectionContent}>${precioFinal.toFixed(2)}</Text>
 
             <Text style={stylesHere.sectionTitle}>Método de Pago:</Text>
             <TouchableOpacity
@@ -304,7 +334,12 @@ export default function PurchaseSummaryScreen({
                 source={getCardTypeImage(selectedCard?.type)}
                 style={stylesHere.cardTypeImage2}
               />
-              <Text style={[stylesHere.paymentButtonText, { flex: 1, marginLeft: 10 }]}>
+              <Text
+                style={[
+                  stylesHere.paymentButtonText,
+                  { flex: 1, marginLeft: 10 },
+                ]}
+              >
                 {selectedCard
                   ? `${getCardTypeName(selectedCard?.type)} **** ${
                       selectedCard?.number
@@ -318,7 +353,7 @@ export default function PurchaseSummaryScreen({
           </View>
           <View style={stylesHere.buyButtonContainer}>
             <TouchableOpacity
-              style={stylesHere.buyButton}
+              style={styles.primaryButton}
               onPress={handleBuyPackage}
             >
               <Text style={stylesHere.buyButtonText}>Comprar</Text>
@@ -394,7 +429,7 @@ const stylesHere = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: 20,
+    paddingBottom: 10,
   },
   backButton: {
     padding: 10,
@@ -403,7 +438,12 @@ const stylesHere = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: "white",
-    marginLeft: 20,
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "white",
+    marginBottom: 16,
   },
   content: {
     flex: 1,
@@ -417,6 +457,10 @@ const stylesHere = StyleSheet.create({
   },
   infoContainer: {
     padding: 20,
+  },
+  headingAndButtons: {
+    paddingTop: 15,
+    paddingHorizontal: 24,
   },
   sectionTitle: {
     fontSize: 18,
@@ -457,7 +501,7 @@ const stylesHere = StyleSheet.create({
     alignItems: "center",
   },
   buyButtonText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "500",
     color: "white",
   },

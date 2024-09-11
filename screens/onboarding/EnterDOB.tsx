@@ -68,7 +68,7 @@ export default function EnterDOBScreen({
           Fecha de Nacimiento{" "}
         </Text>
         <Text style={{ ...styles.paragraph, color: "white" }}>
-          Entra tu cumpleaños{" "}
+          Selecciona tu cumpleaños{" "}
         </Text>
       </View>
 

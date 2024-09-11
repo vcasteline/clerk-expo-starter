@@ -69,7 +69,7 @@ export default function EnterNameScreen({
         ¿Cómo te llamas?{" "}
         </Text>
         <Text style={{ ...styles.paragraph, color: "white" }}>
-          Entra tu nombre y apellido{" "}
+          Escribe tu nombre y apellido{" "}
         </Text>
       </View>
 

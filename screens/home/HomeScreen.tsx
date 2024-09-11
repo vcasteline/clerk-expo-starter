@@ -347,6 +347,7 @@ export default function HomeScreen({
             <ScrollView
               showsHorizontalScrollIndicator={false}
               horizontal={true}
+              contentContainerStyle={{ paddingRight: 100 }} 
             >
               {instructors.map((instructor) => {
                 return (

@@ -99,7 +99,10 @@ export default function BuyRidesScreen({
                         stylesHere.whiteText,
                     ]}
                   >
-                    {ridePackage.attributes.numeroDeRides} Rides
+                    {ridePackage.attributes.numeroDeRides > 1 ? 
+                    `${ridePackage.attributes.numeroDeRides} Rides` :
+                    `${ridePackage.attributes.numeroDeRides} Ride`
+                    }
                   </Text>
                   <View
                     style={{
@@ -330,7 +333,7 @@ const stylesHere = StyleSheet.create({
     borderRadius: 10,
   },
   buyButtonText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "500",
     color: "white",
   },

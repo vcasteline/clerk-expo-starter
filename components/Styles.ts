@@ -95,7 +95,7 @@ export const styles = StyleSheet.create({
   primaryButtonText: {
     color: "#ffffff",
     fontWeight:'500',
-    fontSize: 14
+    fontSize: 16
   },
 
   instructorCard: {
@@ -143,7 +143,7 @@ export const styles = StyleSheet.create({
   secondaryButtonText: {
     color: "#000",
     fontWeight: '400',
-    fontSize: 14
+    fontSize: 16
   },
 
   oauthView: {

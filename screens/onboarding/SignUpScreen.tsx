@@ -98,7 +98,7 @@ export default function SignUpScreen({
           Crear Nueva Cuenta{" "}
         </Text>
         <Text style={{ ...styles.paragraph, color: "white", marginRight:30 }}>
-          Ultimo paso! Entra tu información.{" "}
+          Ultimo paso! Escribe tu información.{" "}
         </Text>
       </View>
 

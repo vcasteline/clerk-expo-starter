@@ -7,11 +7,13 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  ViewStyle,
 } from "react-native";
 import axios from "axios";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
 import { Ionicons } from "@expo/vector-icons";
+import { isDinersCard, verifyDinersCard } from "../../services/PaymentService";
 
 interface FormField {
   label: string;
@@ -19,14 +21,27 @@ interface FormField {
   value: string;
   onChange: (text: string) => void;
 }
+const formatExpiryDate = (text: string) => {
+  const cleaned = text.replace(/\D/g, '');
+  if (cleaned.length >= 2) {
+    return `${cleaned.slice(0, 2)}/${cleaned.slice(2, 4)}`;
+  }
+  return cleaned;
+};
 
-const FormInput: React.FC<FormField> = ({
+const formatCVV = (text: string) => {
+  return text.replace(/\D/g, '').slice(0, 4);
+};
+
+const FormInput: React.FC<FormField & { style?: ViewStyle, formatFunction?: (text: string) => string }> = ({
   label,
   placeholder,
   value,
   onChange,
+  style,
+  formatFunction,
 }) => (
-  <>
+  <View style={style}>
     <Text style={styles.label}>{label}</Text>
     <View style={styles.inputView}>
       <TextInput
@@ -35,10 +50,10 @@ const FormInput: React.FC<FormField> = ({
         style={styles.textInput}
         placeholder={placeholder}
         placeholderTextColor="gray"
-        onChangeText={onChange}
+        onChangeText={(text) => onChange(formatFunction ? formatFunction(text) : text)}
       />
     </View>
-  </>
+  </View>
 );
 
 type PaymentMethodScreenProps = RootStackScreenProps<"PaymentMethod"> & {
@@ -108,36 +123,64 @@ export default function PaymentMethodScreen({
       throw error;
     }
   };
-
+  const getOTPFromUser = (): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      Alert.prompt(
+        "Verificación OTP",
+        "Por favor, ingrese el código OTP que recibió:",
+        [
+          {
+            text: "Cancelar",
+            onPress: () => reject(new Error("OTP cancelado")),
+            style: "cancel"
+          },
+          {
+            text: "Verificar",
+            onPress: (otp: string | undefined) => {
+              if (otp) {
+                resolve(otp);
+              } else {
+                reject(new Error("OTP inválido"));
+              }
+            }
+          }
+        ],
+        "plain-text"
+      );
+    });
+  };
   const handleTokenizeCard = async () => {
     try {
       const authToken = await getNuveiAuthToken();
-      // console.log("Auth Token:", authToken);
-
       const [expiryMonth, expiryYear] = expiryDate.split("/");
-
+  
       const userData = {
         id: username,
         email: email,
       };
-
+  
       const cardData = {
         number: cardNumber.replace(/\s/g, ""),
         holder_name: cardHolder,
         expiry_month: parseInt(expiryMonth, 10),
         expiry_year: parseInt(`20${expiryYear}`, 10),
         cvc: cvv,
-        type: "vi", // Asume Visa, ajusta según sea necesario
       };
-
-      // console.log("User Data:", userData);
-      // console.log("Card Data:", cardData);
-
+        
       let tokenizedCard;
       try {
         tokenizedCard = await tokenizeCard(authToken, userData, cardData);
+        if (isDinersCard(cardNumber)) {
+          const otp = await getOTPFromUser();
+          // Realizar verificación adicional para Diners
+          await verifyDinersCard(authToken, tokenizedCard.transaction_reference, username, otp);
+        }
       } catch (error: any) {
-        if (
+        if (error.message === "OTP cancelado") {
+          Alert.alert("Verificación cancelada", "La tarjeta no ha sido añadida.");
+          return;
+        }
+        if (  
           error.response?.data?.error?.type?.startsWith("Card already added")
         ) {
           const tokenMatch = error.response.data.error.type.match(/\d+/);
@@ -251,22 +294,74 @@ export default function PaymentMethodScreen({
       </View>
 
       <View style={stylesHere.dashboard}>
-        {formFields.map((field, index) => (
-          <FormInput key={index} {...field} />
-        ))}
-
-        <TouchableOpacity
-          style={styles.primaryButton}
-          onPress={handleTokenizeCard}
-        >
-          <Text style={styles.primaryButtonText}>Agregar Tarjeta</Text>
-        </TouchableOpacity>
-      </View>
+  <FormInput
+    label="TITULAR"
+    placeholder="Nombre del titular"
+    value={cardHolder}
+    onChange={setCardHolder}
+  />
+  <FormInput
+    label="NO. DE TARJETA"
+    placeholder="Número de tarjeta"
+    value={cardNumber}
+    onChange={setCardNumber}
+  />
+  <View style={stylesHere.rowContainer}>
+    <FormInput
+      label="EXPIRACIÓN"
+      placeholder="MM/YY"
+      value={expiryDate}
+      onChange={setExpiryDate}
+      style={stylesHere.halfInput}
+      formatFunction={formatExpiryDate}
+    />
+    <FormInput
+      label="CVV"
+      placeholder="Código"
+      value={cvv}
+      onChange={setCvv}
+      style={stylesHere.halfInput}
+      formatFunction={formatCVV}
+    />
+  </View>
+  <TouchableOpacity
+    style={styles.primaryButton}
+    onPress={handleTokenizeCard}
+  >
+    <Text style={styles.primaryButtonText}>Agregar Tarjeta</Text>
+  </TouchableOpacity>
+</View>
     </View>
   );
 }
 
 const stylesHere = StyleSheet.create({
+  rowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  halfInput: {
+    width: '48%',
+  },
+  inputContainer: {
+    marginBottom: 15, // Espacio entre grupos de inputs
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    color: '#333',
+  },
+  inputView: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  textInput: {
+    fontSize: 16,
+  },
   container: {
     flex: 1,
     paddingTop: 75,

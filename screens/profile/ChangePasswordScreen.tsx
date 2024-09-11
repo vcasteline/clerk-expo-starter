@@ -52,6 +52,7 @@ export default function ChangePasswordScreen({
           token
         );
       }
+      navigation.popToTop();
       Alert.alert("Éxito", "Tu clave fue actualizada", [
         {
           text: "Listo",
