@@ -181,7 +181,7 @@ export default function PaymentMethodScreen({
           
           // Obtener el estado actualizado de las tarjetas después de la verificación
           const updatedCards = await getTokenizedCards(username);
-          console.log(updatedCards)
+          //console.log(updatedCards)
           const updatedCard = updatedCards?.find((card: { token: any; }) => card.token === tokenizedCard.token);
           
           if (updatedCard && updatedCard.status === "valid") {

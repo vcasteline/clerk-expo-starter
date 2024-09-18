@@ -4,7 +4,7 @@
     "slug": "clerk-expo-starter",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/volta-logo-black.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -13,17 +13,22 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/fd6b68e6-c72e-4a25-8693-90c9f0e5d102"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
-      "associatedDomains": ["applinks:clerk.helping.lemming-64.lclstage.dev"],
+      "associatedDomains": [
+        "applinks:clerk.helping.lemming-64.lclstage.dev"
+      ],
       "bundleIdentifier": "dev.clerk.clerkexpostarter"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/wheel-icon.png",
         "backgroundColor": "#ffffff"
       },
       "intentFilters": [
@@ -37,13 +42,29 @@
               "pathPrefix": "/v1/oauth-native-callback"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ],
       "package": "com.sokratisv.clerkexpostarter"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "fd6b68e6-c72e-4a25-8693-90c9f0e5d102"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "plugins": [
+      "expo-asset",
+      "expo-font",
+      "expo-secure-store"
+    ]
   }
 }

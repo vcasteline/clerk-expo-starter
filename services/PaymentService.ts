@@ -101,7 +101,7 @@ export const getTokenizedCards = async (userId: string) => {
         },
       };
       
-      console.log("Payload for Nuvei payment:", JSON.stringify(payload, null, 2));
+      //console.log("Payload for Nuvei payment:", JSON.stringify(payload, null, 2));
   
       const response = await axios.post(
         'https://ccapi-stg.paymentez.com/v2/transaction/debit/',
