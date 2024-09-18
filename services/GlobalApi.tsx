@@ -321,7 +321,14 @@ const calcularFechaExpiracion = (fechaCompra: string | number | Date, diasDuraci
 export const comprarPaquete = async (userId: any, numeroDeClases: any, diasDuracion: any, token: any) => {
   try {
     const fechaCompra = new Date();
-    const fechaExpiracion = calcularFechaExpiracion(fechaCompra, diasDuracion);
+    
+    let fechaExpiracion;
+    if (diasDuracion === 1) {
+      // Si la duración es 1, establecer la fecha de expiración al final del mes actual
+      fechaExpiracion = new Date(fechaCompra.getFullYear(), fechaCompra.getMonth() + 1, 0, 23, 59, 59, 999);
+    } else {
+      fechaExpiracion = calcularFechaExpiracion(fechaCompra, diasDuracion);
+    }
 
     const response = await axios.post(`${API_URL}/purchased-ride-packs`, {
       data: {

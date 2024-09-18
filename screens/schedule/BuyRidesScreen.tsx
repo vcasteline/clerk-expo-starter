@@ -221,7 +221,7 @@ const stylesHere = StyleSheet.create({
   },
   container: {
     flex: 1,
-    paddingHo: 0,
+    paddingHorizontal: 0,
     paddingTop: 75,
     backgroundColor: "black",
   },
