@@ -81,7 +81,11 @@ export default function WelcomeScreen({
         >
           <Text style={styles.secondaryButtonText}>Iniciar Sesión</Text>
         </TouchableOpacity>
-        <View style={styles.center}>
+        <Image
+          style={{ width: 200, resizeMode: "contain" }}
+          source={require("../../assets/images/wheel.png")}
+        />
+        {/* <View style={styles.center}>
           <Text style={{ ...styles.paragraph, marginTop: 15 }}></Text>
           <View
             style={{
@@ -92,10 +96,10 @@ export default function WelcomeScreen({
               marginVertical: 10,
             }}
           ></View>
-        </View>
-        <View style={styles.center}>
+        </View> */}
+        {/* <View style={styles.center}>
           <OAuthButtons />
-        </View>
+        </View> */}
       </View>
     </View>
   );

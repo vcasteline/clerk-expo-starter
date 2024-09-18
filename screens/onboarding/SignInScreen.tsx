@@ -108,17 +108,17 @@ export default function SignInScreen({
             autoCapitalize="none"
             value={emailAddress}
             style={styles.textInput}
-            placeholder="Email..."
+            placeholder="Email"
             placeholderTextColor="gray"
             onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
           />
         </View>
-        <Text style={styles.label}>TU CLAVE</Text>
+        <Text style={styles.label}>TU CONTRASEÑA</Text>
         <View style={styles.inputView}>
           <TextInput
             value={password}
             style={styles.textInput}
-            placeholder="Clave..."
+            placeholder="Contraseña"
             placeholderTextColor="gray"
             secureTextEntry={true}
             onChangeText={(password) => setPassword(password)}

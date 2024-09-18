@@ -7,6 +7,7 @@ import {
   Image,
   StyleSheet,
   TouchableWithoutFeedback,
+  Alert,
 } from "react-native";
 import { log } from "../../logger";
 import { RootStackScreenProps } from "../../types";
@@ -35,7 +36,6 @@ export default function SignUpScreen({
         telefono: user.number,
         clasesDisponibles: 0
       };
-
       // Registro del usuario
       const registerResponse = await registerUser(userData);
       if (registerResponse && registerResponse.jwt) {
@@ -47,6 +47,18 @@ export default function SignUpScreen({
         console.error("Registro completado pero no se recibió token JWT.");
       }
     } catch (err: any) {
+
+      console.log('Error completo:', err);
+      console.log('Mensaje de error:', err.message);
+      if (err.response) {
+        console.log('Datos de respuesta:', err.response.data);
+        console.log('Estado de respuesta:', err.response.status);
+      }
+      Alert.alert(
+        "Error",
+        "Hubo un error. Por favor, revise que sus datos son correctos.",
+        [{ text: "OK" }]
+      );
       log("Error:> " + err?.message || "");
     }
   };
