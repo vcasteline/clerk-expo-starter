@@ -80,7 +80,7 @@ export default function EnterNameScreen({
           <TextInput
             value={user.firstName}
             style={styles.textInput}
-            placeholder="Tu nombre..."
+            placeholder="Tu nombre"
             placeholderTextColor="gray"
             onChangeText={(text) => setUser({ ...user, firstName: text })}
           />
@@ -91,7 +91,7 @@ export default function EnterNameScreen({
             autoCapitalize="none"
             value={user.lastName}
             style={styles.textInput}
-            placeholder="Tu apellido..."
+            placeholder="Tu apellido"
             placeholderTextColor="gray"
             onChangeText={(text) => setUser({ ...user, lastName: text })}
           />

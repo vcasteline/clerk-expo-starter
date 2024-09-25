@@ -66,10 +66,10 @@ export default function EnterNumberScreen({
           <Ionicons name="chevron-back-outline" size={30} color={"white"} />
         </TouchableWithoutFeedback>
         <Text style={{ ...styles.titleText, color: "white", marginTop: 20 }}>
-          Numero de Telefono{" "}
+          Numero de Teléfono{" "}
         </Text>
         <Text style={{ ...styles.paragraph, color: "white" }}>
-          Provee tu numero de telefono{" "}
+          Provee tu numero de teléfono{" "}
         </Text>
       </View>
 
@@ -90,7 +90,6 @@ export default function EnterNumberScreen({
             borderWidth: 1,
             borderColor: "#CDCDCD",
             backgroundColor: "#FFF",
-            height: 50,
           }}
           codeTextStyle={{ fontWeight: "400", fontSize: 14 }}
           placeholder="Número"

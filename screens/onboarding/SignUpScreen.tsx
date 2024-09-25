@@ -122,7 +122,7 @@ export default function SignUpScreen({
           <TextInput
             value={user.username}
             style={styles.textInput}
-            placeholder="Username..."
+            placeholder="Ussuario"
             placeholderTextColor="gray"
             onChangeText={(username) => setUser({...user, username: username})}
           />
@@ -133,7 +133,7 @@ export default function SignUpScreen({
             autoCapitalize="none"
             value={user.email}
             style={styles.textInput}
-            placeholder="Email..."
+            placeholder="Email"
             placeholderTextColor="gray"
             onChangeText={(email) => setUser({...user, email: email})}
           />
@@ -143,7 +143,7 @@ export default function SignUpScreen({
           <TextInput
             value={user.password}
             style={styles.textInput}
-            placeholder="Password..."
+            placeholder="Contraseña"
             placeholderTextColor="gray"
             secureTextEntry={true}
             onChangeText={(password) => setUser({...user, password: password})}

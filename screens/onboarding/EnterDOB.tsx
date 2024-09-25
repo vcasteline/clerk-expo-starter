@@ -31,7 +31,7 @@ export default function EnterDOBScreen({
     rightImage: {
       position: "absolute",
       top: -60,
-      left: 180,
+      left: "50%",
       width: 210,
       resizeMode: "contain",
     },
