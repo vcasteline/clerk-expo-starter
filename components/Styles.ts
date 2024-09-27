@@ -70,7 +70,7 @@ export const styles = StyleSheet.create({
   },
   label: {
     color: 'gray',
-    marginBottom:0,
+    marginBottom:3,
     marginLeft: 13,
     fontSize: 12
   },

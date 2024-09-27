@@ -357,7 +357,7 @@ const stylesHere = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginVertical: 7,
-    paddingVertical: 20,
+    paddingVertical: 15,
     paddingHorizontal: 20,
     borderWidth: 1,
     borderColor: "rgba(0, 0, 0, 0.2)",

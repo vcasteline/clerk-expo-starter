@@ -120,8 +120,9 @@ export default function SettingsProfileScreen({
       </View>
       <View style={stylesHere.containerHeading}>
         <View style={stylesHere.userInfo}>
-          <Text style={stylesHere.userName}>{user?.username}</Text>
-          <Text style={stylesHere.userEmail}>{user?.email}</Text>
+          <Text style={stylesHere.userName}>{user?.username || "Usuario"}</Text>
+          <Text style={stylesHere.userEmail}>{user?.email || "Email"} </Text>
+          <Text style={stylesHere.userEmail}>{"Documento de identidad: " + user?.cedula || "Cédula"} </Text>
         </View>
       </View>
       <View style={stylesHere.dashboard}>
@@ -150,7 +151,7 @@ export default function SettingsProfileScreen({
               autoCapitalize="none"
               value={firstName}
               style={styles.textInput}
-              placeholder="Nombre..."
+              placeholder="Nombre"
               placeholderTextColor="gray"
               onChangeText={(name) => setFirstName(name)}
             />
@@ -188,7 +189,7 @@ export default function SettingsProfileScreen({
               autoCapitalize="none"
               value={lastName}
               style={styles.textInput}
-              placeholder="Apellido..."
+              placeholder="Apellido"
               placeholderTextColor="gray"
               onChangeText={(name) => setLastName(name)}
             />
@@ -224,7 +225,7 @@ export default function SettingsProfileScreen({
               autoCapitalize="none"
               value={email}
               style={styles.textInput}
-              placeholder="Email..."
+              placeholder="Email"
               placeholderTextColor="gray"
               onChangeText={(emailAddress) => setEmail(emailAddress)}
             />
@@ -286,13 +287,6 @@ export default function SettingsProfileScreen({
         )}
 
         <View style={{...styles.spaceBet, marginRight: 50, alignItems: "center", marginBottom: 10}}>
-          <Text style={styles.label}>TU CÉDULA</Text>
-        </View>
-        <Text style={{ marginLeft: 20, marginVertical: 10, marginBottom: 25 }}>
-          {user?.cedula || "No disponible"}
-        </Text>
-
-        <View style={{...styles.spaceBet, marginRight: 50, alignItems: "center", marginBottom: 10}}>
           <Text style={styles.label}>TU DIRECCIÓN</Text>
           <TouchableWithoutFeedback onPress={() => setEditMode({ ...editMode, address: !editMode.address })}>
             <Text style={{ color: "blue" }}>
@@ -305,13 +299,13 @@ export default function SettingsProfileScreen({
             <TextInput
               value={address}
               style={styles.textInput}
-              placeholder="Dirección..."
+              placeholder="Dirección"
               placeholderTextColor="gray"
               onChangeText={(addr) => setAddress(addr)}
             />
           </View>
         ) : (
-          <Text style={{ marginLeft: 20, marginVertical: 10, marginBottom: 25 }}>
+          <Text style={{ marginLeft: 20, marginVertical: 10, marginBottom: 10 }}>
             {user?.direccion || "No disponible"}
           </Text>
         )}
@@ -363,7 +357,7 @@ const stylesHere = StyleSheet.create({
   dashboard: {
     borderRadius: 30,
     padding: 24,
-    marginTop: 30,
+    marginTop: 13,
     paddingBottom: 40,
     width: "100%",
     height: "100%",
