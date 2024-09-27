@@ -1,0 +1,31 @@
+{
+  "cli": {
+    "version": ">= 12.4.1",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_BASE_URL": "https://strapi-jkxm.onrender.com/api",
+        "EXPO_PUBLIC_IMG_URL": "https://strapi-jkxm.onrender.com",
+        "EXPO_PUBLIC_API_KEY": "d080b3f12e5047ff70ac78e234fc916d36f61e13ee07e004e92e6043e38e4e051c995628f4df78a661c2c8279a79f0c0b6eb9c41146a078381633f4bc098a735ceccab7d053585bf5ce3d4e5e5baa448a8f13042c02636bcf3fb75c941e7502eaad3584cd7ea80f622e3c5a4b8d3b1704228baaa91342d86bb93f80edc337723"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_BASE_URL": "https://strapi-jkxm.onrender.com/api",
+        "EXPO_PUBLIC_IMG_URL": "https://strapi-jkxm.onrender.com",
+        "EXPO_PUBLIC_API_KEY": "d080b3f12e5047ff70ac78e234fc916d36f61e13ee07e004e92e6043e38e4e051c995628f4df78a661c2c8279a79f0c0b6eb9c41146a078381633f4bc098a735ceccab7d053585bf5ce3d4e5e5baa448a8f13042c02636bcf3fb75c941e7502eaad3584cd7ea80f622e3c5a4b8d3b1704228baaa91342d86bb93f80edc337723"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

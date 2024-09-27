@@ -287,6 +287,13 @@ export default function SettingsProfileScreen({
         )}
 
         <View style={{...styles.spaceBet, marginRight: 50, alignItems: "center", marginBottom: 10}}>
+          <Text style={styles.label}>TU CÉDULA</Text>
+        </View>
+        <Text style={{ marginLeft: 20, marginVertical: 10, marginBottom: 25 }}>
+          {user?.cedula || "No disponible"}
+        </Text>
+
+        <View style={{...styles.spaceBet, marginRight: 50, alignItems: "center", marginBottom: 10}}>
           <Text style={styles.label}>TU DIRECCIÓN</Text>
           <TouchableWithoutFeedback onPress={() => setEditMode({ ...editMode, address: !editMode.address })}>
             <Text style={{ color: "blue" }}>
@@ -299,13 +306,13 @@ export default function SettingsProfileScreen({
             <TextInput
               value={address}
               style={styles.textInput}
-              placeholder="Dirección"
+              placeholder="Dirección..."
               placeholderTextColor="gray"
               onChangeText={(addr) => setAddress(addr)}
             />
           </View>
         ) : (
-          <Text style={{ marginLeft: 20, marginVertical: 10, marginBottom: 10 }}>
+          <Text style={{ marginLeft: 20, marginVertical: 10, marginBottom: 25 }}>
             {user?.direccion || "No disponible"}
           </Text>
         )}

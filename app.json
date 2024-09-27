@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "clerk-expo-starter",
-    "slug": "clerk-expo-starter",
+    "name": "Volta",
+    "slug": "volta",
+    "scheme": "voltaec",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/volta-logo-black.png",
-    "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -14,48 +14,29 @@
     },
     "updates": {
       "fallbackToCacheTimeout": 0,
-      "url": "https://u.expo.dev/fd6b68e6-c72e-4a25-8693-90c9f0e5d102"
+      "url": "https://u.expo.dev/fb52d4b4-bf4a-4240-a2e0-6d01f2c31745"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
       "supportsTablet": true,
-      "associatedDomains": [
-        "applinks:clerk.helping.lemming-64.lclstage.dev"
-      ],
-      "bundleIdentifier": "dev.clerk.clerkexpostarter"
+      "bundleIdentifier": "com.volta.app",
+      "buildNumber": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/wheel-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "intentFilters": [
-        {
-          "action": "VIEW",
-          "autoVerify": true,
-          "data": [
-            {
-              "scheme": "https",
-              "host": "clerk.helping.lemming-64.lclstage.dev",
-              "pathPrefix": "/v1/oauth-native-callback"
-            }
-          ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
-        }
-      ],
-      "package": "com.sokratisv.clerkexpostarter"
+      "package": "com.volta.app"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "fd6b68e6-c72e-4a25-8693-90c9f0e5d102"
+        "projectId": "fb52d4b4-bf4a-4240-a2e0-6d01f2c31745"
       }
     },
     "runtimeVersion": {
@@ -63,8 +44,8 @@
     },
     "plugins": [
       "expo-asset",
-      "expo-font",
-      "expo-secure-store"
-    ]
+      "expo-font"
+    ],
+    "owner": "vcasteline"
   }
 }
