@@ -66,10 +66,10 @@ export default function EnterNumberScreen({
           <Ionicons name="chevron-back-outline" size={30} color={"white"} />
         </TouchableWithoutFeedback>
         <Text style={{ ...styles.titleText, color: "white", marginTop: 20 }}>
-          Numero de Teléfono{" "}
+          Tu Contacto{" "}
         </Text>
         <Text style={{ ...styles.paragraph, color: "white" }}>
-          Provee tu numero de teléfono{" "}
+          Escribe tu número de teléfono y dirección.{" "}
         </Text>
       </View>
 
@@ -94,7 +94,17 @@ export default function EnterNumberScreen({
           codeTextStyle={{ fontWeight: "400", fontSize: 14 }}
           placeholder="Número"
         />
-        <TextInput></TextInput>
+        <Text style={{...styles.label, marginTop: 20}}>DIRECCIÓN</Text>
+        <View style={styles.inputView}>
+          <TextInput
+            autoCapitalize="none"
+            value={user.direccion}
+            style={styles.textInput}
+            placeholder="Dirección"
+            placeholderTextColor="gray"
+            onChangeText={(text) => setUser({ ...user, direccion: text })}
+          />
+        </View>
         <View style={{ ...styles.footer, marginTop: 0 }}>
           <TouchableOpacity style={styles.primaryButton} onPress={onNextPress}>
             <Text style={styles.primaryButtonText}>Siguiente</Text>

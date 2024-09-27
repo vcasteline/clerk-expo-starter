@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
+  Linking,
 } from "react-native";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
@@ -89,6 +90,14 @@ export default function MyProfileScreen({
     userId: userHere.id,
     email: userHere.email
   });
+  const onPoliticasVoltaPress = () => {
+    Linking.openURL('https://voltaec.com/politicas-volta/');
+  };
+
+  const onTerminosCondicionesPress = () => {
+    Linking.openURL('https://voltaec.com/terminos-y-condiciones/');
+  };
+
   return loading ? (
     <View style={styles.loadingScreen}>
       <SpinningLogo />
@@ -155,7 +164,7 @@ export default function MyProfileScreen({
               >
                 <View style={stylesHere.textAndIcon}>
                   <Ionicons name="wallet" size={24} color="#3D4AF5" />
-                  <Text style={stylesHere.buttonText}>Método de pago</Text>
+                  <Text style={stylesHere.buttonText}>Método de Pago</Text>
                 </View>
                 <Ionicons
                   name="chevron-forward-outline"
@@ -186,6 +195,36 @@ export default function MyProfileScreen({
                 <View style={stylesHere.textAndIcon}>
                   <Ionicons name="lock-closed" size={24} color="#3D4AF5" />
                   <Text style={stylesHere.buttonText}>Editar Clave</Text>
+                </View>
+                <Ionicons
+                  name="chevron-forward-outline"
+                  size={24}
+                  color="black"
+                />
+              </TouchableOpacity>
+             
+              <TouchableOpacity
+                style={stylesHere.button}
+                onPress={onPoliticasVoltaPress}
+              >
+                <View style={stylesHere.textAndIcon}>
+                  <Ionicons name="shield-half" size={24} color="#3D4AF5" />
+                  <Text style={stylesHere.buttonText}>Políticas Volta</Text>
+                </View>
+                <Ionicons
+                  name="chevron-forward-outline"
+                  size={24}
+                  color="black"
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={stylesHere.button}
+                onPress={onTerminosCondicionesPress}
+              >
+                <View style={stylesHere.textAndIcon}>
+                  <Ionicons name="document-text" size={24} color="#3D4AF5" />
+                  <Text style={stylesHere.buttonText}>Términos y Condiciones</Text>
                 </View>
                 <Ionicons
                   name="chevron-forward-outline"
@@ -317,7 +356,7 @@ const stylesHere = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginVertical: 10,
+    marginVertical: 7,
     paddingVertical: 20,
     paddingHorizontal: 20,
     borderWidth: 1,

@@ -23,12 +23,14 @@ export default function SettingsProfileScreen({
   const [lastName, setLastName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [phoneNumber, setPhoneNumber] = React.useState("");
+  const [address, setAddress] = React.useState("");
   const [countryCode, setCountryCode] = React.useState(["593"]);
   const [editMode, setEditMode] = React.useState({
     firstName: false,
     lastName: false,
     email: false,
     phoneNumber: false,
+    address: false,
   });
   const [error, setError] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
@@ -43,6 +45,7 @@ export default function SettingsProfileScreen({
           setFirstName(userData.nombre);
           setLastName(userData.apellido);
           setEmail(userData.email);
+          setAddress(userData.direccion || "");
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -65,6 +68,7 @@ export default function SettingsProfileScreen({
             apellido: lastName,
             email: email,
             telefono: fullNumber.length > 11 ? fullNumber : user.telefono,
+            direccion: address,
           },
           user.id,
           token
@@ -280,6 +284,38 @@ export default function SettingsProfileScreen({
             {user.telefono}
           </Text>
         )}
+
+        <View style={{...styles.spaceBet, marginRight: 50, alignItems: "center", marginBottom: 10}}>
+          <Text style={styles.label}>TU CÉDULA</Text>
+        </View>
+        <Text style={{ marginLeft: 20, marginVertical: 10, marginBottom: 25 }}>
+          {user?.cedula || "No disponible"}
+        </Text>
+
+        <View style={{...styles.spaceBet, marginRight: 50, alignItems: "center", marginBottom: 10}}>
+          <Text style={styles.label}>TU DIRECCIÓN</Text>
+          <TouchableWithoutFeedback onPress={() => setEditMode({ ...editMode, address: !editMode.address })}>
+            <Text style={{ color: "blue" }}>
+              {editMode.address ? "Cancelar" : "Editar"}
+            </Text>
+          </TouchableWithoutFeedback>
+        </View>
+        {editMode.address ? (
+          <View style={styles.inputView}>
+            <TextInput
+              value={address}
+              style={styles.textInput}
+              placeholder="Dirección..."
+              placeholderTextColor="gray"
+              onChangeText={(addr) => setAddress(addr)}
+            />
+          </View>
+        ) : (
+          <Text style={{ marginLeft: 20, marginVertical: 10, marginBottom: 25 }}>
+            {user?.direccion || "No disponible"}
+          </Text>
+        )}
+
         <TouchableOpacity
           style={styles.primaryButton}
           onPress={handleSaveChanges}

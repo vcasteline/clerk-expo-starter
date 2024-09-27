@@ -11,6 +11,7 @@ import {
   Dimensions,
   Image,
   TouchableWithoutFeedback,
+  Linking,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { RootStackScreenProps } from "../../types";
@@ -46,6 +47,7 @@ export default function PurchaseSummaryScreen({
   const [cards, setCards] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
   const rotateAnim = useRef(new Animated.Value(0)).current;
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const onBackPress = () => navigation.pop();
 
@@ -187,6 +189,11 @@ export default function PurchaseSummaryScreen({
   }, [navigation]);
 
   const handleBuyPackage = async () => {
+    if (!termsAccepted) {
+      Alert.alert("Error", "Debes aceptar los términos y condiciones para continuar.");
+      return;
+    }
+
     if (!selectedCard) {
       Alert.alert("Error", "Por favor selecciona o añade una tarjeta para continuar.");
       return;
@@ -283,6 +290,10 @@ export default function PurchaseSummaryScreen({
   const vat = price * 0.15;
   const precioFinal = price + vat;
 
+  const openTermsAndConditions = () => {
+    Linking.openURL('https://voltaec.com/terminos-y-condiciones/');
+  };
+
   return (
     <SafeAreaView style={stylesHere.container}>
       <View style={stylesHere.headingAndButtons}>
@@ -349,10 +360,28 @@ export default function PurchaseSummaryScreen({
               </Animated.View>
             </TouchableOpacity>
           </View>
+          <View style={stylesHere.termsContainer}>
+            <TouchableOpacity
+              style={stylesHere.checkbox}
+              onPress={() => setTermsAccepted(!termsAccepted)}
+            >
+              {termsAccepted && <Ionicons name="checkmark" size={18} color="black" />}
+            </TouchableOpacity>
+            <Text style={stylesHere.termsText}>
+              Acepto los 
+              <Text style={stylesHere.termsLink} onPress={openTermsAndConditions}>
+                {" "}términos y condiciones
+              </Text>
+            </Text>
+          </View>
           <View style={stylesHere.buyButtonContainer}>
             <TouchableOpacity
-              style={styles.primaryButton}
+              style={[
+                styles.primaryButton,
+                !termsAccepted && stylesHere.disabledButton
+              ]}
               onPress={handleBuyPackage}
+              disabled={!termsAccepted}
             >
               <Text style={stylesHere.buyButtonText}>Comprar</Text>
             </TouchableOpacity>
@@ -577,5 +606,30 @@ const stylesHere = StyleSheet.create({
   cardNumber: {
     fontSize: 14,
     color: "#666",
+  },
+  termsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    paddingHorizontal: 20,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  termsText: {
+    fontSize: 14,
+  },
+  termsLink: {
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
+  disabledButton: {
+    opacity: 0.5,
   },
 });

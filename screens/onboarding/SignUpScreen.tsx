@@ -34,6 +34,8 @@ export default function SignUpScreen({
         email: user.email,
         birthday: user.dateOfBirth,
         telefono: user.number,
+        direccion: user.direccion,
+        cedula: user.cedula,
         clasesDisponibles: 0
       };
       // Registro del usuario

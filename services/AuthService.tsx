@@ -77,6 +77,7 @@ export const updateUser = async (
     apellido: string;
     email: string;
     telefono: string;
+    direccion: string;
   },
   userId: any,
   token: string

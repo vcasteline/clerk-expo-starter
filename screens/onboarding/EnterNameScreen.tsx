@@ -66,16 +66,16 @@ export default function EnterNameScreen({
              <Ionicons name="chevron-back-outline" size={30} color={'white'}/>
         </TouchableWithoutFeedback>
         <Text style={{ ...styles.titleText, color: "white",  marginTop: 20 }}>
-        ¿Cómo te llamas?{" "}
+          Tu Información{" "}
         </Text>
         <Text style={{ ...styles.paragraph, color: "white" }}>
-          Escribe tu nombre y apellido{" "}
+          Escribe tu información personal.{" "}
         </Text>
       </View>
 
       <View style={stylesHere.inputs}>
         {/* <Text style={{...styles.subtitle, marginVertical: 20, marginLeft:10}}>¿Como te llamas?</Text> */}
-      <Text style={styles.label}>NOMBRE</Text>
+        <Text style={styles.label}>NOMBRE</Text>
         <View style={styles.inputView}>
           <TextInput
             value={user.firstName}
@@ -94,6 +94,17 @@ export default function EnterNameScreen({
             placeholder="Tu apellido"
             placeholderTextColor="gray"
             onChangeText={(text) => setUser({ ...user, lastName: text })}
+          />
+        </View>
+        <Text style={styles.label}>CÉDULA/PASAPORTE</Text>
+        <View style={styles.inputView}>
+          <TextInput
+            autoCapitalize="none"
+            value={user.cedula}
+            style={styles.textInput}
+            placeholder="Número de cédula o pasaporte"
+            placeholderTextColor="gray"
+            onChangeText={(text) => setUser({ ...user, cedula: text })}
           />
         </View>
 

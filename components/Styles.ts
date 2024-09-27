@@ -70,12 +70,12 @@ export const styles = StyleSheet.create({
   },
   label: {
     color: 'gray',
-    marginBottom:6,
+    marginBottom:0,
     marginLeft: 13,
     fontSize: 12
   },
   textInput: {
-    height: 50,
+    height: 40,
     flex: 1,
     padding: 10,
     marginLeft: 20,
