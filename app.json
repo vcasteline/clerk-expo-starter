@@ -5,7 +5,7 @@
     "scheme": "voltaec",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/volta-logo-black.png",
+    "icon": "./assets/volta-app-icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -22,7 +22,11 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.volta.app",
-      "buildNumber": "1.0.0"
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {

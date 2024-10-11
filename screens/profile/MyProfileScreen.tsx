@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   View,
   Linking,
+  Alert,
 } from "react-native";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
@@ -20,6 +21,7 @@ import { UserContext } from "../../utils/UserContext";
 import SpinningLogo from "../../components/SpinningLogo";
 import { RefreshControl } from "react-native";
 import { useFocusEffect } from '@react-navigation/native';
+import { deleteUser } from '../../services/AuthService';
 
 export default function MyProfileScreen({
   navigation,
@@ -96,6 +98,72 @@ export default function MyProfileScreen({
 
   const onTerminosCondicionesPress = () => {
     Linking.openURL('https://voltaec.com/terminos-y-condiciones/');
+  };
+
+  const onDeleteAccountPress = () => {
+    Alert.alert(
+      "Eliminar Cuenta",
+      "Esta acción es irreversible. Por favor, ingresa tu email para confirmar.",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel"
+        },
+        {
+          text: "Confirmar",
+          onPress: () => {
+            // Prompt para ingresar el email
+            Alert.prompt(
+              "Confirmar eliminación",
+              "Ingresa tu email para confirmar la eliminación de tu cuenta",
+              [
+                {
+                  text: "Cancelar",
+                  style: "cancel"
+                },
+                {
+                  text: "Eliminar cuenta",
+                  onPress: async (email) => {
+                    if (email === userHere.email) {
+                      try {
+                        const token = await AsyncStorage.getItem("userToken");
+                        if (token) {
+                          const { success, message } = await deleteUser(token);
+                          if (success) {
+                            setAuth({ isSignedIn: false });
+                            setUser({
+                              firstName: "",
+                              lastName: "",
+                              dateOfBirth: "",
+                              number: "",
+                              email: "",
+                              password: "",
+                            });
+                            navigation.reset({
+                              index: 0,
+                              routes: [{ name: "SignIn" }],
+                            });
+                          } else {
+                            Alert.alert("Error", `No se pudo eliminar la cuenta: ${message}`);
+                          }
+                        }
+                      } catch (error) {
+                        console.error("Error al eliminar la cuenta:", error);
+                        Alert.alert("Error", "Ocurrió un error inesperado al eliminar la cuenta. Por favor, inténtalo de nuevo más tarde.");
+                      }
+                    } else {
+                      Alert.alert("Error", "El email ingresado no coincide con tu email registrado.");
+                    }
+                  }
+                }
+              ],
+              "plain-text",
+              "",
+            );
+          }
+        }
+      ]
+    );
   };
 
   return loading ? (
@@ -247,6 +315,17 @@ export default function MyProfileScreen({
                   color="black"
                 />
               </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[stylesHere.button, { borderColor: 'red' }]}
+                onPress={onDeleteAccountPress}
+              >
+                <View style={stylesHere.textAndIcon}>
+                  <Ionicons name="trash-outline" size={24} color="red" />
+                  <Text style={[stylesHere.buttonText, { color: 'red' }]}>Eliminar Cuenta</Text>
+                </View>
+                <Ionicons name="chevron-forward-outline" size={24} color="red" />
+              </TouchableOpacity>
             </View>
           </View>
           {/* Otros componentes... */}
@@ -357,7 +436,7 @@ const stylesHere = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginVertical: 7,
-    paddingVertical: 15,
+    paddingVertical: 10,
     paddingHorizontal: 20,
     borderWidth: 1,
     borderColor: "rgba(0, 0, 0, 0.2)",

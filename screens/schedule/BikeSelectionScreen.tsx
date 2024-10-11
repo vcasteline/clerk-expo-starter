@@ -92,8 +92,8 @@ export default function BikeSelectionScreen({
         (bookedBike: { attributes: { bicycleNumber: number } }) =>
           bookedBike.attributes.bicycleNumber ===
             bike.attributes.bicycleNumber &&
-          booking.attributes.class?.data.id === classId &&
-          booking.attributes.bookingStatus === "completed"
+          booking.attributes?.class?.data?.id === classId &&
+          booking.attributes?.bookingStatus === "completed"
       )
     );
     const buttonStyle = [
@@ -156,8 +156,8 @@ export default function BikeSelectionScreen({
       const userBookings = await getUserBookings(token, userData.id);
       const hasUserBookedClass = userBookings.some(
         (booking) =>
-          booking.attributes.class.data.id === classId &&
-          booking.attributes.bookingStatus === "completed"
+          booking.attributes?.class?.data?.id === classId &&
+          booking.attributes?.bookingStatus === "completed"
       );
   
       if (hasUserBookedClass) {

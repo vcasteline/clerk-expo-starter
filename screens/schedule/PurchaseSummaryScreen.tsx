@@ -258,10 +258,10 @@ export default function PurchaseSummaryScreen({
       );
   
       Alert.alert("Éxito", `Has comprado ${selectedPackage.attributes.nombre}.`);
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "MyProfile" }],
-      });
+      // navigation.reset({
+      //   index: 0,
+      //   routes: [{ name: "Home" }],
+      // });
       navigation.navigate("Home" as never);
     } catch (error) {
       console.error("Error al comprar el paquete:", error);
@@ -368,9 +368,9 @@ export default function PurchaseSummaryScreen({
               {termsAccepted && <Ionicons name="checkmark" size={18} color="black" />}
             </TouchableOpacity>
             <Text style={stylesHere.termsText}>
-              Acepto los 
+              Acepto los
               <Text style={stylesHere.termsLink} onPress={openTermsAndConditions}>
-                {" "}términos y condiciones
+                términos y condiciones
               </Text>
             </Text>
           </View>

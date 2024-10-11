@@ -229,13 +229,13 @@ export default function ScheduleScreen({
         ) : (
           filteredClasses.map((classItem) => {
             const totalBicycles =
-              classItem.attributes.room.data.attributes.bicycles.data.length;
+              classItem?.attributes?.room?.data?.attributes?.bicycles?.data?.length;
 
             // Calcular el total de bicicletas reservadas
             const reservedBicycles = bookings.reduce((total, booking) => {
               if (
-                booking.attributes.class.data.id === classItem.id &&
-                booking.attributes.bookingStatus === "completed"
+                booking.attributes?.class?.data?.id === classItem.id &&
+                booking.attributes?.bookingStatus === "completed"
               ) {
                 // Sumar el número de bicicletas en este booking
                 return total + booking.attributes.bicycles.data.length;

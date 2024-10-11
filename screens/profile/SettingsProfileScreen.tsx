@@ -7,6 +7,9 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { RootStackScreenProps } from "../../types";
 import { styles } from "../../components/Styles";
@@ -24,7 +27,7 @@ export default function SettingsProfileScreen({
   const [email, setEmail] = React.useState("");
   const [phoneNumber, setPhoneNumber] = React.useState("");
   const [address, setAddress] = React.useState("");
-  const [countryCode, setCountryCode] = React.useState(["593"]);
+  const [countryCode, setCountryCode] = React.useState("593");
   const [editMode, setEditMode] = React.useState({
     firstName: false,
     lastName: false,
@@ -34,6 +37,8 @@ export default function SettingsProfileScreen({
   });
   const [error, setError] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
+  const phoneInputRef = React.useRef<PhoneInput>(null);
+  const [phoneNumberWithoutCode, setPhoneNumberWithoutCode] = React.useState("");
 
   React.useEffect(() => {
     const fetchUserData = async () => {
@@ -46,6 +51,17 @@ export default function SettingsProfileScreen({
           setLastName(userData.apellido);
           setEmail(userData.email);
           setAddress(userData.direccion || "");
+          
+          // Manejar el número de teléfono
+          if (userData.telefono) {
+            setPhoneNumber(userData.telefono);
+            // Asumimos que el código de país es siempre +593 para Ecuador
+            if (userData.telefono.startsWith("+593")) {
+              setPhoneNumberWithoutCode(userData.telefono.slice(4)); // Remover '+593'
+            } else {
+              setPhoneNumberWithoutCode(userData.telefono);
+            }
+          }
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -56,7 +72,6 @@ export default function SettingsProfileScreen({
   }, []);
 
   const handleSaveChanges = async () => {
-    const fullNumber = "+" + countryCode + phoneNumber;
     try {
       setSuccess(false);
       setError(false);
@@ -67,7 +82,7 @@ export default function SettingsProfileScreen({
             nombre: firstName,
             apellido: lastName,
             email: email,
-            telefono: fullNumber.length > 11 ? fullNumber : user.telefono,
+            telefono: phoneNumber,
             direccion: address,
           },
           user.id,
@@ -97,24 +112,62 @@ export default function SettingsProfileScreen({
 
   const onBackPress = () => navigation.popToTop();
 
+  const renderField = (label: string, value: string, stateKey: keyof typeof editMode) => (
+    <View style={stylesHere.fieldContainer}>
+      <View style={stylesHere.labelContainer}>
+        <Text style={styles.label}>{label}</Text>
+        <TouchableWithoutFeedback
+          onPress={() => setEditMode({ ...editMode, [stateKey]: !editMode[stateKey] })}
+        >
+          <Text style={stylesHere.editText}>
+            {editMode[stateKey] ? "Cancelar" : "Editar"}
+          </Text>
+        </TouchableWithoutFeedback>
+      </View>
+      {editMode[stateKey] ? (
+        <TextInput
+          autoCapitalize="none"
+          value={value}
+          style={stylesHere.textInput}
+          placeholder={label}
+          placeholderTextColor="gray"
+          onChangeText={(text) => {
+            switch(stateKey) {
+              case 'firstName':
+                setFirstName(text);
+                break;
+              case 'lastName':
+                setLastName(text);
+                break;
+              case 'email':
+                setEmail(text);
+                break;
+              case 'address':
+                setAddress(text);
+                break;
+            }
+          }}
+        />
+      ) : (
+        <Text style={stylesHere.fieldValue}>{value || "No disponible"}</Text>
+      )}
+    </View>
+  );
+
+  const phoneInput = React.useRef<PhoneInput>(null);
+
   return (
-    <View style={styles.containerInside}>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.containerInside}
+    >
       <View style={styles.heading}>
         <TouchableWithoutFeedback onPress={onBackPress}>
           <Ionicons name="chevron-back-outline" size={30} color={"white"} />
         </TouchableWithoutFeedback>
       </View>
-      <View
-        style={{
-          ...styles.flex,
-          flexDirection: "row",
-          justifyContent: "flex-start",
-          width: "100%",
-          marginLeft: 60,
-          marginTop: 10,
-        }}
-      >
-        <Text style={{ ...styles.titleText, color: "white" }}>
+      <View style={stylesHere.titleContainer}>
+        <Text style={stylesHere.titleText}>
           Configurar Perfil
         </Text>
       </View>
@@ -125,206 +178,51 @@ export default function SettingsProfileScreen({
           <Text style={stylesHere.userEmail}>{"Documento de identidad: " + user?.cedula || "Cédula"} </Text>
         </View>
       </View>
-      <View style={stylesHere.dashboard}>
-        <View
-          style={{
-            ...styles.spaceBet,
-            marginRight: 50,
-            alignItems: "center",
-            marginBottom: 10,
-          }}
-        >
-          <Text style={styles.label}>TU NOMBRE</Text>
-          <TouchableWithoutFeedback
-            onPress={() =>
-              setEditMode({ ...editMode, firstName: !editMode.firstName })
-            }
-          >
-            <Text style={{ color: "blue" }}>
-              {editMode.firstName ? "Cancelar" : "Editar"}
-            </Text>
-          </TouchableWithoutFeedback>
-        </View>
-        {editMode.firstName ? (
-          <View style={styles.inputView}>
-            <TextInput
-              autoCapitalize="none"
-              value={firstName}
-              style={styles.textInput}
-              placeholder="Nombre"
-              placeholderTextColor="gray"
-              onChangeText={(name) => setFirstName(name)}
-            />
+      <ScrollView style={stylesHere.dashboard} contentContainerStyle={stylesHere.scrollContent}>
+        {renderField("TU NOMBRE", firstName, "firstName")}
+        {renderField("TU APELLIDO", lastName, "lastName")}
+        {renderField("TU EMAIL", email, "email")}
+        
+        <View style={stylesHere.fieldContainer}>
+          <View style={stylesHere.labelContainer}>
+            <Text style={styles.label}>TU NÚMERO</Text>
+            <TouchableWithoutFeedback
+              onPress={() => setEditMode({ ...editMode, phoneNumber: !editMode.phoneNumber })}
+            >
+              <Text style={stylesHere.editText}>
+                {editMode.phoneNumber ? "Cancelar" : "Editar"}
+              </Text>
+            </TouchableWithoutFeedback>
           </View>
-        ) : (
-          <Text
-            style={{ marginLeft: 20, marginVertical: 10, marginBottom: 25 }}
-          >
-            {user?.nombre}
-          </Text>
-        )}
-
-        <View
-          style={{
-            ...styles.spaceBet,
-            marginRight: 50,
-            alignItems: "center",
-            marginBottom: 10,
-          }}
-        >
-          <Text style={styles.label}>TU APELLIDO</Text>
-          <TouchableWithoutFeedback
-            onPress={() =>
-              setEditMode({ ...editMode, lastName: !editMode.lastName })
-            }
-          >
-            <Text style={{ color: "blue" }}>
-              {editMode.lastName ? "Cancelar" : "Editar"}
-            </Text>
-          </TouchableWithoutFeedback>
-        </View>
-        {editMode.lastName ? (
-          <View style={styles.inputView}>
-            <TextInput
-              autoCapitalize="none"
-              value={lastName}
-              style={styles.textInput}
-              placeholder="Apellido"
-              placeholderTextColor="gray"
-              onChangeText={(name) => setLastName(name)}
-            />
-          </View>
-        ) : (
-          <Text
-            style={{ marginLeft: 20, marginVertical: 10, marginBottom: 25 }}
-          >
-            {user?.apellido}
-          </Text>
-        )}
-
-        <View
-          style={{
-            ...styles.spaceBet,
-            marginRight: 50,
-            alignItems: "center",
-            marginBottom: 10,
-          }}
-        >
-          <Text style={styles.label}>TU EMAIL</Text>
-          <TouchableWithoutFeedback
-            onPress={() => setEditMode({ ...editMode, email: !editMode.email })}
-          >
-            <Text style={{ color: "blue" }}>
-              {editMode.email ? "Cancelar" : "Editar"}
-            </Text>
-          </TouchableWithoutFeedback>
-        </View>
-        {editMode.email ? (
-          <View style={styles.inputView}>
-            <TextInput
-              autoCapitalize="none"
-              value={email}
-              style={styles.textInput}
-              placeholder="Email"
-              placeholderTextColor="gray"
-              onChangeText={(emailAddress) => setEmail(emailAddress)}
-            />
-          </View>
-        ) : (
-          <Text
-            style={{ marginLeft: 20, marginVertical: 10, marginBottom: 25 }}
-          >
-            {user?.email}
-          </Text>
-        )}
-
-        <View
-          style={{
-            ...styles.spaceBet,
-            marginRight: 50,
-            alignItems: "center",
-            marginBottom: 10,
-          }}
-        >
-          <Text style={styles.label}>TU NÚMERO</Text>
-          <TouchableWithoutFeedback
-            onPress={() =>
-              setEditMode({ ...editMode, phoneNumber: !editMode.phoneNumber })
-            }
-          >
-            <Text style={{ color: "blue" }}>
-              {editMode.phoneNumber ? "Cancelar" : "Editar"}
-            </Text>
-          </TouchableWithoutFeedback>
-        </View>
-        {editMode.phoneNumber ? (
-          <View style={{ marginBottom: 20 }}>
-            {/* @ts-ignore */}
+          {editMode.phoneNumber ? (
             <PhoneInput
+              ref={phoneInput}
+              value={phoneNumberWithoutCode}
               defaultCode="EC"
-              onChangeCountry={(c) => setCountryCode(c.callingCode)}
               layout="first"
-              onChangeText={(p) => setPhoneNumber(p)}
-              containerStyle={{ width: "100%" }}
-              textInputStyle={{ fontSize: 14 }}
-              textContainerStyle={{
-                borderRadius: 20,
-                borderWidth: 1,
-                borderColor: "#CDCDCD",
-                backgroundColor: "#FFF",
-                height: 50,
-              }}
-              codeTextStyle={{ fontWeight: "400", fontSize: 14 }}
-              placeholder="Número"
+              onChangeText={(text: string) => setPhoneNumberWithoutCode(text)}
+              onChangeFormattedText={(text: string) => setPhoneNumber(text)}
+              containerStyle={stylesHere.phoneInputContainer}
+              textContainerStyle={stylesHere.phoneInputTextContainer}
+              textInputStyle={stylesHere.phoneInputText}
+              codeTextStyle={stylesHere.phoneInputCodeText}
+              placeholder="Número de teléfono"
             />
-          </View>
-        ) : (
-          <Text
-            style={{ marginLeft: 20, marginVertical: 10, marginBottom: 25 }}
-          >
-            {user.telefono}
-          </Text>
-        )}
-
-        <View style={{...styles.spaceBet, marginRight: 50, alignItems: "center", marginBottom: 10}}>
-          <Text style={styles.label}>TU CÉDULA</Text>
+          ) : (
+            <Text style={stylesHere.fieldValue}>{phoneNumber || "No disponible"}</Text>
+          )}
         </View>
-        <Text style={{ marginLeft: 20, marginVertical: 10, marginBottom: 25 }}>
-          {user?.cedula || "No disponible"}
-        </Text>
 
-        <View style={{...styles.spaceBet, marginRight: 50, alignItems: "center", marginBottom: 10}}>
-          <Text style={styles.label}>TU DIRECCIÓN</Text>
-          <TouchableWithoutFeedback onPress={() => setEditMode({ ...editMode, address: !editMode.address })}>
-            <Text style={{ color: "blue" }}>
-              {editMode.address ? "Cancelar" : "Editar"}
-            </Text>
-          </TouchableWithoutFeedback>
-        </View>
-        {editMode.address ? (
-          <View style={styles.inputView}>
-            <TextInput
-              value={address}
-              style={styles.textInput}
-              placeholder="Dirección..."
-              placeholderTextColor="gray"
-              onChangeText={(addr) => setAddress(addr)}
-            />
-          </View>
-        ) : (
-          <Text style={{ marginLeft: 20, marginVertical: 10, marginBottom: 25 }}>
-            {user?.direccion || "No disponible"}
-          </Text>
-        )}
+        {renderField("TU DIRECCIÓN", address, "address")}
 
         <TouchableOpacity
-          style={styles.primaryButton}
+          style={[styles.primaryButton, stylesHere.saveButton]}
           onPress={handleSaveChanges}
         >
           <Text style={styles.primaryButtonText}>Guardar Cambios</Text>
         </TouchableOpacity>
-      </View>
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -334,12 +232,6 @@ const stylesHere = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 12,
     paddingHorizontal: 16,
-  },
-  profilePicture: {
-    marginLeft: 20,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
   },
   userInfo: {
     flex: 1,
@@ -354,55 +246,74 @@ const stylesHere = StyleSheet.create({
     fontSize: 14,
     color: "#666666",
   },
-  settingsIcon: {
-    marginRight: 16,
-  },
-  title: {
-    color: "white",
-    fontSize: 20,
-  },
   dashboard: {
+    flex: 1,
     borderRadius: 30,
-    padding: 24,
-    marginTop: 13,
-    paddingBottom: 40,
     width: "100%",
-    height: "100%",
-    justifyContent: "flex-start",
     backgroundColor: "#fff",
   },
-  input: {
+  scrollContent: {
+    padding: 24,
+    paddingBottom: 40,
+  },
+  fieldContainer: {
+    marginBottom: 15,
+  },
+  labelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  editText: {
+    color: 'blue',
+    fontSize: 14,
+  },
+  fieldValue: {
+    fontSize: 16,
+    color: '#333',
+    paddingLeft: 10, // Añade un poco de padding a la izquierda
+  },
+  textInput: {
     height: 40,
-    borderColor: "gray",
+    borderColor: '#CDCDCD',
     borderWidth: 1,
-    marginBottom: 10,
+    borderRadius: 10,
     paddingHorizontal: 10,
+    fontSize: 16,
+  },
+  phoneInputContainer: {
+    width: "100%",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#CDCDCD",
+    backgroundColor: "#FFF",
+  },
+  phoneInputTextContainer: {
+    backgroundColor: "transparent",
+    paddingLeft: 10,
+  },
+  phoneInputText: {
+    fontSize: 16,
+    color: "#333",
+    height: 40,
+  },
+  phoneInputCodeText: {
+    fontSize: 16,
+    color: "#333",
   },
   saveButton: {
-    backgroundColor: "black",
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 15,
-    alignSelf: "center",
+    marginTop: 20,
   },
-  saveButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    textAlign: "center",
-  },
-  button: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 10,
-    paddingVertical: 10,
+  titleContainer: {
+    width: '100%',
     paddingHorizontal: 20,
-    borderWidth: 1,
-    borderColor: "#3D4AF5",
-    borderRadius: 5,
+    marginTop: 10,
   },
-  buttonText: {
+  titleText: {
+    ...styles.titleText,
     marginLeft: 10,
-    fontSize: 16,
-    color: "#3D4AF5",
+    color: "white",
+    textAlign: 'left',
   },
 });

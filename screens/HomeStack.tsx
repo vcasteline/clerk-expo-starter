@@ -7,6 +7,9 @@ import InstructorScreen from './instructors/InstructorScreen';
 import NextRidesScreen from './home/NextRides';
 import BikeSelectionScreen from './schedule/BikeSelectionScreen';
 import SuccessfulScreen from './schedule/SuccessfulScreen';
+import BuyRidesScreen from './schedule/BuyRidesScreen';
+import PaymentMethodScreen from './profile/PaymentMethodScreen';
+import PurchaseSummaryScreen from './schedule/PurchaseSummaryScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -23,6 +26,10 @@ export default function HomeStack({
       <Stack.Screen name="NextRides" component={NextRidesScreen} />
       <Stack.Screen name="BikeSelection" component={BikeSelectionScreen} />
       <Stack.Screen name="Successful" component={SuccessfulScreen} />
+      <Stack.Screen name="BuyRides" component={BuyRidesScreen} />
+      <Stack.Screen name="PurchaseSummary" component={PurchaseSummaryScreen} />
+      <Stack.Screen name="PaymentMethod" component={PaymentMethodScreen} />
+
 
     </Stack.Navigator>
   );

@@ -134,3 +134,27 @@ export const getMe = async (token: string) => {
     throw error;
   }
 };
+
+export const deleteUser = async (token: string): Promise<{ success: boolean; message: string }> => {
+  try {
+    // Primero, obtener el ID del usuario
+    const meResponse = await axios.get(`${API_URL}/users/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const userId = meResponse.data.id;
+
+    // Luego, eliminar el usuario usando su ID
+    const deleteResponse = await axios.delete(`${API_URL}/users/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return { success: true, message: "Cuenta eliminada con éxito" };
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    return { success: false, message: "Error al eliminar la cuenta" };
+  }
+};
