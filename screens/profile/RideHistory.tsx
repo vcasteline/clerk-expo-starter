@@ -133,7 +133,7 @@ export default function RideHistoryScreen({
             } else {
               // Manejar el caso cuando past_bbooking.class no existe
               const fechaFormateada = convertDate(
-                past_booking.attributes.fechaHora
+                past_booking?.attributes?.fechaHora
               );
               return (
                 <ClassCard
@@ -142,8 +142,8 @@ export default function RideHistoryScreen({
                   image={null}
                   date={fechaFormateada}
                   className="Clase no disponible"
-                  time=""
-                  instructor=""
+                  time="Esta clase ya no existe"
+                  instructor="probablemente fue eliminada"
                   spots={null}
                   isPastClass={true}
                 />
